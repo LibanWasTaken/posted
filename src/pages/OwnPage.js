@@ -37,13 +37,13 @@ const OwnPage = () => {
       </div>
       <div className="components">
         <button className="add diary" onClick={handleDiaryOpen}>
-          <span class="material-symbols-outlined">add_notes</span>
+          <span className="material-symbols-outlined">add_notes</span>
         </button>
         <button className="add link">
-          <span class="material-symbols-outlined">add_link</span>
+          <span className="material-symbols-outlined">add_link</span>
         </button>
         <button className="add etc">
-          <span class="material-symbols-outlined">add</span>
+          <span className="material-symbols-outlined">add</span>
         </button>
       </div>
       {/* <Diary open={diaryOpen} handleClose={handleDiaryClose} info={info} /> */}

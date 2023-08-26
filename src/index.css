@@ -4,3 +4,26 @@ body {
     "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
     "Helvetica Neue", sans-serif;
 }
+
+.classicBtn {
+  background-color: black;
+  padding: 1.5rem 2.5rem;
+  color: white;
+  letter-spacing: 2px;
+  outline: none;
+  text-transform: uppercase;
+  border: none;
+}
+
+.classicBtn:hover {
+  cursor: pointer;
+  transition: 0.3s;
+  padding: 1.5rem 2.7rem;
+  letter-spacing: 3px;
+}
+
+.classicBtn:active {
+  color: black;
+  transition: 0s;
+  background-color: whitesmoke;
+}

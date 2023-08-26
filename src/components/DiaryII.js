@@ -21,13 +21,13 @@ const DiaryII = ({ isOpen, onClose }) => {
       <Content open={isOpen}>
         <div className="header">
           <div className="left">
-            <span class="material-symbols-outlined" onClick={onClose}>
+            <span className="material-symbols-outlined" onClick={onClose}>
               close
             </span>
             <h1>Diary</h1>
           </div>
 
-          <span class="material-symbols-outlined right">Save</span>
+          <span className="material-symbols-outlined right">Save</span>
         </div>
 
         <div className="notes">

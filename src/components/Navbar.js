@@ -17,30 +17,29 @@ import {
 // import Badge from "@mui/material/Badge";
 
 const Navbar = () => {
-  const db = getDatabase();
-  const [cartLength, setCartLength] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // const db = getDatabase();
+  // const [cartLength, setCartLength] = useState(null);
+  // const [loading, setLoading] = useState(true);
 
-  const values = AccPage();
-  let currentUser;
-  if (values.logged) {
-    currentUser = values.user;
-  }
-  // Admin
-  let isAdmin = false;
-  if (values.adminLogged) {
-    isAdmin = true;
-  }
+  // const values = AccPage();
+  // let currentUser;
+  // if (values.logged) {
+  //   currentUser = values.user;
+  // }
+  // let isAdmin = false;
+  // if (values.adminLogged) {
+  //   isAdmin = true;
+  // }
 
-  useEffect(() => {
-    if (currentUser) {
-      const cartRef = ref(db, "users/" + currentUser.uid + "/cart");
-      onValue(cartRef, (snapshot) => {
-        let data = snapshot.val();
-        setCartLength(Object.keys(data).length);
-      });
-    }
-  }, [currentUser]);
+  // useEffect(() => {
+  //   if (currentUser) {
+  //     const cartRef = ref(db, "users/" + currentUser.uid + "/cart");
+  //     onValue(cartRef, (snapshot) => {
+  //       let data = snapshot.val();
+  //       setCartLength(Object.keys(data).length);
+  //     });
+  //   }
+  // }, [currentUser]);
 
   // Window width
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -84,13 +83,13 @@ const Navbar = () => {
                     </a>
                   </li>
 
-                  {isAdmin && (
+                  {/* {isAdmin && (
                     <li>
                       <a className="navLinks" href="/admin">
                         Admin
                       </a>
                     </li>
-                  )}
+                  )} */}
                 </ul>
               </div>
             )}
@@ -101,10 +100,10 @@ const Navbar = () => {
               ) : (
                 <div>
                   <a href="/search" className="icon">
-                    <span class="material-symbols-outlined">search</span>
+                    <span className="material-symbols-outlined">search</span>
                   </a>
                   <a href="/account" className="icon">
-                    <span class="material-symbols-outlined">
+                    <span className="material-symbols-outlined">
                       account_circle
                     </span>
                   </a>

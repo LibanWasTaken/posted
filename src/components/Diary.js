@@ -92,7 +92,7 @@ export default function Diary({ open, handleClose, info }) {
               aria-label="close"
             >
               {/* <CloseIcon /> */}
-              <span class="material-symbols-outlined">close</span>
+              <span className="material-symbols-outlined">close</span>
             </IconButton>
             <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
               Diary
