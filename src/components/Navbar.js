@@ -13,8 +13,8 @@ import {
 // import { VscAccount } from "react-icons/vsc";
 // import { AiOutlineShopping } from "react-icons/ai";
 // import Sidebar from "./Sidebar";
-// import logoPng from "../assets/logo-png-black.png";
-import Badge from "@mui/material/Badge";
+// import logoPng from "../assets/logo.png";
+// import Badge from "@mui/material/Badge";
 
 const Navbar = () => {
   const db = getDatabase();
@@ -74,20 +74,16 @@ const Navbar = () => {
                     </a>
                   </li>
                   <li>
-                    <a className="navLinks" href="/products/best-sellers">
-                      Best Sellers
+                    <a className="navLinks" href="/me/them">
+                      To Who
                     </a>
                   </li>
                   <li>
-                    <a className="navLinks" href="/products/new-arrivals">
-                      New Arrivals
+                    <a className="navLinks" href="/everyone">
+                      Everyone
                     </a>
                   </li>
-                  <li>
-                    <a className="navLinks" href="#">
-                      Search
-                    </a>
-                  </li>
+
                   {isAdmin && (
                     <li>
                       <a className="navLinks" href="/admin">
@@ -104,7 +100,7 @@ const Navbar = () => {
                 <span className="icon">{/* <Sidebar /> */}</span>
               ) : (
                 <div>
-                  <a href="/cart" className="icon">
+                  <a href="/search" className="icon">
                     <span class="material-symbols-outlined">search</span>
                   </a>
                   <a href="/account" className="icon">

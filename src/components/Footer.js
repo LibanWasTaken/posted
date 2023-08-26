@@ -1,5 +1,6 @@
 import { React } from "react";
 import styled from "styled-components";
+import logoPng from "../assets/logo.png";
 
 const Footer = () => {
   return (
@@ -8,7 +9,9 @@ const Footer = () => {
         <Wrapper>
           <footer>
             <div className="ftgrid">
-              <div className="item">asd</div>
+              <div className="item">
+                <img className="logoPng" src={logoPng} alt="" />
+              </div>
               <div className="item">asd</div>
               <div className="item">POSTED © 2023. All rights reserved.</div>
             </div>
@@ -27,12 +30,10 @@ const Wrapper = styled.section`
     width: 100%;
     background-color: black;
     color: white;
-    padding: 3rem 2rem;
+    padding: 2rem;
     display: flex;
     justify-content: center;
     flex-direction: column;
-    /* border-top: 1px solid rgba(0, 0, 0, 0.2); */
-    /* box-shadow: rgba(149, 157, 165, 0.5) 0px -10px 24px; */
   }
 
   .ftgrid {
@@ -40,6 +41,10 @@ const Wrapper = styled.section`
     justify-content: space-around;
     align-items: center;
     flex-direction: row;
+  }
+
+  .logoPng {
+    height: 50px;
   }
 
   @media screen and (max-width: 800px) {
