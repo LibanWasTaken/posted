@@ -27,3 +27,14 @@ body {
   transition: 0s;
   background-color: whitesmoke;
 }
+
+.disabledClassicBtn {
+  color: black;
+  background-color: whitesmoke;
+}
+
+.disabledClassicBtn:hover {
+  cursor: not-allowed;
+  padding: 1.5rem 2.5rem;
+  letter-spacing: 2px;
+}
