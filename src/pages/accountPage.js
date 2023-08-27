@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import {
   createUserWithEmailAndPassword,
@@ -8,12 +8,12 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { auth, provider } from "./../services/firebase-config";
-import { adminID } from "./../services/constants";
+// import { adminID } from "./../services/constants";
 import TextField from "@mui/material/TextField";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Spinner1 } from "../components/Spinner";
-
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { useUserContext } from "../context/UserContext";
 
 const theme = createTheme({
   palette: {
@@ -27,14 +27,14 @@ const theme = createTheme({
 });
 
 export function AccPage() {
-  const [user, setUser] = useState(null);
+  const { user, loading } = useUserContext();
   const [value, setValue] = useState(0);
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [userName, setUserName] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [errMsg, setErrMsg] = useState("");
 
   const formatErr = (str) => {
     const words = str.split(" ");
@@ -44,16 +44,6 @@ export function AccPage() {
     const result = `${words.join(" ")}, ${target}`;
     return result;
   };
-  const [errMsg, setErrMsg] = useState("");
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, []);
 
   const register = async () => {
     try {
@@ -116,123 +106,116 @@ export function AccPage() {
 
   // Check if admin
 
-  let isAdmin = false;
-  if (user) {
-    if (user.uid === adminID) {
-      isAdmin = true;
-    }
-  }
-  return {
-    logged: user ? true : false,
-    adminLogged: isAdmin,
-    user: user,
-    jsx: (
-      <Wrapper>
-        {loading ? (
-          <Spinner1 />
-        ) : (
-          <ThemeProvider theme={theme}>
-            {user ? (
-              <section className="section2 ">
-                <h2>Welcome, {user.displayName}.</h2>
+  // let isAdmin = false;
+  // if (user) {
+  //   if (user.uid === adminID) {
+  //     isAdmin = true;
+  //   }
+  // }
 
-                <button onClick={logout} className="finalBtn">
-                  Sign Out
+  console.log(user, loading);
+  return (
+    <Wrapper>
+      {loading ? (
+        <Spinner1 />
+      ) : (
+        <ThemeProvider theme={theme}>
+          {user ? (
+            <section className="section2 ">
+              <h2>Welcome, {user.displayName}.</h2>
+
+              <button onClick={logout} className="finalBtn">
+                Sign Out
+              </button>
+            </section>
+          ) : (
+            <section className="section ">
+              {/* Tab Buttons */}
+              <div className="btn-container">
+                <button
+                  className={`tabBtn ${value === 0 && "active-btn"}`}
+                  onClick={() => setValue(0)}
+                >
+                  LOGIN
                 </button>
-              </section>
-            ) : (
-              <section className="section ">
-                {/* Tab Buttons */}
-                <div className="btn-container">
-                  <button
-                    className={`tabBtn ${value === 0 && "active-btn"}`}
-                    onClick={() => setValue(0)}
-                  >
-                    LOGIN
-                  </button>
-                  <button
-                    className={`tabBtn ${value === 1 && "active-btn"}`}
-                    onClick={() => setValue(1)}
-                  >
-                    REGISTER
-                  </button>
-                  <button className={`tabBtn `} onClick={loginGmail}>
-                    GMAIL
+                <button
+                  className={`tabBtn ${value === 1 && "active-btn"}`}
+                  onClick={() => setValue(1)}
+                >
+                  REGISTER
+                </button>
+                <button className={`tabBtn `} onClick={loginGmail}>
+                  GMAIL
+                </button>
+              </div>
+              {value === 0 ? (
+                // Sign in tab
+                <div className="containers">
+                  <div className="inputs">
+                    <TextField
+                      className="fields"
+                      label="Email"
+                      type="email"
+                      variant="standard"
+                      value={loginEmail}
+                      onChange={(event) => setLoginEmail(event.target.value)}
+                    />
+                    <TextField
+                      className="fields"
+                      label="Password"
+                      type="password"
+                      variant="standard"
+                      value={loginPassword}
+                      onChange={(event) => setLoginPassword(event.target.value)}
+                    />
+                  </div>
+                  <a href="/">Forgot your password?</a>
+                  <button className="finalBtn" onClick={login}>
+                    SIGN IN
                   </button>
                 </div>
-                {value === 0 ? (
-                  // Sign in tab
-                  <div className="containers">
-                    <div className="inputs">
-                      <TextField
-                        className="fields"
-                        label="Email"
-                        type="email"
-                        variant="standard"
-                        value={loginEmail}
-                        onChange={(event) => setLoginEmail(event.target.value)}
-                      />
-                      <TextField
-                        className="fields"
-                        label="Password"
-                        type="password"
-                        variant="standard"
-                        value={loginPassword}
-                        onChange={(event) =>
-                          setLoginPassword(event.target.value)
-                        }
-                      />
-                    </div>
-                    <a href="/">Forgot your password?</a>
-                    <button className="finalBtn" onClick={login}>
-                      SIGN IN
-                    </button>
+              ) : (
+                // Register tab
+                <div className="containers">
+                  <div className="inputs">
+                    <TextField
+                      className="fields"
+                      label="User Name"
+                      variant="filled"
+                      value={userName}
+                      onChange={(event) => setUserName(event.target.value)}
+                    />
+                    <TextField
+                      className="fields"
+                      label="Email"
+                      type="email"
+                      variant="filled"
+                      value={registerEmail}
+                      onChange={(event) => setRegisterEmail(event.target.value)}
+                    />
+                    <TextField
+                      className="fields"
+                      label="Password"
+                      type="password"
+                      variant="filled"
+                      value={registerPassword}
+                      onChange={(event) =>
+                        setRegisterPassword(event.target.value)
+                      }
+                    />
                   </div>
-                ) : (
-                  // Register tab
-                  <div className="containers">
-                    <div className="inputs">
-                      <TextField
-                        className="fields"
-                        label="User Name"
-                        variant="filled"
-                        value={userName}
-                        onChange={(event) => setUserName(event.target.value)}
-                      />
-                      <TextField
-                        className="fields"
-                        label="Email"
-                        type="email"
-                        variant="filled"
-                        value={registerEmail}
-                        onChange={(event) =>
-                          setRegisterEmail(event.target.value)
-                        }
-                      />
-                      <TextField
-                        className="fields"
-                        label="Password"
-                        type="password"
-                        variant="filled"
-                        value={registerPassword}
-                        onChange={(event) =>
-                          setRegisterPassword(event.target.value)
-                        }
-                      />
-                    </div>
-                    <button className="finalBtn" onClick={register}>
-                      SIGN UP
-                    </button>
-                  </div>
-                )}
-                <div className="errMsg">{errMsg !== "" && errMsg}</div>
-              </section>
-            )}
-          </ThemeProvider>
-        )}
-      </Wrapper>
-    ),
-  };
+                  <button className="finalBtn" onClick={register}>
+                    SIGN UP
+                  </button>
+                </div>
+              )}
+              <div className="errMsg">{errMsg !== "" && errMsg}</div>
+            </section>
+          )}
+        </ThemeProvider>
+      )}
+    </Wrapper>
+  );
 }
 
 const Wrapper = styled.main`

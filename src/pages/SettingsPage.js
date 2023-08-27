@@ -23,7 +23,7 @@ const SettingsPage = () => {
       const infoRef = ref(db, "users/" + currentUser.uid + "/info");
       onValue(infoRef, (snapshot) => {
         let data = snapshot.val();
-        s(data);
+        setUserInfo(data);
       });
     }
   }, [currentUser]);
