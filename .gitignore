@@ -24,3 +24,4 @@ yarn-error.log*
 
 # accounts
 /src/services/
+/src/components/BigBoyEditor

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { useUserContext } from "../context/UserContext";
 import { Spinner1 } from "../components/Spinner";
+import { useUserContext } from "../context/UserContext";
 import {
   getDatabase,
   ref,
@@ -10,6 +10,8 @@ import {
   update,
   remove,
 } from "firebase/database";
+import { countries } from "../context/UserOptions";
+
 // mui
 import PropTypes from "prop-types";
 import Tabs from "@mui/material/Tabs";
@@ -93,7 +95,7 @@ const SettingsPage = () => {
   const [userInfo, setUserInfo] = useState(null);
   const [value, setValue] = useState(0);
   const [saveDisabled, setSaveDisabled] = useState(true);
-  const [editDisabled, setEditDisabled] = useState(true);
+  const [editDisabled, setEditDisabled] = useState(false);
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -109,7 +111,6 @@ const SettingsPage = () => {
   //     });
   //   }
   // }, [currentUser]);
-  // console.log(userInfo);
 
   const userDetails = {
     firstName: "Liban",
@@ -139,7 +140,23 @@ const SettingsPage = () => {
     updates["/users/" + currentUser.uid + "/info/"] = userDetails;
     update(ref(db), updates);
     console.log("updated");
+    setSaveDisabled(true);
   }
+
+  function changeValueOfThis(key) {
+    return {
+      defaultValue: userDetails[key],
+      onChange: (event) => updateInfo(key, event.target.value),
+    };
+  }
+
+  function updateInfo(key, info) {
+    console.log(key, ":", userDetails[key], "->", info);
+    userDetails[key] = info;
+    console.log(userDetails);
+    setSaveDisabled(false);
+  }
+  // updateInfo("lastName", "Rahman");
 
   return (
     <Wrapper>
@@ -163,11 +180,11 @@ const SettingsPage = () => {
                     </Tabs>
                   </Box>
                   <CustomTabPanel value={value} index={0}>
-                    <h4>tip on who to send, how etc</h4>
+                    <p>tip on who to send, how etc</p>
 
                     <div className="mail1">
                       <TextField
-                        disabled={editDisabled}
+                        disabled={!editDisabled}
                         sx={{ m: 1 }}
                         label="Mail 1"
                         variant="outlined"
@@ -176,7 +193,7 @@ const SettingsPage = () => {
                       />
 
                       <TextField
-                        disabled={editDisabled}
+                        disabled={!editDisabled}
                         sx={{ m: 1, width: "25ch" }}
                         label="Short Message"
                         inputProps={{ maxLength: 100 }}
@@ -185,7 +202,7 @@ const SettingsPage = () => {
                     </div>
                     <div className="mail2">
                       <TextField
-                        disabled={editDisabled}
+                        disabled={!editDisabled}
                         sx={{ m: 1 }}
                         label="Mail 2"
                         variant="outlined"
@@ -193,18 +210,18 @@ const SettingsPage = () => {
                       />
 
                       <TextField
-                        disabled={editDisabled}
+                        disabled={!editDisabled}
                         sx={{ m: 1, width: "25ch" }}
                         label="Short Message"
                         inputProps={{ maxLength: 100 }}
                         variant="standard"
                       />
                     </div>
-                    <h2>More..</h2>
+                    <p>More..</p>
 
                     <div className="mail3">
                       <TextField
-                        disabled={editDisabled}
+                        disabled={!editDisabled}
                         sx={{ m: 1 }}
                         label="Mail 3"
                         variant="outlined"
@@ -214,23 +231,25 @@ const SettingsPage = () => {
                     </div>
                   </CustomTabPanel>
                   <CustomTabPanel value={value} index={1}>
-                    {/* <h2>how much do u want to reveal</h2> */}
+                    {/* <p>how much do u want to reveal</p> */}
                     <div className="name">
                       <TextField
-                        disabled={editDisabled}
+                        disabled={!editDisabled}
                         sx={{ m: 1 }}
                         label="First Name"
                         variant="outlined"
                         required
+                        {...changeValueOfThis("firstName")}
                       />
                       <TextField
-                        disabled={editDisabled}
+                        disabled={!editDisabled}
                         sx={{ m: 1 }}
                         label="Middle Name"
                         variant="outlined"
+                        {...changeValueOfThis("middleName")}
                       />
                       <TextField
-                        disabled={editDisabled}
+                        disabled={!editDisabled}
                         sx={{ m: 1 }}
                         label="Last Name"
                         variant="outlined"
@@ -238,14 +257,14 @@ const SettingsPage = () => {
                       />
                     </div>
                     <TextField
-                      disabled={editDisabled}
+                      disabled={!editDisabled}
                       sx={{ m: 1, width: "5ch" }}
                       label="Prefix"
                       inputProps={{ maxLength: 5 }}
                       variant="standard"
                     />
                     <TextField
-                      disabled={editDisabled}
+                      disabled={!editDisabled}
                       sx={{ m: 1, width: "5ch" }}
                       label="Suffix"
                       inputProps={{ maxLength: 5 }}
@@ -254,13 +273,11 @@ const SettingsPage = () => {
                     <div className="datePicker" style={{ marginTop: "2rem" }}>
                       <DatePicker
                         label="Date of Birth"
-                        disabled={editDisabled}
+                        disabled={!editDisabled}
                         defaultValue={dayjs("2003-07-03")}
                       />
                     </div>
-                    <h2>more..</h2>
-
-                    <h3>Country of Birth</h3>
+                    <p>more..</p>
 
                     {/* https://mui.com/material-ui/react-autocomplete/#load-on-open:~:text=for%20each%20keystroke.-,Load%20on%20open,-It%20displays%20a 
                     
@@ -269,15 +286,57 @@ const SettingsPage = () => {
 
                     {/* https://www.google.com/search?sca_esv=560498928&rlz=1C1CHBF_enBD1064BD1064&sxsrf=AB5stBjkXlUTelH7ND295ZhGy2rVmwPVBA:1693150717696&q=time+illustration&tbm=isch&source=lnms&sa=X&ved=2ahUKEwju7dD4lf2AAxUuyDgGHY9mCv4Q0pQJegQIDBAB&biw=1920&bih=963&dpr=1#imgrc=_LPw8rHBrAMQgM 
 
-these types of drawings also
-*/}
+                    these types of drawings also
+                    */}
+                    <div>
+                      <Autocomplete
+                        disabled={!editDisabled}
+                        id="gender-select"
+                        sx={{ width: 350, m: 1 }}
+                        options={countries}
+                        autoHighlight
+                        getOptionLabel={(option) => option.label}
+                        renderOption={(props, option) => (
+                          <li {...props}>{option.label}</li>
+                        )}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="Birth Country"
+                            inputProps={{
+                              ...params.inputProps,
+                              autoComplete: "new-password", // disable autocomplete and autofill
+                            }}
+                          />
+                        )}
+                      />
+                      <TextField
+                        disabled={!editDisabled}
+                        label="Birth State"
+                        variant="outlined"
+                        type="text"
+                        sx={{ m: 1, width: "25ch" }}
+                      />
+                      <TextField
+                        disabled={!editDisabled}
+                        label="Birth City"
+                        variant="outlined"
+                        type="text"
+                        sx={{ m: 1, width: "25ch" }}
+                      />
+                    </div>
+                    <TextField
+                      disabled={!editDisabled}
+                      label="Phone Number"
+                      variant="standard"
+                      type="number"
+                      sx={{ m: 1, width: "25ch", marginBottom: 3 }}
+                    />
 
-                    <h3>City of Birth</h3>
-                    <h3>State of Birth</h3>
                     <Autocomplete
-                      disabled={editDisabled}
+                      disabled={!editDisabled}
                       id="gender-select"
-                      sx={{ width: 150 }}
+                      sx={{ width: 150, m: 1 }}
                       options={[
                         { label: "Male", value: "male" },
                         { label: "Female", value: "female" },
@@ -298,71 +357,83 @@ these types of drawings also
                         />
                       )}
                     />
-
-                    <h3>Phone Number</h3>
                     <TextField
-                      disabled={editDisabled}
+                      disabled={!editDisabled}
                       label="Own Email"
                       variant="outlined"
                       type="email"
                       sx={{ m: 1, width: "25ch" }}
                       defaultValue="libanmesbah@gmail.com"
                     />
-                    <h2>More..</h2>
+                    <p>More..</p>
+                    <div>
+                      <TextField
+                        disabled={!editDisabled}
+                        sx={{ m: 1, width: "40ch" }}
+                        label="Home Address"
+                        inputProps={{ maxLength: 100 }}
+                        variant="standard"
+                      />
+                      <TextField
+                        disabled={!editDisabled}
+                        sx={{ m: 1, width: "40ch", marginBottom: 3 }}
+                        label="Mailing Address"
+                        inputProps={{ maxLength: 100 }}
+                        variant="standard"
+                      />
 
-                    <TextField
-                      disabled={editDisabled}
-                      sx={{ m: 1, width: "40ch" }}
-                      label="Home Address"
-                      inputProps={{ maxLength: 100 }}
-                      variant="standard"
-                    />
-                    <h3>Mailing Address</h3>
-                    <h3>Occupation</h3>
-                    <h3>Spouse-s</h3>
-                    <h3>Children-s</h3>
-                    <Autocomplete
-                      disabled={editDisabled}
-                      id="blood-type-select"
-                      sx={{ width: 150 }}
-                      options={[
-                        { label: "A+", value: "A+" },
-                        { label: "A-", value: "A-" },
-                        { label: "B+", value: "B+" },
-                        { label: "B-", value: "B-" },
-                        { label: "AB+", value: "AB+" },
-                        { label: "AB-", value: "AB-" },
-                        { label: "O+", value: "O+" },
-                        { label: "O-", value: "O-" },
-                      ]}
-                      autoHighlight
-                      getOptionLabel={(option) => option.label}
-                      renderOption={(props, option) => (
-                        <li {...props}>{option.label}</li>
-                      )}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Blood Type"
-                          inputProps={{
-                            ...params.inputProps,
-                            autoComplete: "new-password", // disable autocomplete and autofill
-                          }}
-                        />
-                      )}
-                    />
+                      {/* <p>Spouse-s</p> */}
+                      {/* <p>Children-s</p> */}
+                      <Autocomplete
+                        disabled={!editDisabled}
+                        id="blood-type-select"
+                        sx={{ width: 150, m: 1 }}
+                        options={[
+                          { label: "A+", value: "A+" },
+                          { label: "A-", value: "A-" },
+                          { label: "B+", value: "B+" },
+                          { label: "B-", value: "B-" },
+                          { label: "AB+", value: "AB+" },
+                          { label: "AB-", value: "AB-" },
+                          { label: "O+", value: "O+" },
+                          { label: "O-", value: "O-" },
+                        ]}
+                        autoHighlight
+                        getOptionLabel={(option) => option.label}
+                        renderOption={(props, option) => (
+                          <li {...props}>{option.label}</li>
+                        )}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="Blood Type"
+                            inputProps={{
+                              ...params.inputProps,
+                              autoComplete: "new-password", // disable autocomplete and autofill
+                            }}
+                          />
+                        )}
+                      />
+                      <TextField
+                        disabled={!editDisabled}
+                        sx={{ m: 1, width: "20ch" }}
+                        label="Occupation"
+                        inputProps={{ maxLength: 20 }}
+                        variant="outlined"
+                      />
+                      {/* 
+                      <p>MORE..</p>
 
-                    <h2>MORE..</h2>
-
-                    <h3>Medical Conditions</h3>
-                    <h3>Medications</h3>
-                    <h3>Social Media Profiles</h3>
-                    <h3>Online Usernames</h3>
+                      <p>Medical Conditions</p>
+                      <p>Medications</p>
+                      <p>Social Media Profiles</p>
+                      <p>Online Usernames</p> */}
+                    </div>
                   </CustomTabPanel>
                   <CustomTabPanel value={value} index={2}>
-                    <h3>default Delay date - 1st day of month</h3>
-                    <h3>default - How long should delays - 1month</h3>
-                    <h4>less than month = money, more = free</h4>
+                    <p>default Delay date - 1st day of month</p>
+                    <p>default - How long should delays - 1month</p>
+                    <p>less than month = money, more = free</p>
                   </CustomTabPanel>
                 </ThemeProvider>
                 <div className="buttons">
@@ -375,6 +446,7 @@ these types of drawings also
                         console.log("disabled");
                       } else {
                         updateUserDetails();
+                        console.log("updated");
                       }
                     }}
                   >
@@ -388,8 +460,24 @@ these types of drawings also
                       if (!editDisabled) {
                         console.log("disabled");
                       } else {
-                        console.log("nothing yet");
+                        console.log("uncomment");
+                        setSaveDisabled(true);
                         setEditDisabled(false);
+                      }
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className={`classicBtn ${
+                      editDisabled && "disabledClassicBtn"
+                    }`}
+                    onClick={() => {
+                      if (editDisabled) {
+                        console.log("disabled");
+                      } else {
+                        console.log("nothing yet");
+                        setEditDisabled(true);
                       }
                     }}
                   >
@@ -416,6 +504,11 @@ const Wrapper = styled.main`
   margin: 2rem;
   .classicBtn {
     margin: 1rem;
+  }
+  .classicBtn:hover {
+    margin: 1rem;
+    letter-spacing: 2px;
+    padding: 1.5rem 2.5rem;
   }
 
   .tabs {

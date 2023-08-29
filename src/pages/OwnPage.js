@@ -3,11 +3,13 @@ import styled from "styled-components";
 import Diary from "./../components/Diary";
 import DiaryII from "../components/DiaryII";
 import Editor from "../components/Editor/Editor";
-// import "../components/Editor/styles.css";
+import LinkAdder from "../components/LinkAdder";
+// import bbEditor from "../components/BigBoyEditor/bbEditor";
 
 const OwnPage = () => {
   const [accountEmpty, setAccountEmpty] = useState(true);
   const [diaryOpen, setDiaryOpen] = useState(false);
+  const [linkAdderOpen, setLinkAdderOpen] = useState(false);
   const [info, setInfo] = useState("blabla");
 
   const handleDiaryOpen = () => {
@@ -16,6 +18,14 @@ const OwnPage = () => {
 
   const handleDiaryClose = () => {
     setDiaryOpen(false);
+  };
+
+  const handleLinkAdderOpen = () => {
+    setLinkAdderOpen(true);
+  };
+
+  const handleLinkAdderClose = () => {
+    setLinkAdderOpen(false);
   };
 
   return (
@@ -33,13 +43,13 @@ const OwnPage = () => {
         </section>
       )}
       <div className="textEditor">
-        <Editor />
+        <Editor initialConfig={{ editable: true }} />
       </div>
       <div className="components">
         <button className="add diary" onClick={handleDiaryOpen}>
           <span className="material-symbols-outlined">add_notes</span>
         </button>
-        <button className="add link">
+        <button className="add link" onClick={handleLinkAdderOpen}>
           <span className="material-symbols-outlined">add_link</span>
         </button>
         <button className="add etc">
@@ -47,6 +57,7 @@ const OwnPage = () => {
         </button>
       </div>
       {/* <Diary open={diaryOpen} handleClose={handleDiaryClose} info={info} /> */}
+      <LinkAdder open={linkAdderOpen} handleClose={handleLinkAdderClose} />
       <DiaryII isOpen={diaryOpen} onClose={handleDiaryClose} />
     </Wrapper>
   );
@@ -131,6 +142,7 @@ const Wrapper = styled.main`
       /* padding: 1.5rem 2.7rem; */
       color: black;
       background-color: whitesmoke;
+      box-shadow: rgba(149, 157, 165, 0.5) 0px 8px 24px;
     }
   }
 `;

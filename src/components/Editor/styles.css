@@ -20,14 +20,17 @@
   line-height: 20px;
   font-weight: 400;
   text-align: left;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  border-radius: 10px;
+  /* box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px; */
+  /* border: 1px solid rgba(149, 157, 165, 0.2); */
+  border: 1px solid rgba(149, 157, 165, 0.5);
+  padding: 1px;
 }
 
 .editor-inner {
   background: #fff;
   position: relative;
+  border-radius: 10px;
 }
 
 .editor-input {
@@ -38,7 +41,7 @@
   position: relative;
   tab-size: 1;
   outline: 0;
-  padding: 15px 10px;
+  padding: 15px 15px;
   caret-color: #444;
 }
 
@@ -48,7 +51,7 @@
   position: absolute;
   text-overflow: ellipsis;
   top: 15px;
-  left: 10px;
+  left: 15px;
   font-size: 15px;
   user-select: none;
   display: inline-block;

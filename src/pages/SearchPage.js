@@ -55,6 +55,7 @@ const Search = () => {
 
   return (
     <Wrapper>
+      <h4>https://extensions.dev/extensions/firebase/firestore-send-email</h4>
       <form
         ref={form}
         className="form"
