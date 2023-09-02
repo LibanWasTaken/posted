@@ -4,12 +4,32 @@ import TextField from "@mui/material/TextField";
 import emailjs from "@emailjs/browser";
 import { SERVICE_ID, TEMPLATE_ID, USER_PUBLIC_ID } from "../services/constants";
 
+const CssTextField = styled(TextField)({
+  "& label.Mui-focused": {
+    color: "#000000",
+  },
+  "& .MuiInput-underline:after": {
+    borderBottomColor: "#B2BAC2",
+  },
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": {
+      borderColor: "#E0E3E7",
+    },
+    "&:hover fieldset": {
+      borderColor: "#B2BAC2",
+    },
+    "&.Mui-focused fieldset": {
+      borderColor: "#000000",
+    },
+  },
+});
+
 const Search = () => {
   const name = "Liban";
   const [end, setEnd] = useState("");
   const form = useRef();
 
-  const sendEmail = (e) => {
+  const sendEmailForm = (e) => {
     e.preventDefault();
 
     emailjs
@@ -24,6 +44,38 @@ const Search = () => {
       );
   };
 
+  function sendEmail(
+    to_mail_value = "UNDEFINED",
+    from_name_value = "UNDEFINED",
+    message_value = "UNDEFINED"
+  ) {
+    const currentUrl = window.location.href;
+    console.log(currentUrl);
+    const templateParams = {
+      to_mail: to_mail_value,
+      from_name: from_name_value,
+      message: message_value,
+      sender_url: currentUrl,
+    };
+
+    // emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams, USER_PUBLIC_ID)
+    // .then(function(response) {
+    //    console.log('SUCCESS!', response.status, response.text);
+    // }, function(error) {
+    //    console.log('FAILED...', error);
+    // });
+
+    console.log(
+      "sending:",
+      to_mail_value,
+      from_name_value,
+      message_value,
+      currentUrl
+    );
+  }
+
+  sendEmail();
+
   function ending(e) {
     e.preventDefault();
 
@@ -33,26 +85,6 @@ const Search = () => {
     }, 3000);
   }
 
-  const CssTextField = styled(TextField)({
-    "& label.Mui-focused": {
-      color: "#000000",
-    },
-    "& .MuiInput-underline:after": {
-      borderBottomColor: "#B2BAC2",
-    },
-    "& .MuiOutlinedInput-root": {
-      "& fieldset": {
-        borderColor: "#E0E3E7",
-      },
-      "&:hover fieldset": {
-        borderColor: "#B2BAC2",
-      },
-      "&.Mui-focused fieldset": {
-        borderColor: "#000000",
-      },
-    },
-  });
-
   return (
     <Wrapper>
       <h4>https://extensions.dev/extensions/firebase/firestore-send-email</h4>
@@ -61,7 +93,7 @@ const Search = () => {
         className="form"
         onSubmit={console.log("enable it dummy")}
       >
-        {/* <form ref={form} className="form" onSubmit={sendEmail}> */}
+        {/* <form ref={form} className="form" onSubmit={sendEmailForm}> */}
         <CssTextField
           id="outlined-basic"
           className="input"

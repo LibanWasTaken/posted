@@ -30,9 +30,11 @@ function App() {
                 <Route exact path="/me" element={<OwnPage />} />
                 <Route exact path="/search" element={<SearchPage />} />
                 <Route exact path="/example" element={<SinglePostsPage />} />
-                <Route exact path="/everyone" element={<AllPostsPage />} />
+                <Route exact path="/posts" element={<AllPostsPage />} />
                 <Route exact path="/account" element={<AccPage />} />
                 <Route exact path="/me/them" element={<SettingsPage />} />
+                <Route path="/posts/:id" element={<SinglePostsPage />} />
+
                 <Route path="*" element={<Error />} />
               </Routes>
             </div>
@@ -45,3 +47,10 @@ function App() {
 }
 
 export default App;
+
+/*
+https://github.com/Steveeeie/react-page-transition
+https://react-scroll-parallax.damnthat.tv/docs/
+
+
+*/

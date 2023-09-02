@@ -43,8 +43,8 @@ const Navbar = () => {
                 </a>
               </li>
               <li>
-                <a className="navLinks" href="/everyone">
-                  Everyone
+                <a className="navLinks" href="/posts">
+                  Others
                 </a>
               </li>
 

@@ -102,12 +102,13 @@ const SettingsPage = () => {
 
   // Setting User and Database
   const db = getDatabase();
+
   // useEffect(() => {
   //   if (currentUser) {
-  //     const infoRef = ref(db, "users/" + currentUser.uid + "/info");
+  //     const infoRef = ref(db, "unposted/");
   //     onValue(infoRef, (snapshot) => {
   //       let data = snapshot.val();
-  //       setUserInfo(data);
+  //       console.log(data);
   //     });
   //   }
   // }, [currentUser]);
@@ -134,10 +135,12 @@ const SettingsPage = () => {
     mail1: "",
     mail2: "",
     // mail3: emailAddress,
+    id: "gHJGsv0uqAcC4FBnrWPcTCA7wz32",
+    // add a way to automatically add this when registering
   };
   function updateUserDetails() {
     const updates = {};
-    updates["/users/" + currentUser.uid + "/info/"] = userDetails;
+    updates["/users/unposted/" + currentUser.uid + "/info/"] = userDetails;
     update(ref(db), updates);
     console.log("updated");
     setSaveDisabled(true);
@@ -156,7 +159,6 @@ const SettingsPage = () => {
     console.log(userDetails);
     setSaveDisabled(false);
   }
-  // updateInfo("lastName", "Rahman");
 
   return (
     <Wrapper>
@@ -217,7 +219,7 @@ const SettingsPage = () => {
                         variant="standard"
                       />
                     </div>
-                    <p>More..</p>
+                    {/* <p>More..</p> */}
 
                     <div className="mail3">
                       <TextField
@@ -274,10 +276,11 @@ const SettingsPage = () => {
                       <DatePicker
                         label="Date of Birth"
                         disabled={!editDisabled}
+                        sx={{ m: 1 }}
                         defaultValue={dayjs("2003-07-03")}
                       />
                     </div>
-                    <p>more..</p>
+                    {/* <p>more..</p> */}
 
                     {/* https://mui.com/material-ui/react-autocomplete/#load-on-open:~:text=for%20each%20keystroke.-,Load%20on%20open,-It%20displays%20a 
                     
@@ -365,7 +368,7 @@ const SettingsPage = () => {
                       sx={{ m: 1, width: "25ch" }}
                       defaultValue="libanmesbah@gmail.com"
                     />
-                    <p>More..</p>
+                    {/* <p>More..</p> */}
                     <div>
                       <TextField
                         disabled={!editDisabled}

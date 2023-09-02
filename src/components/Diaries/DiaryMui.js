@@ -86,6 +86,12 @@ export default function Diary({ open, handleClose, info }) {
         <AppBar sx={{ position: "relative" }}>
           <Toolbar color="primary" sx={{ ...typographyStyling }}>
             <IconButton
+              sx={{
+                // bgcolor: "yellow",
+                "&:hover": {
+                  transform: "rotate(90deg)",
+                },
+              }}
               edge="start"
               color="inherit"
               onClick={handleClose}
@@ -98,7 +104,7 @@ export default function Diary({ open, handleClose, info }) {
               Diary
             </Typography>
             <Button autoFocus color="inherit" onClick={handleClose}>
-              save
+              <span className="material-symbols-outlined">save</span>
             </Button>
           </Toolbar>
         </AppBar>

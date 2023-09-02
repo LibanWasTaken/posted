@@ -61,33 +61,7 @@ const editorConfig = {
 };
 
 export default function Editor() {
-  const [editorState, setEditorState] = useState();
-  const [editorValue, setEditorValue] = useState();
-  const [editorValueRecieved, setEditorValueRecieved] = useState();
-  const { user: currentUser, loading } = useUserContext();
-  const db = getDatabase();
-  if (currentUser) {
-    console.log(currentUser);
-    const postRef = ref(db, "users/" + currentUser.uid + "/post/letter");
-    onValue(postRef, (snapshot) => {
-      let data = snapshot.val();
-      console.log("V this isnt working, also why twice");
-      // setEditorValue(data);
-      console.log(data);
-    });
-  }
-
-  function OnChangePlugin({ onChange }) {
-    const [editor] = useLexicalComposerContext();
-    useEffect(() => {
-      setEditorValue(JSON.stringify(editor.getEditorState()));
-      return editor.registerUpdateListener((editorState) => {
-        onChange(editorState);
-      });
-    }, [editor, onChange]);
-  }
-
-  const testertest = {
+  const testState = {
     root: {
       children: [
         {
@@ -134,7 +108,6 @@ export default function Editor() {
       version: 1,
     },
   };
-
   const emptyState = {
     root: {
       children: [
@@ -155,28 +128,55 @@ export default function Editor() {
     },
   };
 
+  const [editorState, setEditorState] = useState();
+  const [editorValue, setEditorValue] = useState(emptyState);
+  const [editorValueReceived, setEditorValueReceived] = useState();
+  const [valueApplied, setValueApplied] = useState(false);
+  const { user: currentUser, loading } = useUserContext();
+  const db = getDatabase();
+  useEffect(() => {
+    if (currentUser) {
+      // console.log(currentUser);
+      const postRef = ref(
+        db,
+        "users/unposted/" + currentUser.uid + "/post/letter"
+      );
+      onValue(postRef, (snapshot) => {
+        let data = snapshot.val();
+        setEditorValueReceived(data);
+      });
+    }
+  }, [currentUser]);
+
+  function OnChangePlugin({ onChange }) {
+    const [editor] = useLexicalComposerContext();
+    useEffect(() => {
+      setEditorValue(JSON.stringify(editor.getEditorState()));
+      return editor.registerUpdateListener((editorState) => {
+        onChange(editorState);
+      });
+    }, [editor, onChange]);
+  }
+
   const UpdatePlugin = () => {
     const [editor] = useLexicalComposerContext();
 
-    const onButtonClick = () => {
-      const editorState = editor.parseEditorState(JSON.stringify(testertest));
-      editor.setEditorState(editorState);
-    };
+    useEffect(() => {
+      if (editorValueReceived && !valueApplied) {
+        // Check if value has been applied
+        const newEditorState = editor.parseEditorState(editorValueReceived);
+        editor.setEditorState(newEditorState);
+        setValueApplied(true); // Set the value as applied
+      }
+    }, [editorValueReceived, editor, valueApplied]);
 
-    return (
-      <button
-        className="classicBtn"
-        style={{ margin: 10 }}
-        onClick={onButtonClick}
-      >
-        Update
-      </button>
-    );
+    return null; // You can simply return null since you don't need any JSX here
   };
 
   function updateUserPost() {
     const updates = {};
-    updates["/users/" + currentUser.uid + "/post/letter/"] = editorValue;
+    updates["/users/unposted/" + currentUser.uid + "/post/letter/"] =
+      editorValue;
     update(ref(db), updates);
     console.log("updated");
   }
@@ -227,7 +227,7 @@ export default function Editor() {
           className="classicBtn"
           style={{ margin: 10 }}
           onClick={() => {
-            console.log(editorValue);
+            // console.log(editorValue);
             updateUserPost();
           }}
         >

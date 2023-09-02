@@ -24,10 +24,10 @@ const Footer = () => {
 
 const Wrapper = styled.section`
   footer {
-    position: fixed;
-    left: 0;
-    bottom: 0;
-    width: 100%;
+    /* position: fixed; */
+    /* left: 0; */
+    /* bottom: 0; */
+    width: 100vw;
     background-color: black;
     color: white;
     padding: 2rem;

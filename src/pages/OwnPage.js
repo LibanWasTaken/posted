@@ -1,7 +1,7 @@
 import { React, useState } from "react";
 import styled from "styled-components";
-import Diary from "./../components/Diary";
-import DiaryII from "../components/DiaryII";
+import DiaryMui from "../components/Diaries/DiaryMui";
+import DiaryII from "../components/Diaries/DiaryII";
 import Editor from "../components/Editor/Editor";
 import LinkAdder from "../components/LinkAdder";
 // import bbEditor from "../components/BigBoyEditor/bbEditor";
@@ -9,13 +9,13 @@ import LinkAdder from "../components/LinkAdder";
 const OwnPage = () => {
   const [accountEmpty, setAccountEmpty] = useState(true);
   const [diaryOpen, setDiaryOpen] = useState(false);
+  const [diaryOpenMUI, setDiaryOpenMUI] = useState(false);
   const [linkAdderOpen, setLinkAdderOpen] = useState(false);
   const [info, setInfo] = useState("blabla");
 
   const handleDiaryOpen = () => {
     setDiaryOpen(true);
   };
-
   const handleDiaryClose = () => {
     setDiaryOpen(false);
   };
@@ -23,21 +23,27 @@ const OwnPage = () => {
   const handleLinkAdderOpen = () => {
     setLinkAdderOpen(true);
   };
-
   const handleLinkAdderClose = () => {
     setLinkAdderOpen(false);
   };
 
+  const handleDiaryCloseMUI = () => {
+    setDiaryOpenMUI(false);
+  };
+  const handleDiaryOpenMUI = () => {
+    setDiaryOpenMUI(true);
+  };
+
   return (
     <Wrapper>
-      {accountEmpty ? (
+      {!accountEmpty ? (
         <section className="headMsg">
           <h1>There's nothing yet</h1>
           <h2>Leave something:</h2>
         </section>
       ) : (
         <section className="headMsg">
-          <h1>Hello, you spill in</h1>
+          <h1>Posting in</h1>
           <h2>12 days, 3 hours, 15 minutes</h2>
           <button className="delayBtn">Delay</button>
         </section>
@@ -52,13 +58,17 @@ const OwnPage = () => {
         <button className="add link" onClick={handleLinkAdderOpen}>
           <span className="material-symbols-outlined">add_link</span>
         </button>
-        <button className="add etc">
+        <button className="add etc" onClick={handleDiaryOpenMUI}>
           <span className="material-symbols-outlined">add</span>
         </button>
       </div>
-      {/* <Diary open={diaryOpen} handleClose={handleDiaryClose} info={info} /> */}
-      <LinkAdder open={linkAdderOpen} handleClose={handleLinkAdderClose} />
       <DiaryII isOpen={diaryOpen} onClose={handleDiaryClose} />
+      <LinkAdder open={linkAdderOpen} handleClose={handleLinkAdderClose} />
+      <DiaryMui
+        open={diaryOpenMUI}
+        handleClose={handleDiaryCloseMUI}
+        info={info}
+      />
     </Wrapper>
   );
 };
@@ -119,7 +129,7 @@ const Wrapper = styled.main`
       margin: 0 2rem;
       background-color: black;
       border-radius: 50%;
-      padding: 3rem;
+      padding: 2rem;
 
       .material-symbols-outlined {
         font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 48;
