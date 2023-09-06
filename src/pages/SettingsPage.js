@@ -24,6 +24,16 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import Autocomplete from "@mui/material/Autocomplete";
 
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
+
+import Radio from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormControl from "@mui/material/FormControl";
+import FormLabel from "@mui/material/FormLabel";
+
 const theme = createTheme({
   typography: {
     fontFamily: [
@@ -56,7 +66,6 @@ const theme = createTheme({
   },
   // shadows: 0,
 });
-
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -76,13 +85,11 @@ function CustomTabPanel(props) {
     </div>
   );
 }
-
 CustomTabPanel.propTypes = {
   children: PropTypes.node,
   index: PropTypes.number.isRequired,
   value: PropTypes.number.isRequired,
 };
-
 function a11yProps(index) {
   return {
     id: `simple-tab-${index}`,
@@ -92,34 +99,39 @@ function a11yProps(index) {
 
 const SettingsPage = () => {
   const { user: currentUser, loading } = useUserContext();
-  const [userInfo, setUserInfo] = useState(null);
+  const [userInfo, setUserInfo] = useState();
   const [value, setValue] = useState(0);
   const [saveDisabled, setSaveDisabled] = useState(true);
   const [editDisabled, setEditDisabled] = useState(false);
-  const handleChange = (event, newValue) => {
+  const handleTabChange = (event, newValue) => {
     setValue(newValue);
   };
 
-  // Setting User and Database
   const db = getDatabase();
 
-  // useEffect(() => {
-  //   if (currentUser) {
-  //     const infoRef = ref(db, "unposted/");
-  //     onValue(infoRef, (snapshot) => {
-  //       let data = snapshot.val();
-  //       console.log(data);
-  //     });
-  //   }
-  // }, [currentUser]);
+  useEffect(() => {
+    if (currentUser) {
+      const infoRef = ref(db, "users/unposted/" + currentUser.uid);
+      onValue(infoRef, (snapshot) => {
+        let data = snapshot.val();
+        setUserInfo(data.info);
+      });
+    }
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (userInfo) {
+      console.log(userInfo);
+    }
+  }, [userInfo]);
 
   const userDetails = {
-    firstName: "Liban",
+    firstName: "",
     lastName: "",
     middleName: "",
     prefix: "",
     suffix: "",
-    dob: "03072004",
+    dob: "",
     cityOfBirth: "",
     stateOfBirth: "",
     countryOfBirth: "",
@@ -134,10 +146,11 @@ const SettingsPage = () => {
     bloodType: "",
     mail1: "",
     mail2: "",
-    // mail3: emailAddress,
-    id: "gHJGsv0uqAcC4FBnrWPcTCA7wz32",
-    // add a way to automatically add this when registering
+    // mail3: currentUser.email,
   };
+
+  const emptyObj = {};
+
   function updateUserDetails() {
     const updates = {};
     updates["/users/unposted/" + currentUser.uid + "/info/"] = userDetails;
@@ -173,7 +186,7 @@ const SettingsPage = () => {
                   <Box sx={{ borderBottom: 0, borderColor: "divider" }}>
                     <Tabs
                       value={value}
-                      onChange={handleChange}
+                      onChange={handleTabChange}
                       aria-label="basic tabs example"
                     >
                       <Tab label="WHOM" {...a11yProps(0)} />
@@ -182,7 +195,7 @@ const SettingsPage = () => {
                     </Tabs>
                   </Box>
                   <CustomTabPanel value={value} index={0}>
-                    <p>tip on who to send, how etc</p>
+                    {/* <p>tip on who to send, how etc</p> */}
 
                     <div className="mail1">
                       <TextField
@@ -192,6 +205,7 @@ const SettingsPage = () => {
                         variant="outlined"
                         type="email"
                         required
+                        {...changeValueOfThis("bingbong")}
                       />
 
                       <TextField
@@ -280,17 +294,6 @@ const SettingsPage = () => {
                         defaultValue={dayjs("2003-07-03")}
                       />
                     </div>
-                    {/* <p>more..</p> */}
-
-                    {/* https://mui.com/material-ui/react-autocomplete/#load-on-open:~:text=for%20each%20keystroke.-,Load%20on%20open,-It%20displays%20a 
-                    
-                    + the country thing, (link)
-                    */}
-
-                    {/* https://www.google.com/search?sca_esv=560498928&rlz=1C1CHBF_enBD1064BD1064&sxsrf=AB5stBjkXlUTelH7ND295ZhGy2rVmwPVBA:1693150717696&q=time+illustration&tbm=isch&source=lnms&sa=X&ved=2ahUKEwju7dD4lf2AAxUuyDgGHY9mCv4Q0pQJegQIDBAB&biw=1920&bih=963&dpr=1#imgrc=_LPw8rHBrAMQgM 
-
-                    these types of drawings also
-                    */}
                     <div>
                       <Autocomplete
                         disabled={!editDisabled}
@@ -308,7 +311,7 @@ const SettingsPage = () => {
                             label="Birth Country"
                             inputProps={{
                               ...params.inputProps,
-                              autoComplete: "new-password", // disable autocomplete and autofill
+                              autoComplete: "new-password",
                             }}
                           />
                         )}
@@ -355,7 +358,7 @@ const SettingsPage = () => {
                           label="Gender"
                           inputProps={{
                             ...params.inputProps,
-                            autoComplete: "new-password", // disable autocomplete and autofill
+                            autoComplete: "new-password",
                           }}
                         />
                       )}
@@ -377,13 +380,13 @@ const SettingsPage = () => {
                         inputProps={{ maxLength: 100 }}
                         variant="standard"
                       />
-                      <TextField
+                      {/* <TextField
                         disabled={!editDisabled}
                         sx={{ m: 1, width: "40ch", marginBottom: 3 }}
                         label="Mailing Address"
                         inputProps={{ maxLength: 100 }}
                         variant="standard"
-                      />
+                      /> */}
 
                       {/* <p>Spouse-s</p> */}
                       {/* <p>Children-s</p> */}
@@ -412,18 +415,18 @@ const SettingsPage = () => {
                             label="Blood Type"
                             inputProps={{
                               ...params.inputProps,
-                              autoComplete: "new-password", // disable autocomplete and autofill
+                              autoComplete: "new-password",
                             }}
                           />
                         )}
                       />
-                      <TextField
+                      {/* <TextField
                         disabled={!editDisabled}
                         sx={{ m: 1, width: "20ch" }}
                         label="Occupation"
                         inputProps={{ maxLength: 20 }}
                         variant="outlined"
-                      />
+                      /> */}
                       {/* 
                       <p>MORE..</p>
 
@@ -434,9 +437,168 @@ const SettingsPage = () => {
                     </div>
                   </CustomTabPanel>
                   <CustomTabPanel value={value} index={2}>
-                    <p>default Delay date - 1st day of month</p>
-                    <p>default - How long should delays - 1month</p>
-                    <p>less than month = money, more = free</p>
+                    <FormControl sx={{ marginBottom: 3 }}>
+                      <FormLabel id="demo-controlled-radio-buttons-group">
+                        Schedule
+                      </FormLabel>
+                      <RadioGroup
+                        defaultValue="Recurring"
+                        row
+                        aria-labelledby="demo-controlled-radio-buttons-group"
+                        name="row-radio-buttons-group"
+                      >
+                        <FormControlLabel
+                          value="Recurring"
+                          control={<Radio />}
+                          label="Recurring"
+                        />
+                        <FormControlLabel
+                          value="One Time"
+                          control={<Radio />}
+                          label="One Time"
+                        />
+                      </RadioGroup>
+                    </FormControl>
+                    <Box>
+                      <FormControl sx={{ marginBottom: 2 }}>
+                        <FormLabel id="demo-controlled-radio-buttons-group">
+                          Attempt Post Every
+                        </FormLabel>
+                        <RadioGroup
+                          defaultValue="Month"
+                          row
+                          aria-labelledby="demo-controlled-radio-buttons-group"
+                          name="row-radio-buttons-group"
+                        >
+                          <FormControlLabel
+                            value="Year"
+                            control={<Radio />}
+                            label="Year"
+                          />
+                          <FormControlLabel
+                            value="Month"
+                            control={<Radio />}
+                            label="Month"
+                          />
+                          <FormControlLabel
+                            value="Week"
+                            disabled
+                            control={<Radio />}
+                            label="Week"
+                          />
+                          <FormControlLabel
+                            value="Day"
+                            disabled
+                            control={<Radio />}
+                            label="Day"
+                          />
+                        </RadioGroup>
+                      </FormControl>
+                    </Box>
+                    <FormControl>
+                      <InputLabel id="demo-simple-select-label">Age</InputLabel>
+                      <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        label="Age"
+                        // onChange={handleChange}
+                        sx={{ width: "15ch" }}
+                      >
+                        <MenuItem value={10}>Ten</MenuItem>
+                        <MenuItem value={20}>Twenty</MenuItem>
+                        <MenuItem value={30}>Thirty</MenuItem>
+                      </Select>
+                    </FormControl>
+                    <Autocomplete
+                      disabled={false}
+                      id="post-date"
+                      sx={{ width: 250 }}
+                      options={[
+                        {
+                          label: "year",
+                          value: "year",
+                        },
+                        {
+                          label: "month",
+                          value: "month",
+                        },
+                        {
+                          label: "week",
+                          value: "week",
+                        },
+                        {
+                          label: "day",
+                          value: "day",
+                        },
+                      ]}
+                      autoHighlight
+                      defaultValue={{
+                        label: "month",
+                        value: "month",
+                      }}
+                      getOptionLabel={(option) => option.label}
+                      renderOption={(props, option) => (
+                        <li {...props}>{option.label}</li>
+                      )}
+                      renderInput={(params) => (
+                        <TextField
+                          helperText="12:01 am (UTC)"
+                          variant="standard"
+                          {...params}
+                          sx={{ m: 1 }}
+                          label="On the"
+                          inputProps={{
+                            ...params.inputProps,
+                            autoComplete: "new-password",
+                          }}
+                        />
+                      )}
+                    />
+                    <Autocomplete
+                      disabled={false}
+                      id="post-date-day"
+                      sx={{ width: 250 }}
+                      options={[
+                        {
+                          label: "year",
+                          value: "year",
+                        },
+                        {
+                          label: "month",
+                          value: "month",
+                        },
+                        {
+                          label: "week",
+                          value: "week",
+                        },
+                        {
+                          label: "day",
+                          value: "day",
+                        },
+                      ]}
+                      autoHighlight
+                      // defaultValue={{
+                      //   label: "month",
+                      //   value: "month",
+                      // }}
+                      getOptionLabel={(option) => option.label}
+                      renderOption={(props, option) => (
+                        <li {...props}>{option.label}</li>
+                      )}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          sx={{ m: 1 }}
+                          label="Attempt Post Every"
+                          inputProps={{
+                            ...params.inputProps,
+                            autoComplete: "new-password",
+                          }}
+                        />
+                      )}
+                    />
+                    {/* <p>default - How long should delays - 1month</p> */}
+                    {/* <p>less than month = money, more = free</p> */}
                   </CustomTabPanel>
                 </ThemeProvider>
                 <div className="buttons">

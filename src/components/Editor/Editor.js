@@ -225,7 +225,7 @@ export default function Editor() {
         </div>
         <button
           className="classicBtn"
-          style={{ margin: 10 }}
+          style={{ margin: 15, position: "relative", right: "-75%" }}
           onClick={() => {
             // console.log(editorValue);
             updateUserPost();

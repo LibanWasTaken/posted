@@ -6,6 +6,8 @@ import { UserProvider } from "./context/UserContext";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
+import { ParallaxProvider } from "react-scroll-parallax";
+
 import {
   Home,
   Error,
@@ -21,26 +23,28 @@ function App() {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <UserProvider>
-        <Router>
-          <div className="app">
-            <Navbar />
-            <div className="content">
-              <Routes>
-                <Route exact path="/" element={<Home />} />
-                <Route exact path="/me" element={<OwnPage />} />
-                <Route exact path="/search" element={<SearchPage />} />
-                <Route exact path="/example" element={<SinglePostsPage />} />
-                <Route exact path="/posts" element={<AllPostsPage />} />
-                <Route exact path="/account" element={<AccPage />} />
-                <Route exact path="/me/them" element={<SettingsPage />} />
-                <Route path="/posts/:id" element={<SinglePostsPage />} />
+        <ParallaxProvider>
+          <Router>
+            <div className="app">
+              <Navbar />
+              <div className="content">
+                <Routes>
+                  <Route exact path="/" element={<Home />} />
+                  <Route exact path="/me" element={<OwnPage />} />
+                  <Route exact path="/search" element={<SearchPage />} />
+                  <Route exact path="/example" element={<SinglePostsPage />} />
+                  <Route exact path="/posts" element={<AllPostsPage />} />
+                  <Route exact path="/account" element={<AccPage />} />
+                  <Route exact path="/me/them" element={<SettingsPage />} />
+                  <Route path="/posts/:id" element={<SinglePostsPage />} />
 
-                <Route path="*" element={<Error />} />
-              </Routes>
+                  <Route path="*" element={<Error />} />
+                </Routes>
+              </div>
+              {/* <Footer /> */}
             </div>
-            {/* <Footer /> */}
-          </div>
-        </Router>
+          </Router>
+        </ParallaxProvider>
       </UserProvider>
     </LocalizationProvider>
   );

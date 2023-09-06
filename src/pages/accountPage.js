@@ -122,7 +122,12 @@ export function AccPage() {
         <ThemeProvider theme={theme}>
           {user ? (
             <section className="section2 ">
-              <h2>Welcome, {user.displayName}.</h2>
+              <img
+                src={user.photoURL}
+                alt="profile picture"
+                className="profilePic"
+              />
+              <h2>Welcome, {user.displayName}</h2>
 
               <button onClick={logout} className="finalBtn">
                 Sign Out
@@ -320,6 +325,11 @@ const Wrapper = styled.main`
     align-items: center;
     justify-content: center;
     flex-direction: column;
+  }
+
+  .profilePic {
+    border-radius: 50%;
+    width: 5rem;
   }
 
   @media screen and (min-width: 800px) {

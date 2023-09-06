@@ -1,10 +1,16 @@
-import { React, useState } from "react";
+import { React, useState, useEffect } from "react";
 import styled from "styled-components";
 import DiaryMui from "../components/Diaries/DiaryMui";
 import DiaryII from "../components/Diaries/DiaryII";
 import Editor from "../components/Editor/Editor";
 import LinkAdder from "../components/LinkAdder";
 // import bbEditor from "../components/BigBoyEditor/bbEditor";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import duration from "dayjs/plugin/duration";
+
+dayjs.extend(utc);
+dayjs.extend(duration);
 
 const OwnPage = () => {
   const [accountEmpty, setAccountEmpty] = useState(true);
@@ -12,6 +18,33 @@ const OwnPage = () => {
   const [diaryOpenMUI, setDiaryOpenMUI] = useState(false);
   const [linkAdderOpen, setLinkAdderOpen] = useState(false);
   const [info, setInfo] = useState("blabla");
+  const [delayDisabled, setDelayDisabled] = useState(false);
+
+  const targetDate = dayjs.utc("2023-09-09T00:01:00Z");
+
+  // Calculate the initial time remaining
+  const calculateTimeRemaining = () => {
+    const now = dayjs.utc();
+    const timeRemaining = targetDate.diff(now);
+    const duration = dayjs.duration(timeRemaining);
+    return {
+      days: duration.days(),
+      hours: duration.hours(),
+      minutes: duration.minutes(),
+      seconds: duration.seconds(),
+    };
+  };
+
+  const [timeRemaining, setTimeRemaining] = useState(calculateTimeRemaining);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimeRemaining(calculateTimeRemaining());
+    }, 1000);
+
+    // Clear the interval when the component unmounts
+    return () => clearInterval(interval);
+  }, []);
 
   const handleDiaryOpen = () => {
     setDiaryOpen(true);
@@ -34,6 +67,11 @@ const OwnPage = () => {
     setDiaryOpenMUI(true);
   };
 
+  const handleDelay = () => {
+    setDelayDisabled(true);
+    // db
+  };
+
   return (
     <Wrapper>
       {!accountEmpty ? (
@@ -44,8 +82,30 @@ const OwnPage = () => {
       ) : (
         <section className="headMsg">
           <h1>Posting in</h1>
-          <h2>12 days, 3 hours, 15 minutes</h2>
-          <button className="delayBtn">Delay</button>
+          <div className="countdown">
+            <div className="item">
+              <span className="number">{timeRemaining.days}</span>
+              <span className="label">days</span>
+            </div>
+            <div className="item">
+              <span className="number">{timeRemaining.hours}</span>
+              <span className="label">hours</span>
+            </div>
+            <div className="item">
+              <span className="number">{timeRemaining.minutes}</span>
+              <span className="label">minutes</span>
+            </div>
+            <div className="item">
+              <span className="number">{timeRemaining.seconds}</span>
+              <span className="label">seconds</span>
+            </div>
+          </div>
+          <button
+            className={`classicBtn ${delayDisabled && "disabledClassicBtn"}`}
+            onClick={handleDelay}
+          >
+            Delay
+          </button>
         </section>
       )}
       <div className="textEditor">
@@ -74,43 +134,66 @@ const OwnPage = () => {
 };
 
 const Wrapper = styled.main`
-  /* .headMsg { */
   display: flex;
   margin-top: 2rem;
+  margin-bottom: 2rem;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
-  h1 {
-    font-size: 2rem;
-  }
-  h2 {
-    font-size: 1.5 rem;
-  }
-  /* } */
 
-  .delayBtn {
-    background-color: black;
-    padding: 1.5rem 2.5rem;
-    margin-top: 2rem;
-    color: white;
-    letter-spacing: 2px;
-    outline: none;
-    text-transform: uppercase;
-    border: none;
+  .headMsg {
+    /* height: 100vh; */
+    /* position: absolute; */
+    /* top: 7rem;
+    right: 2rem; */
+    h1 {
+      font-size: 2rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    h2 {
+      font-size: 1.5 rem;
+    }
   }
 
-  .delayBtn:hover {
-    cursor: pointer;
-    transition: 0.3s;
-    padding: 1.5rem 2.7rem;
-    letter-spacing: 3px;
-  }
+  .countdown {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    margin-bottom: 2rem;
+    .item {
+      margin: 0.5rem;
+      /* border-radius: 10px; */
+      display: flex;
+      flex-direction: column;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: white;
+      width: 4rem;
+      padding: 1rem;
+      .number {
+        font-size: 3rem;
+        margin-bottom: 10px;
+      }
+      .label {
+        text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        font-size: 1rem;
+      }
+    }
 
-  .delayBtn:active {
-    color: black;
-    transition: 0s;
-    background-color: whitesmoke;
+    @keyframes pulse {
+      0% {
+        background-color: rgba(0, 0, 0, 0.65);
+      }
+      100% {
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+    }
+
+    .item:last-child {
+      animation: pulse 1s infinite ease-in-out;
+    }
   }
 
   .textEditor {
