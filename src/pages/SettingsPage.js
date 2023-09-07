@@ -99,12 +99,12 @@ function a11yProps(index) {
 
 const SettingsPage = () => {
   const { user: currentUser, loading } = useUserContext();
-  const [userInfo, setUserInfo] = useState();
-  const [value, setValue] = useState(0);
+  const [userInfo, setUserInfo] = useState({});
+  const [tabValue, setTabValue] = useState(0);
   const [saveDisabled, setSaveDisabled] = useState(true);
   const [editDisabled, setEditDisabled] = useState(false);
   const handleTabChange = (event, newValue) => {
-    setValue(newValue);
+    setTabValue(newValue);
   };
 
   const db = getDatabase();
@@ -114,62 +114,75 @@ const SettingsPage = () => {
       const infoRef = ref(db, "users/unposted/" + currentUser.uid);
       onValue(infoRef, (snapshot) => {
         let data = snapshot.val();
-        setUserInfo(data.info);
+        if (data.info) {
+          setUserInfo(data.info);
+        } else {
+          setUserInfo({ emailAddress: currentUser.email });
+        }
       });
     }
   }, [currentUser]);
 
-  useEffect(() => {
-    if (userInfo) {
-      console.log(userInfo);
-    }
-  }, [userInfo]);
+  // useEffect(() => {
+  //   if (userInfo && currentUser) {
+  //     // if (!userInfo.emailAddress) {
+  //     //   const propertyName = "emailAddress";
+  //     //   userInfo[propertyName] = currentUser.email;
+  //     // }
+  //     console.log(userInfo);
+  //     console.log(userInfo["mail1"]);
+  //   }
+  // }, [userInfo]);
 
-  const userDetails = {
-    firstName: "",
-    lastName: "",
-    middleName: "",
-    prefix: "",
-    suffix: "",
-    dob: "",
-    cityOfBirth: "",
-    stateOfBirth: "",
-    countryOfBirth: "",
-    gender: "",
-    phoneNumber: "",
-    emailAddress: "",
-    homeAddress: "",
-    mailingAddress: "",
-    occupation: "",
-    spouse: "",
-    children: "",
-    bloodType: "",
-    mail1: "",
-    mail2: "",
-    // mail3: currentUser.email,
-  };
-
-  const emptyObj = {};
+  // const emptyObject = {
+  //   firstName: "",
+  //   lastName: "",
+  //   middleName: "",
+  //   prefix: "",
+  //   suffix: "",
+  //   dob: "",
+  //   cityOfBirth: "",
+  //   stateOfBirth: "",
+  //   countryOfBirth: "",
+  //   gender: "",
+  //   phoneNumber: "",
+  //   emailAddress: "",
+  //   homeAddress: "",
+  //   mailingAddress: "",
+  //   occupation: "",
+  //   spouse: "",
+  //   children: "",
+  //   bloodType: "",
+  //   mail1: "",
+  //   mail2: "",
+  //   mail3: "",
+  // };
 
   function updateUserDetails() {
     const updates = {};
-    updates["/users/unposted/" + currentUser.uid + "/info/"] = userDetails;
+    updates["/users/unposted/" + currentUser.uid + "/info/"] = userInfo;
     update(ref(db), updates);
     console.log("updated");
     setSaveDisabled(true);
+    setEditDisabled(false);
   }
 
   function changeValueOfThis(key) {
+    const propertyName = key;
     return {
-      defaultValue: userDetails[key],
+      value: userInfo[propertyName] || "",
       onChange: (event) => updateInfo(key, event.target.value),
     };
   }
 
   function updateInfo(key, info) {
-    console.log(key, ":", userDetails[key], "->", info);
-    userDetails[key] = info;
-    console.log(userDetails);
+    const propertyName = key;
+    // console.log(key, ":", userInfo[propertyName], "->", info);
+    const updatedUserInfo = {
+      ...userInfo,
+      [propertyName]: info,
+    };
+    setUserInfo(updatedUserInfo);
     setSaveDisabled(false);
   }
 
@@ -179,13 +192,13 @@ const SettingsPage = () => {
         <Spinner1 />
       ) : (
         <div>
-          {currentUser ? (
+          {currentUser && userInfo ? (
             <div className="tabs">
               <Box sx={{ width: "100%" }}>
                 <ThemeProvider theme={theme}>
                   <Box sx={{ borderBottom: 0, borderColor: "divider" }}>
                     <Tabs
-                      value={value}
+                      value={tabValue}
                       onChange={handleTabChange}
                       aria-label="basic tabs example"
                     >
@@ -194,7 +207,7 @@ const SettingsPage = () => {
                       <Tab label="WHEN" {...a11yProps(2)} />
                     </Tabs>
                   </Box>
-                  <CustomTabPanel value={value} index={0}>
+                  <CustomTabPanel value={tabValue} index={0}>
                     {/* <p>tip on who to send, how etc</p> */}
 
                     <div className="mail1">
@@ -203,9 +216,10 @@ const SettingsPage = () => {
                         sx={{ m: 1 }}
                         label="Mail 1"
                         variant="outlined"
+                        id="outlined-controlled"
                         type="email"
                         required
-                        {...changeValueOfThis("bingbong")}
+                        {...changeValueOfThis("mail1")}
                       />
 
                       <TextField
@@ -223,6 +237,7 @@ const SettingsPage = () => {
                         label="Mail 2"
                         variant="outlined"
                         type="email"
+                        {...changeValueOfThis("mail2")}
                       />
 
                       <TextField
@@ -237,16 +252,16 @@ const SettingsPage = () => {
 
                     <div className="mail3">
                       <TextField
-                        disabled={!editDisabled}
+                        disabled={true}
                         sx={{ m: 1 }}
                         label="Mail 3"
                         variant="outlined"
                         type="email"
-                        defaultValue="libanmesbah@gmail.com"
+                        defaultValue={userInfo.emailAddress}
                       />
                     </div>
                   </CustomTabPanel>
-                  <CustomTabPanel value={value} index={1}>
+                  <CustomTabPanel value={tabValue} index={1}>
                     {/* <p>how much do u want to reveal</p> */}
                     <div className="name">
                       <TextField
@@ -255,14 +270,12 @@ const SettingsPage = () => {
                         label="First Name"
                         variant="outlined"
                         required
-                        {...changeValueOfThis("firstName")}
                       />
                       <TextField
                         disabled={!editDisabled}
                         sx={{ m: 1 }}
                         label="Middle Name"
                         variant="outlined"
-                        {...changeValueOfThis("middleName")}
                       />
                       <TextField
                         disabled={!editDisabled}
@@ -436,7 +449,7 @@ const SettingsPage = () => {
                       <p>Online Usernames</p> */}
                     </div>
                   </CustomTabPanel>
-                  <CustomTabPanel value={value} index={2}>
+                  <CustomTabPanel value={tabValue} index={2}>
                     <FormControl sx={{ marginBottom: 3 }}>
                       <FormLabel id="demo-controlled-radio-buttons-group">
                         Schedule
