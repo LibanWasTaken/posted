@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import {
   createUserWithEmailAndPassword,
@@ -7,13 +7,21 @@ import {
   signOut,
   updateProfile,
 } from "firebase/auth";
-import { auth, provider } from "./../services/firebase-config";
+import { auth, provider, db } from "./../services/firebase-config";
 // import { adminID } from "./../services/constants";
 import TextField from "@mui/material/TextField";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Spinner1 } from "../components/Spinner";
-import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import {
+  // signInWithPopup,
+  GoogleAuthProvider,
+  signInWithRedirect,
+  getRedirectResult,
+  getAuth,
+} from "firebase/auth";
 import { useUserContext } from "../context/UserContext";
+
+import { collection, addDoc, getDoc, setDoc, doc } from "firebase/firestore";
 
 const theme = createTheme({
   palette: {
@@ -45,6 +53,27 @@ export function AccPage() {
     return result;
   };
 
+  const addAccToFireStore = async (newUser) => {
+    console.log("adding:", newUser);
+
+    try {
+      const docRef = doc(db, "users", newUser.uid); // Specify the custom ID here
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        console.log("Document already exists with custom ID: ", newUser.uid);
+      } else {
+        await setDoc(docRef, {
+          displayName: newUser.displayName,
+          email: newUser.email,
+        });
+        console.log("Document created with custom ID: ", newUser.uid);
+      }
+    } catch (error) {
+      console.error("Error setting/updating document: ", error);
+    }
+  };
+
   const register = async () => {
     try {
       const userCredential = await createUserWithEmailAndPassword(
@@ -54,6 +83,8 @@ export function AccPage() {
       );
       const newUser = userCredential.user;
       await updateProfile(newUser, { displayName: userName });
+
+      addAccToFireStore(newUser);
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
@@ -79,19 +110,38 @@ export function AccPage() {
   };
 
   const loginGmail = () => {
-    signInWithPopup(auth, provider)
+    const auth = getAuth();
+    signInWithRedirect(auth, provider).catch((error) => {
+      console.error("Error initiating redirect: ", error);
+    });
+
+    // getRedirectResult(auth)
+    //   .then((result) => {
+    //     const credential = GoogleAuthProvider.credentialFromResult(result);
+    //     const token = credential.accessToken;
+    //     const user = result.user;
+    //     console.log("User authenticated: ", user);
+    //     addAccToFireStore(user);
+    //   })
+    //   .catch((error) => {
+    //     console.error("Error getting redirect result: ", error);
+    //   });
+  };
+
+  useEffect(() => {
+    const auth = getAuth();
+    getRedirectResult(auth)
       .then((result) => {
         const credential = GoogleAuthProvider.credentialFromResult(result);
         const token = credential.accessToken;
         const user = result.user;
+        console.log("Gmail User authenticated: ", user);
+        addAccToFireStore(user);
       })
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        const email = error.customData.email;
-        const credential = GoogleAuthProvider.credentialFromError(error);
+        console.error("Error getting redirect result: ", error);
       });
-  };
+  }, []);
 
   const logout = async () => {
     try {
@@ -113,7 +163,7 @@ export function AccPage() {
   //   }
   // }
 
-  console.log(user, loading);
+  // console.log(user, loading);
   return (
     <Wrapper>
       {loading ? (

@@ -23,5 +23,5 @@ yarn-debug.log*
 yarn-error.log*
 
 # accounts
-/src/services/
+/src/services/constants.js
 /src/components/BigBoyEditor

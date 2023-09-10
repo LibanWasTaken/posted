@@ -37,6 +37,17 @@ import {
   remove,
 } from "firebase/database";
 
+import {
+  collection,
+  getDocs,
+  getDoc,
+  setDoc,
+  addDoc,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
+import { db as FSdb } from "../../services/firebase-config";
+
 const editorConfig = {
   theme: ExampleTheme,
   // Handling of errors during update
@@ -131,6 +142,8 @@ export default function Editor() {
   const [editorState, setEditorState] = useState();
   const [editorValue, setEditorValue] = useState(emptyState);
   const [editorValueReceived, setEditorValueReceived] = useState();
+  const [editorValueReceivedFS, setEditorValueReceivedFS] = useState();
+
   const [valueApplied, setValueApplied] = useState(false);
   const { user: currentUser, loading } = useUserContext();
   const db = getDatabase();
@@ -145,8 +158,18 @@ export default function Editor() {
         let data = snapshot.val();
         setEditorValueReceived(data);
       });
+
+      getFSData();
     }
   }, [currentUser]);
+
+  async function getFSData() {
+    const docRef = doc(FSdb, "posts", "DZL3b9ij1vWSZ4d72aa2");
+    const docSnap = await getDoc(docRef);
+    const userInfo = docSnap.data();
+    setEditorValueReceivedFS(userInfo.letter);
+    console.log("editorValueReceivedFS set");
+  }
 
   function OnChangePlugin({ onChange }) {
     const [editor] = useLexicalComposerContext();
@@ -162,12 +185,19 @@ export default function Editor() {
     const [editor] = useLexicalComposerContext();
 
     useEffect(() => {
+      // Realtime Database
       if (editorValueReceived && !valueApplied) {
-        // Check if value has been applied
         const newEditorState = editor.parseEditorState(editorValueReceived);
         editor.setEditorState(newEditorState);
-        setValueApplied(true); // Set the value as applied
+        setValueApplied(true);
       }
+
+      // Firestore
+      // if (editorValueReceivedFS && !valueApplied) {
+      //   const newEditorState = editor.parseEditorState(editorValueReceivedFS);
+      //   editor.setEditorState(newEditorState);
+      //   setValueApplied(true);
+      // }
     }, [editorValueReceived, editor, valueApplied]);
 
     return null; // You can simply return null since you don't need any JSX here

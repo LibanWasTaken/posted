@@ -45,7 +45,9 @@ const HomePage = () => {
             <Divergence value={value} />
           </div>
         </Parallax>
-        {/* <button>get started</button> */}
+        <a href="/me">
+          <button>get started &#12297;</button>
+        </a>
       </div>
       <section className="section2">
         <div className="text">
@@ -124,6 +126,7 @@ const Wrapper = styled.main`
     align-items: center;
     justify-content: center;
     /* filter: saturate(0) invert(1); */
+    flex-direction: column;
     filter: saturate(0) brightness(1.5);
     /* padding: 2rem 0; */
     text-align: center;
@@ -135,21 +138,26 @@ const Wrapper = styled.main`
     img {
       user-select: none;
       width: 5vw;
+      cursor: wait;
     }
     button {
-      font-size: 2rem;
+      font-size: 1rem;
       text-transform: uppercase;
-      padding: 1.5rem 2rem;
+      padding: 1rem 1.255rem;
       border-radius: 50px;
-      font-family: "Raleway";
-      font-weight: 600;
+      font-family: "Poppins";
       margin-top: 6rem;
-      background-color: white;
-      border: none;
+      background-color: black;
+      color: white;
+      border: 2px solid gray;
       outline: none;
+      letter-spacing: 1px;
     }
     button:hover {
       cursor: pointer;
+      letter-spacing: 1.5px;
+      transition: 0.3s;
+      border: 2px solid white;
     }
   }
 

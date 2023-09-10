@@ -20,7 +20,7 @@ const OwnPage = () => {
   const [info, setInfo] = useState("blabla");
   const [delayDisabled, setDelayDisabled] = useState(false);
 
-  const targetDate = dayjs.utc("2023-09-09T00:01:00Z");
+  const targetDate = dayjs.utc("2023-09-13T00:01:00Z");
 
   // Calculate the initial time remaining
   const calculateTimeRemaining = () => {

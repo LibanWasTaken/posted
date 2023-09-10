@@ -97,6 +97,8 @@ function a11yProps(index) {
   };
 }
 
+// https://react-hook-form.com/ ?
+
 const SettingsPage = () => {
   const { user: currentUser, loading } = useUserContext();
   const [userInfo, setUserInfo] = useState({});
@@ -111,6 +113,7 @@ const SettingsPage = () => {
 
   useEffect(() => {
     if (currentUser) {
+      console.log(currentUser);
       const infoRef = ref(db, "users/unposted/" + currentUser.uid);
       onValue(infoRef, (snapshot) => {
         let data = snapshot.val();

@@ -17,6 +17,7 @@ import {
   SettingsPage,
   SinglePostsPage,
   AllPostsPage,
+  Playground,
 } from "./pages";
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
                   <Route exact path="/search" element={<SearchPage />} />
                   <Route exact path="/example" element={<SinglePostsPage />} />
                   <Route exact path="/posts" element={<AllPostsPage />} />
+                  <Route exact path="/playground" element={<Playground />} />
                   <Route exact path="/account" element={<AccPage />} />
                   <Route exact path="/me/them" element={<SettingsPage />} />
                   <Route path="/posts/:id" element={<SinglePostsPage />} />
