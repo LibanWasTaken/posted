@@ -1,6 +1,7 @@
 import Home from "./HomePage";
 import Error from "./ErrorPage";
 import OwnPage from "./OwnPage";
+import OwnPageTEMP from "./OwnPageTEMP";
 import SearchPage from "./SearchPage";
 import SettingsPage from "./SettingsPage";
 import Playground from "./Playground";
@@ -13,6 +14,7 @@ export {
   Error,
   AccPage,
   OwnPage,
+  OwnPageTEMP,
   SearchPage,
   Playground,
   SettingsPage,
