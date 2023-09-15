@@ -8,14 +8,14 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 import { ParallaxProvider } from "react-scroll-parallax";
 
-import { PageTransition } from "@steveeeie/react-page-transition";
+// import { PageTransition } from "@steveeeie/react-page-transition";
 
 import {
   Home,
   Error,
   AccPage,
   OwnPage,
-  OwnPageTEMP,
+  OwnPostPage,
   SearchPage,
   SettingsPage,
   SinglePostsPage,
@@ -33,11 +33,7 @@ function App() {
             <Routes>
               <Route exact path="/" element={<Home />} />
               <Route exact path="/me" element={<OwnPage />} />
-              <Route
-                exact
-                path="/me/idshouldbethere"
-                element={<OwnPageTEMP />}
-              />
+              <Route exact path="/me/post/:id" element={<OwnPostPage />} />
               <Route exact path="/search" element={<SearchPage />} />
               <Route exact path="/example" element={<SinglePostsPage />} />
               <Route exact path="/posts" element={<AllPostsPage />} />

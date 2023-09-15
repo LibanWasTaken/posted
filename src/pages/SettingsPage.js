@@ -477,7 +477,10 @@ const SettingsPage = () => {
                     </FormControl>
                     <Box>
                       <FormControl sx={{ marginBottom: 2 }}>
-                        <FormLabel id="demo-controlled-radio-buttons-group">
+                        <FormLabel
+                          helperText="12:01 am (UTC)"
+                          id="demo-controlled-radio-buttons-group"
+                        >
                           Attempt Post Every
                         </FormLabel>
                         <RadioGroup
@@ -510,6 +513,15 @@ const SettingsPage = () => {
                           />
                         </RadioGroup>
                       </FormControl>
+                    </Box>
+                    <Box>
+                      <DatePicker
+                        label="On the"
+                        disabled={!editDisabled}
+                        sx={{ m: 1 }}
+                        defaultValue={dayjs("2003-07-03")}
+                        helperText="12:01 am (UTC)"
+                      />
                     </Box>
                     <FormControl>
                       <InputLabel id="demo-simple-select-label">Age</InputLabel>

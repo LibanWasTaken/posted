@@ -25,7 +25,11 @@ export default function SinglePostPage() {
     const prodRef = ref(db, "users/unposted/" + id); // TODO: change to posted later
     onValue(prodRef, (snapshot) => {
       let data = snapshot.val();
-      setUser(data);
+      if (!data) {
+        setUser("noUser");
+      } else {
+        setUser(data);
+      }
     });
   }, []);
 
@@ -136,7 +140,7 @@ export default function SinglePostPage() {
 
   return (
     <Wrapper>
-      {user ? (
+      {user && user !== "noUser" ? (
         <div className="section">
           {/* {product.imgs.map((url, index) => (
                   <div className="preview" onClick={() => setMainImg(url)}>
@@ -157,8 +161,17 @@ export default function SinglePostPage() {
             <button className="classicBtn">Diary</button>
           </div>
         </div>
+      ) : user == "noUser" ? (
+        <div className="error">
+          <h1>User Not Found</h1>
+          <a href="/">
+            <button className="classicBtn">Go home</button>
+          </a>
+        </div>
       ) : (
-        <Spinner1 />
+        <div className="error">
+          <Spinner1 />
+        </div>
       )}
     </Wrapper>
   );
@@ -169,5 +182,15 @@ const Wrapper = styled.main`
   /* justify-content: center; */
   margin: 2rem 3rem;
   .section {
+  }
+
+  .error {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    flex-direction: column;
+    width: 100vw;
+    height: 50vh;
   }
 `;

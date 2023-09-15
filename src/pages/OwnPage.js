@@ -1,242 +1,286 @@
-import { React, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import DiaryMui from "../components/Diaries/DiaryMui";
-import DiaryII from "../components/Diaries/DiaryII";
-import Editor from "../components/Editor/Editor";
-import LinkAdder from "../components/LinkAdder";
-// import bbEditor from "../components/BigBoyEditor/bbEditor";
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-import duration from "dayjs/plugin/duration";
+import ScreenTimeSVG from "../assets/undraw_screenTimeEdited.svg";
+import { Link } from "react-router-dom";
+import { Spinner2 } from "../components/Spinner";
+// import SliderComponent from "../components/Slider";
+import Waves from "../components/Waves";
 
-dayjs.extend(utc);
-dayjs.extend(duration);
+import { addDoc, getDoc, getDocs, collection, doc } from "firebase/firestore";
+import { db as FSdb } from "../services/firebase-config";
+import { useUserContext } from "../context/UserContext";
+
+function generatePostLinks(posts) {
+  return posts.map((post) => (
+    <Link
+      key={post.id} // Make sure to provide a unique key for each mapped element
+      to={`/me/post/${post.id}`}
+      style={{ textDecoration: "none" }}
+    >
+      <div className="post">
+        <p className="heading">{post.title}</p>
+        <p className="timing">14:02:52</p>
+      </div>
+    </Link>
+  ));
+}
 
 const OwnPage = () => {
-  const [accountEmpty, setAccountEmpty] = useState(true);
-  const [diaryOpen, setDiaryOpen] = useState(false);
-  const [diaryOpenMUI, setDiaryOpenMUI] = useState(false);
-  const [linkAdderOpen, setLinkAdderOpen] = useState(false);
-  const [info, setInfo] = useState("blabla");
-  const [delayDisabled, setDelayDisabled] = useState(false);
+  const { user: currentUser, loading } = useUserContext();
+  const [userPosts, setUserPosts] = useState();
 
-  const targetDate = dayjs.utc("2023-09-13T00:01:00Z");
+  // const slideData = [
+  //   {
+  //     index: 0,
+  //     headline: "New Fashion Apparel",
+  //     button: "Shop now",
+  //     src: "https://s3-us-west-2.amazonaws.com/s.cdpn.io/225363/fashion.jpg",
+  //   },
+  //   {
+  //     index: 1,
+  //     headline: "In The Wilderness",
+  //     button: "Book travel",
+  //     src: "https://s3-us-west-2.amazonaws.com/s.cdpn.io/225363/forest.jpg",
+  //   },
+  //   {
+  //     index: 2,
+  //     headline: "For Your Current Mood",
+  //     button: "Listen",
+  //     src: "https://s3-us-west-2.amazonaws.com/s.cdpn.io/225363/guitar.jpg",
+  //   },
+  //   {
+  //     index: 3,
+  //     headline: "Focus On The Writing",
+  //     button: "Get Focused",
+  //     src: "https://s3-us-west-2.amazonaws.com/s.cdpn.io/225363/typewriter.jpg",
+  //   },
+  // ];
 
-  // Calculate the initial time remaining
-  const calculateTimeRemaining = () => {
-    const now = dayjs.utc();
-    const timeRemaining = targetDate.diff(now);
-    const duration = dayjs.duration(timeRemaining);
-    return {
-      days: duration.days(),
-      hours: duration.hours(),
-      minutes: duration.minutes(),
-      seconds: duration.seconds(),
-    };
+  async function getFSData() {
+    const userID = "your_custom_id_here";
+    await getDocs(collection(FSdb, `/users/${userID}/posts`)).then(
+      (querySnapshot) => {
+        const postsData = querySnapshot.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+        }));
+        setUserPosts(postsData);
+        console.log(postsData);
+      }
+    );
+  }
+
+  const addNewPostFS = async (e) => {
+    e.preventDefault();
+    console.log("pressed");
+
+    try {
+      const docRef = await addDoc(collection(FSdb, "posts"), {
+        user: currentUser.uid,
+      });
+      console.log("Document added with ID: ", docRef.id);
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
   };
-
-  const [timeRemaining, setTimeRemaining] = useState(calculateTimeRemaining);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTimeRemaining(calculateTimeRemaining());
-    }, 1000);
-
-    // Clear the interval when the component unmounts
-    return () => clearInterval(interval);
-  }, []);
-
-  const handleDiaryOpen = () => {
-    setDiaryOpen(true);
-  };
-  const handleDiaryClose = () => {
-    setDiaryOpen(false);
-  };
-
-  const handleLinkAdderOpen = () => {
-    setLinkAdderOpen(true);
-  };
-  const handleLinkAdderClose = () => {
-    setLinkAdderOpen(false);
-  };
-
-  const handleDiaryCloseMUI = () => {
-    setDiaryOpenMUI(false);
-  };
-  const handleDiaryOpenMUI = () => {
-    setDiaryOpenMUI(true);
-  };
-
-  const handleDelay = () => {
-    setDelayDisabled(true);
-    // db
-  };
+    if (currentUser) {
+      console.log(currentUser);
+      getFSData();
+    }
+  }, [currentUser]);
 
   return (
     <Wrapper>
-      {!accountEmpty ? (
-        <section className="headMsg">
-          <h1>There's nothing yet</h1>
-          <h2>Leave something:</h2>
-        </section>
-      ) : (
-        <section className="headMsg">
-          <h1>Posting in</h1>
-          <div className="countdown">
-            <div className="item">
-              <span className="number">{timeRemaining.days}</span>
-              <span className="label">days</span>
-            </div>
-            <div className="item">
-              <span className="number">{timeRemaining.hours}</span>
-              <span className="label">hours</span>
-            </div>
-            <div className="item">
-              <span className="number">{timeRemaining.minutes}</span>
-              <span className="label">minutes</span>
-            </div>
-            <div className="item">
-              <span className="number">{timeRemaining.seconds}</span>
-              <span className="label">seconds</span>
+      <span className="stylishBg">
+        <div></div>
+        {/* <img src={ReadingSVG} alt="ExamsSVG" className="ExamsSVG" /> */}
+        <img
+          src={ScreenTimeSVG}
+          alt="ScreenTimeSVG"
+          className="ScreenTimeSVG"
+        />
+      </span>
+      {userPosts ? (
+        <section className="postSection">
+          <p className="header">Your Posts</p>
+          <div className="posts">
+            {generatePostLinks(userPosts)}
+            {/* <Link
+              to="/me/post/idshouldbethere"
+              style={{ textDecoration: "none" }}
+            >
+              <div className="post">
+                <p className="heading">Something</p>
+                <p className="timing">14:02:52</p>
+              </div>
+            </Link>
+            <div className="post">
+              <p className="heading">Sum Else</p>
+              <p className="timing">01:17:23</p>
+            </div> */}
+            <div className="post" onClick={addNewPostFS}>
+              <span className="material-symbols-outlined addPostBtn">add</span>
+              <p>
+                Add Post <br /> 2/3
+              </p>
             </div>
           </div>
-          <button
-            className={`classicBtn ${delayDisabled && "disabledClassicBtn"}`}
-            onClick={handleDelay}
-          >
-            Delay
-          </button>
+        </section>
+      ) : (
+        <section className="postSection loading">
+          {/* <p className="header">Loading...</p> */}
+          <Spinner2 />
         </section>
       )}
-      <div className="textEditor">
-        <Editor initialConfig={{ editable: true }} />
+
+      <h1 className="randomAssText">
+        Lorem ipsum dolor sit amet,
+        <br /> Jesnly fomer.
+      </h1>
+      {/* <SliderComponent heading="Example Slider" slides={slideData} /> */}
+      <div className="waves">
+        <Waves />
       </div>
-      <div className="components">
-        <button className="add diary" onClick={handleDiaryOpen}>
-          <span className="material-symbols-outlined">add_notes</span>
-        </button>
-        <button className="add link" onClick={handleLinkAdderOpen}>
-          <span className="material-symbols-outlined">add_link</span>
-        </button>
-        <button className="add etc" onClick={handleDiaryOpenMUI}>
-          <span className="material-symbols-outlined">add</span>
-        </button>
-      </div>
-      <DiaryII isOpen={diaryOpen} onClose={handleDiaryClose} />
-      <LinkAdder open={linkAdderOpen} handleClose={handleLinkAdderClose} />
-      <DiaryMui
-        open={diaryOpenMUI}
-        handleClose={handleDiaryCloseMUI}
-        info={info}
-      />
     </Wrapper>
   );
 };
 
 const Wrapper = styled.main`
   display: flex;
-  margin-top: 2rem;
-  margin-bottom: 2rem;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  text-align: center;
+  justify-content: center;
+  margin-top: 2rem;
+  color: white;
 
-  .headMsg {
-    /* height: 100vh; */
-    /* position: absolute; */
-    /* top: 7rem;
-    right: 2rem; */
-    h1 {
-      font-size: 2rem;
-      letter-spacing: 1px;
-      text-transform: uppercase;
+  .postSection {
+    text-align: left;
+    z-index: 1;
+  }
+
+  .loading {
+    margin-top: 5rem;
+    text-align: center;
+  }
+
+  .header {
+    font-size: 2rem;
+    text-align: left;
+  }
+  .stylishBg {
+    background-color: black;
+    position: absolute;
+    width: 100vw;
+    height: 20rem;
+    top: 105px;
+    left: 0;
+    /* z-index: 0; */
+
+    display: flex;
+    justify-content: space-between;
+
+    img {
+      filter: saturate(0);
+      opacity: 0.5;
     }
-    h2 {
-      font-size: 1.5 rem;
+
+    .ExamsSVG {
+      transform: translateY(90px);
+      width: 250px;
+    }
+
+    .ScreenTimeSVG {
+      transform: translateY(3px);
     }
   }
 
-  .countdown {
+  .posts {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2rem;
+  }
+
+  .post {
+    width: 15rem;
+    height: 17rem;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-direction: row;
-    margin-bottom: 2rem;
-    .item {
-      margin: 0.5rem;
-      /* border-radius: 10px; */
-      display: flex;
-      flex-direction: column;
-      background-color: rgba(0, 0, 0, 0.5);
-      color: white;
-      width: 4rem;
-      padding: 1rem;
-      .number {
-        font-size: 3rem;
-        margin-bottom: 10px;
-      }
-      .label {
-        text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-        font-size: 1rem;
-      }
+    flex-direction: column;
+    text-align: center;
+
+    border-radius: 10px;
+    color: black;
+    background-color: white;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+
+    .heading {
+      font-size: 1.5rem;
+    }
+    .timing {
+      letter-spacing: 1px;
+      font-size: 1rem;
     }
 
-    @keyframes pulse {
-      0% {
-        background-color: rgba(0, 0, 0, 0.65);
-      }
-      100% {
-        background-color: rgba(0, 0, 0, 0.5);
-      }
-    }
-
-    .item:last-child {
-      animation: pulse 1s infinite ease-in-out;
+    .count {
+      font-size: 0.75rem;
     }
   }
 
-  .textEditor {
-    margin: 2rem 0;
+  .post:hover {
+    cursor: pointer;
+    background-color: whitesmoke;
   }
 
-  .components {
-    margin-top: 4rem;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    flex-direction: row;
-    .add {
-      outline: none;
-      border: none;
-      margin: 0 2rem;
-      background-color: black;
-      border-radius: 50%;
-      padding: 2rem;
+  .addPostBtn {
+    font-size: 2rem;
+  }
+  .addPostBtn:hover {
+    transform: rotate(90deg);
+    transition: 0.3s;
+  }
 
-      .material-symbols-outlined {
-        font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 48;
-        font-size: 2rem;
-      }
-      color: white;
+  .randomAssText {
+    position: fixed;
+    bottom: 10rem;
+
+    font-family: "Poppins";
+    font-size: 4rem;
+
+    color: black;
+    /*background: linear-gradient(
+      to right,
+      #7953cd 20%,
+      #00affa 30%,
+      #0190cd 70%,
+      #764ada 80%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-fill-color: transparent;
+    background-size: 500% auto;
+    animation: textShine 5s ease-in-out infinite alternate; */
+  }
+
+  @keyframes textShine {
+    0% {
+      background-position: 0% 50%;
     }
-    .diary {
-      /* box-shadow: rgba(0, 255, 0, 1) 0px 0px 5px; */
+    100% {
+      background-position: 100% 50%;
     }
-    .link {
-      /* box-shadow: rgba(255, 0, 0, 1) 0px 0px 5px; */
-    }
-    .etc {
-      /* box-shadow: rgba(255, 0, 0, 1) 0px 0px 5px; */
-    }
-    .add:hover {
-      cursor: pointer;
-      transition: 0.3s;
-      /* padding: 1.5rem 2.7rem; */
-      color: black;
-      background-color: whitesmoke;
-      box-shadow: rgba(149, 157, 165, 0.5) 0px 8px 24px;
-    }
+  }
+
+  .waves {
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    overflow: hidden;
   }
 `;
+
 export default OwnPage;

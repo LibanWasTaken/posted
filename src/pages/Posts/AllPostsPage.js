@@ -15,7 +15,6 @@ export default function AllProductPage() {
       setUsers(data);
     });
   }, []);
-  console.log(users);
 
   return (
     <Wrapper>

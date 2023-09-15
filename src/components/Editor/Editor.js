@@ -37,15 +37,7 @@ import {
   remove,
 } from "firebase/database";
 
-import {
-  collection,
-  getDocs,
-  getDoc,
-  setDoc,
-  addDoc,
-  doc,
-  updateDoc,
-} from "firebase/firestore";
+import { getDoc, doc } from "firebase/firestore";
 import { db as FSdb } from "../../services/firebase-config";
 
 const editorConfig = {
