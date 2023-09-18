@@ -19,6 +19,8 @@ const OwnPostPage = () => {
   const [linkAdderOpen, setLinkAdderOpen] = useState(false);
   const [info, setInfo] = useState("blabla");
 
+  // TODO: if counter hits 00000 refresh page
+
   const handleDiaryOpen = () => {
     setDiaryOpen(true);
   };

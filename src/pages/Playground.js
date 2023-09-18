@@ -190,8 +190,29 @@ const Playground = () => {
     }
   }
 
+  async function addPostToUserDoc(postID, uid) {
+    try {
+      console.log("its happening");
+
+      const userPostsRef = doc(db, `users/${uid}/posts`, postID);
+      const docSnap = await getDoc(userPostsRef);
+
+      if (docSnap.exists()) {
+        await setDoc(userPostsRef, { postID }, { merge: true });
+        console.log("Document updated in user's collection with ID: ", postID);
+      } else {
+        console.log("No such document! Creating one");
+        await setDoc(userPostsRef, { postID });
+        console.log("Document created in user's collection with ID: ", postID);
+      }
+    } catch (e) {
+      console.error("Error adding collection: ", e);
+    }
+  }
+
   useEffect(() => {
     fetchPost();
+    // addPostToUserDoc("samimami  ", "L1uljY8hgdZ9wnLovjJJuCr2sN63");
   }, []);
 
   return (

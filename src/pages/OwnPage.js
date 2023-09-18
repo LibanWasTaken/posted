@@ -5,8 +5,17 @@ import { Link } from "react-router-dom";
 import { Spinner2 } from "../components/Spinner";
 // import SliderComponent from "../components/Slider";
 import Waves from "../components/Waves";
+import PostAdder from "../components/PostAdder";
 
-import { addDoc, getDoc, getDocs, collection, doc } from "firebase/firestore";
+import {
+  addDoc,
+  getDoc,
+  getDocs,
+  setDoc,
+  collection,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
 import { db as FSdb } from "../services/firebase-config";
 import { useUserContext } from "../context/UserContext";
 
@@ -28,6 +37,13 @@ function generatePostLinks(posts) {
 const OwnPage = () => {
   const { user: currentUser, loading } = useUserContext();
   const [userPosts, setUserPosts] = useState();
+  const [postAdderState, setPostAdderState] = useState(false);
+  const ClosePostAdder = () => {
+    setPostAdderState(false);
+  };
+  const OpenPostAdder = () => {
+    setPostAdderState(true);
+  };
 
   // const slideData = [
   //   {
@@ -57,7 +73,7 @@ const OwnPage = () => {
   // ];
 
   async function getFSData() {
-    const userID = "your_custom_id_here";
+    const userID = currentUser.uid;
     await getDocs(collection(FSdb, `/users/${userID}/posts`)).then(
       (querySnapshot) => {
         const postsData = querySnapshot.docs.map((doc) => ({
@@ -65,9 +81,29 @@ const OwnPage = () => {
           id: doc.id,
         }));
         setUserPosts(postsData);
-        console.log(postsData);
+        // console.log(postsData);
       }
     );
+  }
+
+  async function addPostToUserDoc(postID, uid) {
+    try {
+      console.log("its happening");
+
+      const userPostsRef = doc(FSdb, `users/${uid}/posts`, postID);
+      const docSnap = await getDoc(userPostsRef);
+
+      if (docSnap.exists()) {
+        await setDoc(userPostsRef, { postID }, { merge: true });
+        console.log("Document updated in user's collection with ID: ", postID);
+      } else {
+        console.log("No such document! Creating one");
+        await setDoc(userPostsRef, { postID });
+        console.log("Document created in user's collection with ID: ", postID);
+      }
+    } catch (e) {
+      console.error("Error adding collection: ", e);
+    }
   }
 
   const addNewPostFS = async (e) => {
@@ -75,10 +111,18 @@ const OwnPage = () => {
     console.log("pressed");
 
     try {
-      const docRef = await addDoc(collection(FSdb, "posts"), {
-        user: currentUser.uid,
+      const userID = currentUser.uid;
+
+      // Adding to post collection
+      const newDocRef = await addDoc(collection(FSdb, "posts"), {
+        user: userID,
+        title: "bipbap",
       });
-      console.log("Document added with ID: ", docRef.id);
+      const newDocID = newDocRef.id;
+      console.log("Document added with ID: ", newDocID);
+
+      // Adding to user docs
+      addPostToUserDoc(newDocID, userID);
     } catch (e) {
       console.error("Error adding document: ", e);
     }
@@ -86,7 +130,7 @@ const OwnPage = () => {
 
   useEffect(() => {
     if (currentUser) {
-      console.log(currentUser);
+      // console.log(currentUser);
       getFSData();
     }
   }, [currentUser]);
@@ -120,12 +164,17 @@ const OwnPage = () => {
               <p className="heading">Sum Else</p>
               <p className="timing">01:17:23</p>
             </div> */}
-            <div className="post" onClick={addNewPostFS}>
+            <div className="post" onClick={OpenPostAdder}>
               <span className="material-symbols-outlined addPostBtn">add</span>
               <p>
-                Add Post <br /> 2/3
+                Add Post <br /> {userPosts.length}/3
               </p>
             </div>
+            <PostAdder
+              open={postAdderState}
+              handleClose={ClosePostAdder}
+              info={{ uid: currentUser.uid, posts: userPosts }}
+            />
           </div>
         </section>
       ) : (

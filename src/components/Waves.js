@@ -103,19 +103,19 @@ const Wrapper = styled.main`
   }
   .parallax > use:nth-child(1) {
     animation-delay: -2s;
-    animation-duration: 7s;
+    animation-duration: 7s+20s;
   }
   .parallax > use:nth-child(2) {
     animation-delay: -3s;
-    animation-duration: 10s;
+    animation-duration: 10s+20s;
   }
   .parallax > use:nth-child(3) {
     animation-delay: -4s;
-    animation-duration: 13s;
+    animation-duration: 13s+20s;
   }
   .parallax > use:nth-child(4) {
     animation-delay: -5s;
-    animation-duration: 20s;
+    animation-duration: 20s+20s;
   }
   @keyframes move-forever {
     0% {
