@@ -1,5 +1,5 @@
 import * as React from "react";
-import Button from "@mui/material/Button";
+
 import Dialog from "@mui/material/Dialog";
 import ListItemText from "@mui/material/ListItemText";
 import ListItem from "@mui/material/ListItem";
@@ -10,6 +10,10 @@ import Paper from "@mui/material/Paper";
 import Slide from "@mui/material/Slide";
 import styled from "styled-components";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+
+import ExamsSVG from "./../../assets/undraw_exams_re_4ios.svg";
+import DiaryPNG from "./../../assets/DiaryPNG.png";
+import DiaryPage from "./DiaryPage";
 
 const theme = createTheme({
   typography: {
@@ -54,25 +58,146 @@ function renderListItems(data) {
 
 export default function Diary({ open, handleClose, info }) {
   const arrExample = [
-    { primary: "09 Dec, 2023", secondary: "and then this happened" },
-    { primary: "25 Aug, 2023", secondary: "why" },
-    { primary: "09 Dec, 2023", secondary: "and then this happened" },
-    { primary: "25 Aug, 2023", secondary: "why" },
-    { primary: "09 Dec, 2023", secondary: "and then this happened" },
-    { primary: "25 Aug, 2023", secondary: "why" },
-    { primary: "09 Dec, 2023", secondary: "and then this happened" },
-    { primary: "25 Aug, 2023", secondary: "why" },
-    { primary: "09 Dec, 2023", secondary: "and then this happened" },
-    { primary: "25 Aug, 2023", secondary: "why" },
-    { primary: "09 Dec, 2023", secondary: "and then this happened" },
-    { primary: "25 Aug, 2023", secondary: "why" },
-    { primary: "09 Dec, 2023", secondary: "and then this happened" },
-    { primary: "25 Aug, 2023", secondary: "why" },
-    { primary: "09 Dec, 2023", secondary: "and then this happened" },
-    { primary: "25 Aug, 2023", secondary: "why" },
-    { primary: "09 Dec, 2023", secondary: "and then this happened" },
-    { primary: "25 Aug, 2023", secondary: "why" },
+    {
+      primary: "09 Dec, 2021",
+      secondary: "and then this happened",
+      value: "chicken",
+    },
+    { primary: "25 Aug, 2022", secondary: "that was wild", value: "chicken" },
+    {
+      primary: "14 Feb, 2023",
+      secondary: "we celebrated love",
+      value: "chicken",
+    },
+    {
+      primary: "07 Oct, 2022",
+      secondary: "exploring new horizons",
+      value: "chicken",
+    },
+    { primary: "30 May, 2023", secondary: "making memories", value: "chicken" },
+    {
+      primary: "18 Jul, 2022",
+      secondary: "a day to remember",
+      value: "chicken",
+    },
+    {
+      primary: "12 Nov, 2022",
+      secondary: "embracing change",
+      value: "chicken",
+    },
+    {
+      primary: "02 Apr, 2023",
+      secondary: "finding inspiration",
+      value: "chicken",
+    },
+    {
+      primary: "22 Sep, 2022",
+      secondary: "adventure awaits",
+      value: "chicken",
+    },
+    { primary: "03 Mar, 2023", secondary: "chasing dreams", value: "chicken" },
+    { primary: "11 Jan, 2022", secondary: "creating art", value: "chicken" },
+    { primary: "28 Jun, 2022", secondary: "summer vibes", value: "chicken" },
+    {
+      primary: "09 Oct, 2023",
+      secondary: "a new chapter begins",
+      value: "chicken",
+    },
+    {
+      primary: "15 May, 2022",
+      secondary: "sunny days ahead",
+      value: "chicken",
+    },
+    {
+      primary: "19 Apr, 2023",
+      secondary: "exploring the unknown",
+      value: "chicken",
+    },
+    {
+      primary: "05 Jul, 2022",
+      secondary: "music in the air",
+      value: "chicken",
+    },
+    {
+      primary: "27 Feb, 2023",
+      secondary: "finding inner peace",
+      value: "chicken",
+    },
+    {
+      primary: "08 Sep, 2022",
+      secondary: "journey to happiness",
+      value: "chicken",
+    },
+    {
+      primary: "24 Mar, 2023",
+      secondary: "inspiration strikes",
+      value: "chicken",
+    },
+    {
+      primary: "01 Dec, 2022",
+      secondary: "new adventures await",
+      value: "chicken",
+    },
+    {
+      primary: "16 Aug, 2023",
+      secondary: "making a difference",
+      value: "chicken",
+    },
+    { primary: "10 Apr, 2022", secondary: "wandering souls", value: "chicken" },
+    {
+      primary: "23 Jan, 2023",
+      secondary: "a world of possibilities",
+      value: "chicken",
+    },
+    {
+      primary: "06 Jun, 2022",
+      secondary: "exploring the outdoors",
+      value: "chicken",
+    },
+    {
+      primary: "29 Nov, 2022",
+      secondary: "embracing the moment",
+      value: "chicken",
+    },
+    {
+      primary: "20 Jul, 2023",
+      secondary: "building connections",
+      value: "chicken",
+    },
+    {
+      primary: "13 Mar, 2022",
+      secondary: "finding beauty in simplicity",
+      value: "chicken",
+    },
+    {
+      primary: "04 Oct, 2023",
+      secondary: "adventures on the horizon",
+      value: "chicken",
+    },
+    {
+      primary: "21 May, 2022",
+      secondary: "journey of self-discovery",
+      value: "chicken",
+    },
+    {
+      primary: "17 Feb, 2023",
+      secondary: "chasing the sunset",
+      value: "chicken",
+    },
+    {
+      primary: "26 Sep, 2022",
+      secondary: "capturing memories",
+      value: "chicken",
+    },
   ];
+
+  const [pageAdderOpen, setPageAdderOpen] = React.useState(false);
+  const handlePageAdderOpen = () => {
+    setPageAdderOpen(true);
+  };
+  const handlePageAdderClose = () => {
+    setPageAdderOpen(false);
+  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -93,15 +218,27 @@ export default function Diary({ open, handleClose, info }) {
               </span>
               <p>Diary</p>
             </div>
-            <span className="btnIcon material-symbols-outlined">add</span>
+            <span
+              className="btnIcon material-symbols-outlined"
+              onClick={handlePageAdderOpen}
+            >
+              add
+            </span>
           </div>
           <section className="list">
-            <Paper style={{ maxHeight: "70vh", overflow: "auto" }}>
+            <Paper style={{ maxHeight: "80vh", overflow: "auto" }}>
               <List>{renderListItems(arrExample)}</List>
             </Paper>
           </section>
+          {/* <img src={ExamsSVG} alt="ExamsSVG" className="ExamsSVG" /> */}
+          <img
+            src={DiaryPNG}
+            alt="Transparent Notebook Paper Png"
+            className="DiaryPNG"
+          ></img>
         </Wrapper>
       </Dialog>
+      <DiaryPage open={pageAdderOpen} handleClose={handlePageAdderClose} />
     </ThemeProvider>
   );
 }
@@ -146,8 +283,25 @@ const Wrapper = styled.main`
 
   .list {
     padding: 1rem 2rem;
-    border: 1px solid red;
+    /* border: 1px solid red; */
     overflow: scroll;
+  }
+
+  .ExamsSVG {
+    filter: saturate(0);
+    height: 250px;
+    position: absolute;
+    bottom: 0;
+    right: 10rem;
+    opacity: 0.75;
+  }
+  .DiaryPNG {
+    position: absolute;
+    bottom: 0;
+    right: 5rem;
+    opacity: 0.1;
+    height: 100vh;
+    pointer-events: none;
   }
   height: 100vh;
   overflow: hidden;

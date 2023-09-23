@@ -149,7 +149,7 @@ const Wrapper = styled.main`
       margin-top: 6rem;
       background-color: black;
       color: white;
-      border: 2px solid gray;
+      border: 3px solid gray;
       outline: none;
       letter-spacing: 1px;
     }
@@ -157,7 +157,7 @@ const Wrapper = styled.main`
       cursor: pointer;
       letter-spacing: 1.5px;
       transition: 0.3s;
-      border: 2px solid white;
+      border: 3px solid white;
     }
   }
 

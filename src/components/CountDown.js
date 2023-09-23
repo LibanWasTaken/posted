@@ -11,6 +11,7 @@ dayjs.extend(duration);
 
 const CountDown = () => {
   const [delayDisabled, setDelayDisabled] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const targetDate = dayjs.utc("2023-09-30T00:01:00Z");
 
@@ -19,16 +20,27 @@ const CountDown = () => {
     // db
   }
 
+  function handleClose() {
+    setOpen(false);
+  }
+  function handleOpen() {
+    setOpen(true);
+  }
+
+  const formatNumberWithTwoSignificantFigures = (number) => {
+    return number.toLocaleString(undefined, { minimumIntegerDigits: 2 });
+  };
+
   // Calculate the initial time remaining
   const calculateTimeRemaining = () => {
     const now = dayjs.utc();
     const timeRemaining = targetDate.diff(now);
     const duration = dayjs.duration(timeRemaining);
     return {
-      days: duration.days(),
-      hours: duration.hours(),
-      minutes: duration.minutes(),
-      seconds: duration.seconds(),
+      days: formatNumberWithTwoSignificantFigures(duration.days()),
+      hours: formatNumberWithTwoSignificantFigures(duration.hours()),
+      minutes: formatNumberWithTwoSignificantFigures(duration.minutes()),
+      seconds: formatNumberWithTwoSignificantFigures(duration.seconds()),
     };
   };
 
@@ -44,57 +56,86 @@ const CountDown = () => {
   }, []);
   return (
     <Wrapper>
-      <section className="section">
-        <div className="close">
-          <span className="material-symbols-outlined">close</span>
-        </div>
-        <h1>Posting in</h1>
-        <div className="countdown">
-          <div className="item">
-            <span className="number">{timeRemaining.days}</span>
-            <span className="label">days</span>
+      {open ? (
+        <section className="section full">
+          <div className="close">
+            <span
+              className="material-symbols-outlined closeBtn"
+              onClick={handleClose}
+            >
+              close_fullscreen
+            </span>
           </div>
-          <div className="item">
-            <span className="number">{timeRemaining.hours}</span>
-            <span className="label">hours</span>
+          <h1>Posting in</h1>
+          <div className="countdown">
+            <div className="item">
+              <span className="number">{timeRemaining.days}</span>
+              <span className="label">days</span>
+            </div>
+            <div className="item">
+              <span className="number">{timeRemaining.hours}</span>
+              <span className="label">hours</span>
+            </div>
+            <div className="item">
+              <span className="number">{timeRemaining.minutes}</span>
+              <span className="label">minutes</span>
+            </div>
+            <div className="item">
+              <span className="number">{timeRemaining.seconds}</span>
+              <span className="label">seconds</span>
+            </div>
           </div>
-          <div className="item">
-            <span className="number">{timeRemaining.minutes}</span>
-            <span className="label">minutes</span>
-          </div>
-          <div className="item">
-            <span className="number">{timeRemaining.seconds}</span>
-            <span className="label">seconds</span>
-          </div>
-        </div>
-        <button
-          className={`classicBtn ${delayDisabled && "disabledClassicBtn"}`}
-          onClick={handleDelay}
-        >
-          Delay
-        </button>
-      </section>
+          <button
+            className={`classicBtn ${delayDisabled && "disabledClassicBtn"}`}
+            onClick={handleDelay}
+          >
+            Delay
+          </button>
+        </section>
+      ) : (
+        <section className="small">
+          <p>
+            {timeRemaining.days}:{timeRemaining.hours}:{timeRemaining.minutes}:
+            {timeRemaining.seconds}
+          </p>
+          <span class="material-symbols-outlined openBtn" onClick={handleOpen}>
+            open_in_full
+          </span>
+        </section>
+      )}
     </Wrapper>
   );
 };
 
 const Wrapper = styled.main`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: #eee;
-  border-radius: 10px;
-  padding: 2rem;
-
-  .material-symbols-outlined {
+  .closeBtn {
     position: relative;
     left: 45vw;
     font-size: 2rem;
+    padding: 5px;
+    border-radius: 50%;
+  }
+  .closeBtn:hover,
+  .openBtn:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transform: rotate(180deg);
+    transition: 0.3s;
   }
 
-  .section {
+  section {
+    background-color: #eee;
+    box-shadow: rgba(0, 0, 0, 0.15) 0 0 3px;
+  }
+
+  .full {
     width: 93vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    padding: 2rem;
 
     h1 {
       font-size: 2rem;
@@ -145,6 +186,30 @@ const Wrapper = styled.main`
     .item:last-child {
       /* animation: pulse 1s infinite ease-in-out; */
     }
+  }
+
+  .small {
+    /* position: absolute;
+    top: 8rem;
+    right: 1rem; */
+    padding: 0.5rem 1.5rem;
+    border-radius: 10px;
+    font-size: 1.5rem;
+    letter-spacing: 1px;
+    background-color: #eee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    p {
+      margin: 10px 10px 10px 0;
+      font-family: monospace;
+    }
+  }
+
+  .openBtn {
+    font-size: 1.5rem;
+    padding: 5px;
+    border-radius: 50%;
   }
 `;
 

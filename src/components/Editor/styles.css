@@ -14,17 +14,22 @@
 .editor-container {
   margin: 20px auto 20px auto;
   border-radius: 2px;
-  max-width: 600px;
+  min-width: 600px;
+  width: 80vw;
   color: #000;
   position: relative;
   line-height: 20px;
   font-weight: 400;
   text-align: left;
   border-radius: 10px;
-  /* box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px; */
-  /* border: 1px solid rgba(149, 157, 165, 0.2); */
-  border: 1px solid rgba(149, 157, 165, 0.5);
+  /* me */
   padding: 1px;
+  /* box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px; */
+  box-shadow: rgba(0, 0, 0, 0.15) 0 0 3px;
+
+  background-color: white;
+  /* border: 1px solid rgba(149, 157, 165, 0.2); */
+  /* border: 1px solid rgba(149, 157, 165, 0.5); */
 }
 
 .editor-inner {

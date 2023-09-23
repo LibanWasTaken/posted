@@ -111,20 +111,20 @@ const SettingsPage = () => {
 
   const db = getDatabase();
 
-  useEffect(() => {
-    if (currentUser) {
-      console.log(currentUser);
-      const infoRef = ref(db, "users/unposted/" + currentUser.uid);
-      onValue(infoRef, (snapshot) => {
-        let data = snapshot.val();
-        if (data.info) {
-          setUserInfo(data.info);
-        } else {
-          setUserInfo({ emailAddress: currentUser.email });
-        }
-      });
-    }
-  }, [currentUser]);
+  // useEffect(() => {
+  //   if (currentUser) {
+  //     console.log(currentUser);
+  //     const infoRef = ref(db, "users/unposted/" + currentUser.uid);
+  //     onValue(infoRef, (snapshot) => {
+  //       let data = snapshot.val();
+  //       if (data.info) {
+  //         setUserInfo(data.info);
+  //       } else {
+  //         setUserInfo({ emailAddress: currentUser.email });
+  //       }
+  //     });
+  //   }
+  // }, [currentUser]);
 
   // useEffect(() => {
   //   if (userInfo && currentUser) {
@@ -205,7 +205,7 @@ const SettingsPage = () => {
                       onChange={handleTabChange}
                       aria-label="basic tabs example"
                     >
-                      <Tab label="WHOM" {...a11yProps(0)} />
+                      <Tab label="TO WHO" {...a11yProps(0)} />
                       <Tab label="WHO" {...a11yProps(1)} />
                       <Tab label="WHEN" {...a11yProps(2)} />
                     </Tabs>
@@ -260,7 +260,7 @@ const SettingsPage = () => {
                         label="Mail 3"
                         variant="outlined"
                         type="email"
-                        defaultValue={userInfo.emailAddress}
+                        defaultValue={userInfo && userInfo.emailAddress}
                       />
                     </div>
                   </CustomTabPanel>

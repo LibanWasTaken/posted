@@ -3,11 +3,10 @@ import styled from "styled-components";
 import { useParams } from "react-router-dom";
 
 import DiaryMui from "../components/Diaries/DiaryMui";
-import DiaryII from "../components/Diaries/DiaryII";
 import Editor from "../components/Editor/Editor";
 import LinkAdder from "../components/LinkAdder";
-// import bbEditor from "../components/BigBoyEditor/bbEditor";
 import CountDown from "../components/CountDown";
+import SettingsPage from "./SettingsPage";
 
 const OwnPostPage = () => {
   const { id } = useParams();
@@ -20,13 +19,6 @@ const OwnPostPage = () => {
   const [info, setInfo] = useState("blabla");
 
   // TODO: if counter hits 00000 refresh page
-
-  const handleDiaryOpen = () => {
-    setDiaryOpen(true);
-  };
-  const handleDiaryClose = () => {
-    setDiaryOpen(false);
-  };
 
   const handleLinkAdderOpen = () => {
     setLinkAdderOpen(true);
@@ -43,48 +35,56 @@ const OwnPostPage = () => {
   };
 
   return (
-    <Wrapper>
-      {!accountEmpty ? (
-        <section className="headMsg">
-          <h1>There's nothing yet</h1>
-          <h2>Leave something:</h2>
-        </section>
-      ) : (
-        <CountDown />
-      )}
-      <div className="textEditor">
-        <Editor initialConfig={{ editable: true }} />
-      </div>
-      <div className="components">
-        <button className="add diary" onClick={handleDiaryOpen}>
-          <span className="material-symbols-outlined">add_notes</span>
-        </button>
-        <button className="add link" onClick={handleLinkAdderOpen}>
-          <span className="material-symbols-outlined">add_link</span>
-        </button>
-        <button className="add etc" onClick={handleDiaryOpenMUI}>
-          <span className="material-symbols-outlined">add</span>
-        </button>
-      </div>
-      <DiaryII isOpen={diaryOpen} onClose={handleDiaryClose} />
-      <LinkAdder open={linkAdderOpen} handleClose={handleLinkAdderClose} />
-      <DiaryMui
-        open={diaryOpenMUI}
-        handleClose={handleDiaryCloseMUI}
-        info={info}
-      />
-    </Wrapper>
+    <>
+      <Wrapper>
+        {!accountEmpty ? (
+          <section className="headMsg">
+            <h1>There's nothing yet</h1>
+            <h2>Leave something:</h2>
+          </section>
+        ) : (
+          <CountDown />
+        )}
+        <div className="textEditor">
+          <Editor initialConfig={{ editable: true }} />
+        </div>
+        <div className="components">
+          <button className="add diary" onClick={handleDiaryOpenMUI}>
+            <span className="material-symbols-outlined">add_notes</span>
+          </button>
+          <button className="add link" onClick={handleLinkAdderOpen}>
+            <span className="material-symbols-outlined">add_link</span>
+          </button>
+          <a href="/me/them">
+            <button className="add etc">
+              <span className="material-symbols-outlined">settings</span>
+            </button>
+          </a>
+        </div>
+        <LinkAdder
+          open={linkAdderOpen}
+          handleClose={handleLinkAdderClose}
+          info={id}
+        />
+        <DiaryMui
+          open={diaryOpenMUI}
+          handleClose={handleDiaryCloseMUI}
+          info={id}
+        />
+      </Wrapper>
+      {/* <SettingsPage /> */}
+    </>
   );
 };
 
 const Wrapper = styled.main`
   display: flex;
-  margin-top: 2rem;
-  margin-bottom: 2rem;
+  padding: 2rem 0;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
+  background-color: whitesmoke;
 
   .textEditor {
     margin: 2rem 0;

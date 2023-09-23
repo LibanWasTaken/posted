@@ -107,5 +107,9 @@ export default App;
 https://github.com/Steveeeie/react-page-transition
 https://react-scroll-parallax.damnthat.tv/docs/
 
+text editors:
+quill
+tiptap
+draftjs
 
 */
