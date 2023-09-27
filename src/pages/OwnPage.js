@@ -151,19 +151,7 @@ const OwnPage = () => {
           <p className="header">Your Posts</p>
           <div className="posts">
             {generatePostLinks(userPosts)}
-            {/* <Link
-              to="/me/post/idshouldbethere"
-              style={{ textDecoration: "none" }}
-            >
-              <div className="post">
-                <p className="heading">Something</p>
-                <p className="timing">14:02:52</p>
-              </div>
-            </Link>
-            <div className="post">
-              <p className="heading">Sum Else</p>
-              <p className="timing">01:17:23</p>
-            </div> */}
+
             <div className="post" onClick={OpenPostAdder}>
               <span className="material-symbols-outlined addPostBtn">add</span>
               <p>
@@ -184,10 +172,10 @@ const OwnPage = () => {
         </section>
       )}
 
-      <h1 className="randomAssText">
+      {/* <h1 className="randomAssText">
         Lorem ipsum dolor sit amet,
         <br /> Jesnly fomer.
-      </h1>
+      </h1> */}
       {/* <SliderComponent heading="Example Slider" slides={slideData} /> */}
       <div className="waves">
         <Waves />
@@ -201,8 +189,9 @@ const Wrapper = styled.main`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-top: 2rem;
+  /* margin-top: 2rem; */
   color: white;
+  position: relative;
 
   .postSection {
     text-align: left;
@@ -223,9 +212,8 @@ const Wrapper = styled.main`
     position: absolute;
     width: 100vw;
     height: 20rem;
-    top: 105px;
     left: 0;
-    /* z-index: 0; */
+    top: 0;
 
     display: flex;
     justify-content: space-between;
@@ -233,6 +221,12 @@ const Wrapper = styled.main`
     img {
       filter: saturate(0);
       opacity: 0.5;
+      user-select: none;
+    }
+    img:hover {
+      filter: saturate(1);
+      opacity: 0.8;
+      transition: 3s;
     }
 
     .ExamsSVG {

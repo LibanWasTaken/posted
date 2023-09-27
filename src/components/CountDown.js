@@ -31,7 +31,6 @@ const CountDown = () => {
     return number.toLocaleString(undefined, { minimumIntegerDigits: 2 });
   };
 
-  // Calculate the initial time remaining
   const calculateTimeRemaining = () => {
     const now = dayjs.utc();
     const timeRemaining = targetDate.diff(now);
@@ -49,9 +48,9 @@ const CountDown = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setTimeRemaining(calculateTimeRemaining());
+      // TODO: if second < -1, refresh page?
     }, 1000);
 
-    // Clear the interval when the component unmounts
     return () => clearInterval(interval);
   }, []);
   return (
@@ -98,7 +97,10 @@ const CountDown = () => {
             {timeRemaining.days}:{timeRemaining.hours}:{timeRemaining.minutes}:
             {timeRemaining.seconds}
           </p>
-          <span class="material-symbols-outlined openBtn" onClick={handleOpen}>
+          <span
+            className="material-symbols-outlined openBtn"
+            onClick={handleOpen}
+          >
             open_in_full
           </span>
         </section>
@@ -108,9 +110,13 @@ const CountDown = () => {
 };
 
 const Wrapper = styled.main`
+  width: 90%;
+  position: relative;
+
   .closeBtn {
-    position: relative;
-    left: 45vw;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
     font-size: 2rem;
     padding: 5px;
     border-radius: 50%;
@@ -129,7 +135,6 @@ const Wrapper = styled.main`
   }
 
   .full {
-    width: 93vw;
     display: flex;
     flex-direction: column;
     align-items: center;

@@ -181,18 +181,18 @@ export default function Editor() {
 
     useEffect(() => {
       // Realtime Database
-      if (editorValueReceived && !valueApplied) {
-        const newEditorState = editor.parseEditorState(editorValueReceived);
-        editor.setEditorState(newEditorState);
-        setValueApplied(true);
-      }
-
-      // Firestore
-      // if (editorValueReceivedFS && !valueApplied) {
-      //   const newEditorState = editor.parseEditorState(editorValueReceivedFS);
+      // if (editorValueReceived && !valueApplied) {
+      //   const newEditorState = editor.parseEditorState(editorValueReceived);
       //   editor.setEditorState(newEditorState);
       //   setValueApplied(true);
       // }
+
+      // Firestore
+      if (editorValueReceivedFS && !valueApplied) {
+        const newEditorState = editor.parseEditorState(editorValueReceivedFS);
+        editor.setEditorState(newEditorState);
+        setValueApplied(true);
+      }
     }, [editorValueReceived, editor, valueApplied]);
 
     return null; // You can simply return null since you don't need any JSX here
@@ -247,7 +247,12 @@ export default function Editor() {
             }
           />
         </div>
-        <button
+        <span
+          className={`material-symbols-outlined ${!editorState && "disabled"}`}
+        >
+          done
+        </span>
+        {/* <button
           className="classicBtn"
           style={{ margin: 15, position: "relative", right: "-75%" }}
           onClick={() => {
@@ -256,7 +261,7 @@ export default function Editor() {
           }}
         >
           Save
-        </button>
+        </button> */}
       </div>
     </LexicalComposer>
   );

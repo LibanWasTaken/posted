@@ -8,6 +8,10 @@ body {
 
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   -webkit-tap-highlight-color: transparent;
+
+  /* min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr); */
 }
 
 .classicBtn {
@@ -42,6 +46,35 @@ body {
   cursor: not-allowed;
   padding: 1.5rem 2.5rem;
   letter-spacing: 2px;
+}
+
+@keyframes btn-border-top {
+  0% {
+    border: 1px solid whitesmoke;
+    border-left: 1px solid black;
+  }
+
+  25% {
+    border: 1px solid whitesmoke;
+    border-top: 1px solid black;
+  }
+
+  50% {
+    border: 1px solid whitesmoke;
+    border-right: 1px solid black;
+  }
+  75% {
+    border: 1px solid whitesmoke;
+    border-bottom: 1px solid black;
+  }
+  100% {
+    border: 1px solid whitesmoke;
+    border-left: 1px solid black;
+  }
+}
+
+.loadingClassicBtn {
+  animation: btn-border-top 1s infinite;
 }
 
 /* Scrollbar */

@@ -81,7 +81,7 @@ export default function LinkAdder({ open, handleClose, info }) {
     if (info) {
       fetchData();
     }
-  }, [info]);
+  }, [info, open]);
 
   const handleAddLink = async () => {
     try {
@@ -166,7 +166,7 @@ export default function LinkAdder({ open, handleClose, info }) {
               aria-label="delete"
               onClick={() => handleRemoveLink(item.primary, item.secondary)}
             >
-              <span class="material-symbols-outlined">delete</span>
+              <span className="material-symbols-outlined">delete</span>
             </IconButton>
           </ListItem>
         ))}

@@ -9,12 +9,22 @@ import Slide from "@mui/material/Slide";
 import TextField from "@mui/material/TextField";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
-import { addDoc, getDoc, setDoc, collection, doc } from "firebase/firestore";
+import {
+  addDoc,
+  getDoc,
+  setDoc,
+  collection,
+  doc,
+  and,
+} from "firebase/firestore";
 import { db as FSdb } from "../services/firebase-config";
 import { selectClasses } from "@mui/material";
+
+dayjs.extend(utc);
 
 const theme = createTheme({
   typography: {
@@ -67,6 +77,8 @@ export default function PostAdder({ open, handleClose, info }) {
   };
 
   const handleDateChange = (date) => {
+    console.log(dayjs(date.toDate()).utc());
+    console.log(dayjs(date.toDate()).utc().format());
     setSelectedDate(date);
   };
 
@@ -217,7 +229,12 @@ export default function PostAdder({ open, handleClose, info }) {
               views={["year", "month", "day"]}
             />
             <p className={`errText ${hidden && "hidden"}`}>{errorText}</p>
-            <button className="classicBtn" onClick={handleSubmit}>
+            <button
+              className={`classicBtn ${
+                disabled && "disabledClassicBtn loadingClassicBtn"
+              }`}
+              onClick={handleSubmit}
+            >
               add
             </button>
           </div>
