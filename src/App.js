@@ -106,6 +106,7 @@ export default App;
 /*
 https://github.com/Steveeeie/react-page-transition
 https://react-scroll-parallax.damnthat.tv/docs/
+https://zapier.com/app/dashboard
 
 text editors:
 quill

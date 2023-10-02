@@ -47,8 +47,6 @@ const Waves = () => {
 };
 
 const Wrapper = styled.main`
-  @import url(//fonts.googleapis.com/css?family=Lato:300:400);
-
   body {
     margin: 0;
   }
@@ -87,6 +85,7 @@ const Wrapper = styled.main`
     margin-bottom: -7px; /*Fix for safari gap*/
     min-height: 100px;
     max-height: 150px;
+    animation: fadeIn 2s ease-in;
   }
 
   .content {
@@ -127,6 +126,15 @@ const Wrapper = styled.main`
     }
     100% {
       transform: translate3d(85px, 0, 0);
+    }
+  }
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0; /* Start with 0 opacity (completely transparent) */
+    }
+    100% {
+      opacity: 1; /* End with 1 opacity (fully visible) */
     }
   }
   /*Shrinking for mobile*/

@@ -22,7 +22,7 @@ import {
   arrayUnion,
   arrayRemove,
 } from "firebase/firestore";
-import { db } from "../services/firebase-config";
+import { db } from "../../services/firebase-config";
 
 const theme = createTheme({
   typography: {
@@ -79,6 +79,7 @@ export default function LinkAdder({ open, handleClose, info }) {
 
   useEffect(() => {
     if (info) {
+      // && open, add loading
       fetchData();
     }
   }, [info, open]);

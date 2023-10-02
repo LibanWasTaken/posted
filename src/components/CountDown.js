@@ -9,15 +9,17 @@ import duration from "dayjs/plugin/duration";
 dayjs.extend(utc);
 dayjs.extend(duration);
 
-const CountDown = () => {
+const CountDown = (props) => {
   const [delayDisabled, setDelayDisabled] = useState(false);
   const [open, setOpen] = useState(false);
+  const releaseDate = props.info.releaseDate;
 
-  const targetDate = dayjs.utc("2023-09-30T00:01:00Z");
+  // const targetDate = dayjs.utc("2023-09-30T00:01:00Z");
+  const targetDate = dayjs(releaseDate);
 
   function handleDelay() {
     setDelayDisabled(true);
-    // db
+    // import the function
   }
 
   function handleClose() {
@@ -35,7 +37,10 @@ const CountDown = () => {
     const now = dayjs.utc();
     const timeRemaining = targetDate.diff(now);
     const duration = dayjs.duration(timeRemaining);
+    // console.log(releaseDate, duration);
     return {
+      years: formatNumberWithTwoSignificantFigures(duration.years()),
+      months: formatNumberWithTwoSignificantFigures(duration.months()),
       days: formatNumberWithTwoSignificantFigures(duration.days()),
       hours: formatNumberWithTwoSignificantFigures(duration.hours()),
       minutes: formatNumberWithTwoSignificantFigures(duration.minutes()),
@@ -67,6 +72,20 @@ const CountDown = () => {
           </div>
           <h1>Posting in</h1>
           <div className="countdown">
+            {timeRemaining.years > 0 && (
+              <div className="item">
+                <span className="number">{timeRemaining.years}</span>
+                <span className="label">
+                  {timeRemaining.years === 1 ? "year" : "years"}
+                </span>
+              </div>
+            )}
+            {timeRemaining.months > 0 && (
+              <div className="item">
+                <span className="number">{timeRemaining.months}</span>
+                <span className="label">months</span>
+              </div>
+            )}
             <div className="item">
               <span className="number">{timeRemaining.days}</span>
               <span className="label">days</span>
@@ -94,9 +113,12 @@ const CountDown = () => {
       ) : (
         <section className="small">
           <p>
+            {timeRemaining.years > 0 && <span>{timeRemaining.years}:</span>}
+            {timeRemaining.months > 0 && <span>{timeRemaining.months}:</span>}
             {timeRemaining.days}:{timeRemaining.hours}:{timeRemaining.minutes}:
             {timeRemaining.seconds}
           </p>
+
           <span
             className="material-symbols-outlined openBtn"
             onClick={handleOpen}

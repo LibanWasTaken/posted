@@ -468,11 +468,23 @@ const SettingsPage = () => {
                           control={<Radio />}
                           label="Recurring"
                         />
+
                         <FormControlLabel
                           value="One Time"
                           control={<Radio />}
                           label="One Time"
                         />
+                        <p>
+                          Add https://mui.com/material-ui/react-tooltip/ saying,
+                          The Post will be released at specified intervals
+                          unless intervened, it can be delayed for a defined
+                          time period or disabled.
+                        </p>
+                        <p>
+                          Add https://mui.com/material-ui/react-tooltip/ saying,
+                          The Post will be released at specified date, it cannot
+                          be delayed but can be disabled.
+                        </p>
                       </RadioGroup>
                     </FormControl>
                     <Box>

@@ -14,7 +14,8 @@
 .editor-container {
   margin: 20px auto 20px auto;
   border-radius: 2px;
-  min-width: 600px;
+  min-width: 700px;
+  /* width: 600px; */
   width: 80vw;
   color: #000;
   position: relative;
@@ -52,6 +53,17 @@
   }
 }
 
+@media screen and (max-width: 1545px) {
+  .editor-container {
+    width: 800px;
+  }
+}
+@media screen and (max-width: 1111px) {
+  .editor-container {
+    width: 400px;
+  }
+}
+
 .editor-inner {
   background: #fff;
   position: relative;
@@ -60,7 +72,9 @@
 
 .editor-input {
   /* min-height: 150px; */
-  min-height: 250px;
+  min-height: 350px;
+  max-height: 90vh;
+  overflow: scroll;
   resize: none;
   font-size: 15px;
   caret-color: rgb(5, 5, 5);
