@@ -10,7 +10,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
-import { doc, deleteDoc, or } from "firebase/firestore";
+import { doc, deleteDoc } from "firebase/firestore";
 
 import { db } from "../../services/firebase-config";
 

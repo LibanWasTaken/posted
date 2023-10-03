@@ -178,7 +178,12 @@ const OwnPostPage = () => {
       ) : validUser ? (
         <Wrapper>
           <ThemeProvider theme={theme}>
-            <CountDown info={{ releaseDate: postData.releaseDate }} />
+            <CountDown
+              info={{
+                releaseDate: postData.releaseDate,
+                disabled: postData.disabled,
+              }}
+            />
             <div className="sidebar">
               <span className="box1"></span>
               <span className="box2"></span>
@@ -349,7 +354,10 @@ const OwnPostPage = () => {
                     textAlign: "left",
                   }}
                 >
-                  <FormControl sx={{ marginBottom: 5 }}>
+                  <FormControl
+                    sx={{ marginBottom: 5 }}
+                    disabled={!editDisabled}
+                  >
                     <FormLabel id="demo-controlled-radio-buttons-group">
                       Schedule
                     </FormLabel>
@@ -389,7 +397,10 @@ const OwnPostPage = () => {
                     </RadioGroup>
                   </FormControl>
                   <Box>
-                    <FormControl sx={{ marginBottom: 5 }}>
+                    <FormControl
+                      sx={{ marginBottom: 5 }}
+                      disabled={!editDisabled}
+                    >
                       <FormLabel
                         helperText="12:01 am (UTC)"
                         id="demo-controlled-radio-buttons-group"
@@ -427,6 +438,11 @@ const OwnPostPage = () => {
                       </RadioGroup>
                     </FormControl>
                   </Box>
+                  <p>
+                    offer presets: first day of every year, month, week, 5/3
+                    days
+                  </p>
+                  <p>offer presets: warn before a week, a day,</p>
                   <Box>
                     <DatePicker
                       label="On the"
@@ -517,7 +533,7 @@ const OwnPostPage = () => {
                       className="changeStateBtn disable"
                       onClick={handleDisablePostOpen}
                     >
-                      disable post
+                      {postData.disabled ? "enable post" : "disable post"}
                     </button>
                     <button
                       className="changeStateBtn delete"
@@ -536,6 +552,7 @@ const OwnPostPage = () => {
                       handleClose={handleDisablePostClose}
                       postID={id}
                       userID={currentUser.uid}
+                      isDisabled={postData.disabled}
                     />
                   </div>
 
@@ -728,7 +745,9 @@ const Wrapper = styled.main`
     }
 
     .disable:hover {
-      background-color: #f8f5f5;
+      /* color: red;
+      border: 1px solid red; */
+      text-shadow: 0 0 1px red;
     }
   }
 

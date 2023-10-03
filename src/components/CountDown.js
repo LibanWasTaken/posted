@@ -13,6 +13,7 @@ const CountDown = (props) => {
   const [delayDisabled, setDelayDisabled] = useState(false);
   const [open, setOpen] = useState(false);
   const releaseDate = props.info.releaseDate;
+  const disabled = props.info.disabled;
 
   // const targetDate = dayjs.utc("2023-09-30T00:01:00Z");
   const targetDate = dayjs(releaseDate);
@@ -70,7 +71,7 @@ const CountDown = (props) => {
               close_fullscreen
             </span>
           </div>
-          <h1>Posting in</h1>
+          <h1>{disabled && "Not "}Posting in</h1>
           <div className="countdown">
             {timeRemaining.years > 0 && (
               <div className="item">
@@ -112,7 +113,7 @@ const CountDown = (props) => {
         </section>
       ) : (
         <section className="small">
-          <p>
+          <p className={disabled && "crossed"}>
             {timeRemaining.years > 0 && <span>{timeRemaining.years}:</span>}
             {timeRemaining.months > 0 && <span>{timeRemaining.months}:</span>}
             {timeRemaining.days}:{timeRemaining.hours}:{timeRemaining.minutes}:
@@ -231,6 +232,10 @@ const Wrapper = styled.main`
       margin: 10px 10px 10px 0;
       font-family: monospace;
     }
+  }
+
+  .crossed {
+    text-decoration: line-through;
   }
 
   .openBtn {

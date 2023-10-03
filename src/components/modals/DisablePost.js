@@ -8,16 +8,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
-import IconButton from "@mui/material/IconButton";
-
-import {
-  doc,
-  getDoc,
-  setDoc,
-  updateDoc,
-  arrayUnion,
-  arrayRemove,
-} from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../services/firebase-config";
 
 const theme = createTheme({
@@ -54,23 +45,42 @@ export default function DisablePost({
   handleClose,
   postID = "",
   userID = "",
-  state,
+  isDisabled = false,
 }) {
   const [postIDValue, setPostIDValue] = useState("");
+  const [disabling, setDisabling] = useState(false);
 
-  function handleDisable() {
+  function refreshPage() {
+    window.location.reload();
+  }
+
+  async function handleDisable() {
     if (postIDValue === postID) {
-      console.log("disabling post:", postID, "from user:", userID);
+      setDisabling(true);
+      const fieldName = "disabled";
+      const docRef = doc(db, "posts", postID);
+      if (isDisabled) {
+        await updateDoc(docRef, {
+          [fieldName]: false,
+        });
+        console.log("Enabled post:", postID, "from user:", userID);
+      } else {
+        await updateDoc(docRef, {
+          [fieldName]: true,
+        });
+        console.log("Disabled post:", postID, "from user:", userID);
+      }
+      refreshPage();
     }
   }
 
   return (
     <ThemeProvider theme={theme}>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Disabling</DialogTitle>
+        <DialogTitle>{isDisabled ? "Enabling" : "Disabling"}</DialogTitle>
         <DialogContent sx={{ m: 5, overflow: "hidden" }}>
           <DialogContentText sx={{ marginBottom: 0 }}>
-            Can be enabled later on.
+            Can be switched later.
           </DialogContentText>
           <DialogContentText sx={{ marginBottom: 5 }}>
             Enter post ID: {postID}
@@ -97,9 +107,9 @@ export default function DisablePost({
           <Button
             sx={{ letterSpacing: 1, fontWeight: 400 }}
             onClick={handleDisable}
-            disabled={postIDValue !== postID}
+            disabled={postIDValue !== postID || disabling}
           >
-            Disable
+            {isDisabled ? "Enable" : "Disable"}
           </Button>
         </DialogActions>
       </Dialog>
