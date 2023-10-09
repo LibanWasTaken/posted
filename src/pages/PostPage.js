@@ -33,6 +33,8 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import Tooltip from "@mui/material/Tooltip";
+import Snackbar from "@mui/material/Snackbar";
+import Switch from "@mui/material/Switch";
 
 import {
   doc,
@@ -96,30 +98,35 @@ const OwnPostPage = () => {
   const { id } = useParams();
   const [postData, setPostData] = useState();
   const [validUser, setValidUser] = useState(false);
+  const [inValidPost, setInValidPost] = useState(false);
   const [loading2, setLoading2] = useState(true);
   const [saveDisabled, setSaveDisabled] = useState(true);
   const [editDisabled, setEditDisabled] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [tabValue, setTabValue] = useState(0);
+  const [updatedObj, setUpdatedObj] = useState({});
+  const [scheduleValue, setScheduleValue] = useState("One Time");
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
-  function changeValueOfThis(key) {
-    // const propertyName = key;
-    // return {
-    //   value: userInfo[propertyName] || "",
-    //   onChange: (event) => updateInfo(key, event.target.value),
-    // };
-  }
 
-  const getUserDoc = async (uid, postID) => {
+  const handleScheduleValueChange = (event) => {
+    setScheduleValue(event.target.value);
+    console.log(event.target.value);
+  };
+
+  const verifyUserAndGetPost = async (uid, postID) => {
     try {
       const docRef = doc(db, "posts", postID);
-
       const docSnap = await getDoc(docRef);
       const postDataReceived = docSnap.data();
       console.log(postDataReceived);
-      if (uid === postDataReceived.user) {
+      if (postDataReceived == undefined) {
+        setInValidPost(true);
+        setValidUser(false);
+        setLoading2(false);
+      } else if (uid === postDataReceived.user) {
         setValidUser(true);
         setPostData(postDataReceived);
         setLoading2(false);
@@ -134,38 +141,102 @@ const OwnPostPage = () => {
 
   useEffect(() => {
     if (currentUser) {
-      getUserDoc(currentUser.uid, id);
+      verifyUserAndGetPost(currentUser.uid, id);
     }
-  }, [currentUser]);
+    if (!loading && !currentUser) {
+      setValidUser(false);
+      setLoading2(false);
+    }
+  }, [currentUser, loading]);
+
+  async function updateUserData() {
+    setSaving(true);
+    try {
+      const postRef = doc(db, "posts", id);
+      await updateDoc(postRef, updatedObj);
+      console.log("Document successfully updated");
+      setEditDisabled(false);
+      setSaving(false);
+    } catch (error) {
+      console.error("Error updating document: ", error);
+      setSaving(false);
+    }
+  }
+
+  const updateValueOf = (fieldName) => (event) => {
+    const value = event.target.value;
+    setUpdatedObj((prevObj) => ({
+      ...prevObj,
+      [fieldName]: value,
+    }));
+    saveDisabled && setSaveDisabled(false);
+  };
+
+  function handleSave() {
+    if (!saveDisabled) {
+      console.log(updatedObj);
+      // updateUserData();
+      setSaveDisabled(true);
+    }
+  }
+
+  function handleCancel() {
+    if (!editDisabled) {
+      console.log("disabled");
+    } else {
+      console.log("uncomment");
+      setSaveDisabled(true);
+      setEditDisabled(false);
+    }
+  }
+  function handleEdit() {
+    if (editDisabled) {
+      console.log("disabled");
+    } else {
+      console.log("nothing yet");
+      setEditDisabled(true);
+    }
+  }
+
+  function FinalButtons() {
+    return (
+      <div className="buttons">
+        <button
+          className={`classicBtn ${saving && "loadingClassicBtn"} ${
+            saveDisabled && "disabledClassicBtn"
+          }`}
+          onClick={handleSave}
+        >
+          Submit
+        </button>
+        <button
+          className={`classicBtn ${!editDisabled && "disabledClassicBtn"}`}
+          onClick={handleCancel}
+        >
+          Cancel
+        </button>
+        <button
+          className={`classicBtn ${editDisabled && "disabledClassicBtn"}`}
+          onClick={handleEdit}
+        >
+          Edit Info
+        </button>
+      </div>
+    );
+  }
 
   const [diaryOpenMUI, setDiaryOpenMUI] = useState(false);
   const [linkAdderOpen, setLinkAdderOpen] = useState(false);
   const [deletePostOpen, setDeletePostOpen] = useState(false);
   const [disablePostOpen, setDisablePostOpen] = useState(false);
-  const handleLinkAdderOpen = () => {
-    setLinkAdderOpen(true);
-  };
-  const handleLinkAdderClose = () => {
-    setLinkAdderOpen(false);
-  };
-  const handleDiaryCloseMUI = () => {
-    setDiaryOpenMUI(false);
-  };
-  const handleDiaryOpenMUI = () => {
-    setDiaryOpenMUI(true);
-  };
-  const handleDeletePostOpen = () => {
-    setDeletePostOpen(true);
-  };
-  const handleDeletePostClose = () => {
-    setDeletePostOpen(false);
-  };
-  const handleDisablePostOpen = () => {
-    setDisablePostOpen(true);
-  };
-  const handleDisablePostClose = () => {
-    setDisablePostOpen(false);
-  };
+  const handleLinkAdderOpen = () => setLinkAdderOpen(true);
+  const handleLinkAdderClose = () => setLinkAdderOpen(false);
+  const handleDiaryCloseMUI = () => setDiaryOpenMUI(false);
+  const handleDiaryOpenMUI = () => setDiaryOpenMUI(true);
+  const handleDeletePostOpen = () => setDeletePostOpen(true);
+  const handleDeletePostClose = () => setDeletePostOpen(false);
+  const handleDisablePostOpen = () => setDisablePostOpen(true);
+  const handleDisablePostClose = () => setDisablePostOpen(false);
 
   return (
     <div
@@ -244,8 +315,8 @@ const OwnPostPage = () => {
                       variant="outlined"
                       id="outlined-controlled"
                       type="email"
-                      required
-                      {...changeValueOfThis("mail1")}
+                      defaultValue={postData.mail1 || ""}
+                      onChange={updateValueOf("mail1")}
                     />
 
                     <TextField
@@ -254,6 +325,8 @@ const OwnPostPage = () => {
                       label="Short Message"
                       inputProps={{ maxLength: 100 }}
                       variant="standard"
+                      defaultValue={postData.mail1Msg || ""}
+                      onChange={updateValueOf("mail1Msg")}
                     />
                   </Box>
                   <Box>
@@ -263,7 +336,8 @@ const OwnPostPage = () => {
                       label="Mail 2"
                       variant="outlined"
                       type="email"
-                      // {...changeValueOfThis("mail2")}
+                      defaultValue={postData.mail2 || ""}
+                      onChange={updateValueOf("mail2")}
                     />
 
                     <TextField
@@ -272,6 +346,8 @@ const OwnPostPage = () => {
                       label="Short Message"
                       inputProps={{ maxLength: 100 }}
                       variant="standard"
+                      defaultValue={postData.mail2Msg || ""}
+                      onChange={updateValueOf("mail2Msg")}
                     />
                   </Box>
                   <Box>
@@ -282,7 +358,6 @@ const OwnPostPage = () => {
                       variant="outlined"
                       type="email"
                       defaultValue="blabla@gmial.com"
-                      // {...changeValueOfThis("mail2")}
                     />
 
                     <TextField
@@ -294,55 +369,30 @@ const OwnPostPage = () => {
                       defaultValue="Posting (post ID): Uj3Klev3JDCH74u73Rkf"
                     />
                   </Box>
+                  <Tooltip
+                    title="Public: The Post will be publicly available after release, even through the users page. Private: The Post will only be accessible through the link or id (Provided in the email)."
+                    placement="right"
+                    arrow
+                  >
+                    <FormControlLabel
+                      sx={{ marginTop: 2 }}
+                      disabled={!editDisabled}
+                      value="start"
+                      control={<Switch />}
+                      label="Public"
+                      labelPlacement="start"
+                      onChange={(event) => {
+                        console.log(event.target.checked);
+                        setUpdatedObj((prevObj) => ({
+                          ...prevObj,
+                          public: event.target.checked,
+                        }));
+                        saveDisabled && setSaveDisabled(false);
+                      }}
+                    />
+                  </Tooltip>
                 </Box>
-                <div className="buttons">
-                  <button
-                    className={`classicBtn ${
-                      saveDisabled && "disabledClassicBtn"
-                    }`}
-                    onClick={() => {
-                      if (saveDisabled) {
-                        console.log("disabled");
-                      } else {
-                        // updateUserDetails();
-                        console.log("updated");
-                      }
-                    }}
-                  >
-                    Submit
-                  </button>
-                  <button
-                    className={`classicBtn ${
-                      !editDisabled && "disabledClassicBtn"
-                    }`}
-                    onClick={() => {
-                      if (!editDisabled) {
-                        console.log("disabled");
-                      } else {
-                        console.log("uncomment");
-                        setSaveDisabled(true);
-                        setEditDisabled(false);
-                      }
-                    }}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    className={`classicBtn ${
-                      editDisabled && "disabledClassicBtn"
-                    }`}
-                    onClick={() => {
-                      if (editDisabled) {
-                        console.log("disabled");
-                      } else {
-                        console.log("nothing yet");
-                        setEditDisabled(true);
-                      }
-                    }}
-                  >
-                    Edit Info
-                  </button>
-                </div>
+                <FinalButtons />
               </CustomTabPanel>
             </div>
 
@@ -358,29 +408,14 @@ const OwnPostPage = () => {
                     sx={{ marginBottom: 5 }}
                     disabled={!editDisabled}
                   >
-                    <FormLabel id="demo-controlled-radio-buttons-group">
-                      Schedule
-                    </FormLabel>
+                    <FormLabel>Schedule</FormLabel>
                     <RadioGroup
-                      defaultValue="Recurring"
+                      defaultValue="One Time"
                       row
-                      aria-labelledby="demo-controlled-radio-buttons-group"
                       name="row-radio-buttons-group"
+                      value={scheduleValue}
+                      onChange={handleScheduleValueChange}
                     >
-                      <Tooltip
-                        title="The
-                      Post will be released at specified intervals unless
-                      intervened, it can be delayed for a defined time period or
-                      disabled."
-                        placement="top"
-                        arrow
-                      >
-                        <FormControlLabel
-                          value="Recurring"
-                          control={<Radio />}
-                          label="Recurring"
-                        />
-                      </Tooltip>
                       <Tooltip
                         title="The
                         Post will be released at specified date, it cannot be
@@ -394,114 +429,305 @@ const OwnPostPage = () => {
                           label="One Time"
                         />
                       </Tooltip>
+                      <Tooltip
+                        title="The
+                        Post will be released at specified intervals unless
+                        intervened, it can be delayed for a defined time period or
+                        disabled."
+                        placement="top"
+                        arrow
+                      >
+                        <FormControlLabel
+                          value="Recurring"
+                          control={<Radio />}
+                          label="Recurring"
+                        />
+                      </Tooltip>
                     </RadioGroup>
                   </FormControl>
-                  <Box>
-                    <FormControl
-                      sx={{ marginBottom: 5 }}
-                      disabled={!editDisabled}
-                    >
-                      <FormLabel
+                  {scheduleValue == "One Time" ? (
+                    <Box>
+                      <DatePicker
+                        label="On the"
+                        disabled={!editDisabled}
+                        // sx={{ m: 1 }}
+                        // defaultValue={dayjs("2003-07-03")}
+                        defaultValue={dayjs(postData.releaseDate) || null}
                         helperText="12:01 am (UTC)"
-                        id="demo-controlled-radio-buttons-group"
+                      />
+                    </Box>
+                  ) : (
+                    <Box>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "row",
+                          alignItems: "center",
+                          gap: 2,
+                          marginBottom: 3,
+                        }}
                       >
-                        Attempt Post Every
-                      </FormLabel>
-                      <RadioGroup
-                        defaultValue="Month"
-                        row
-                        aria-labelledby="demo-controlled-radio-buttons-group"
-                        name="row-radio-buttons-group"
+                        <Typography variant="body1">Attempt post</Typography>
+                        <Autocomplete
+                          disabled={!editDisabled}
+                          id="post-date"
+                          sx={{ width: 150 }}
+                          options={[
+                            {
+                              label: "1st",
+                              value: "1",
+                            },
+                            {
+                              label: "2nd",
+                              value: "2",
+                            },
+                            {
+                              label: "3rd",
+                              value: "3",
+                            },
+                            {
+                              label: "4th",
+                              value: "4",
+                            },
+                            {
+                              label: "5th",
+                              value: "5",
+                            },
+                            {
+                              label: "6th",
+                              value: "6",
+                            },
+                            {
+                              label: "7th",
+                              value: "7",
+                            },
+                            {
+                              label: "8th",
+                              value: "8",
+                            },
+                            {
+                              label: "9th",
+                              value: "9",
+                            },
+                            {
+                              label: "10th",
+                              value: "10",
+                            },
+                            {
+                              label: "11th",
+                              value: "11",
+                            },
+                            {
+                              label: "12th",
+                              value: "12",
+                            },
+                            {
+                              label: "13th",
+                              value: "13",
+                            },
+                            {
+                              label: "14th",
+                              value: "14",
+                            },
+                            {
+                              label: "15th",
+                              value: "15",
+                            },
+                            {
+                              label: "16th",
+                              value: "16",
+                            },
+                            {
+                              label: "17th",
+                              value: "17",
+                            },
+                            {
+                              label: "18th",
+                              value: "18",
+                            },
+                            {
+                              label: "19th",
+                              value: "19",
+                            },
+                            {
+                              label: "20th",
+                              value: "20",
+                            },
+                            {
+                              label: "21st",
+                              value: "21",
+                            },
+                            {
+                              label: "22nd",
+                              value: "22",
+                            },
+                            {
+                              label: "23rd",
+                              value: "23",
+                            },
+                            {
+                              label: "24th",
+                              value: "24",
+                            },
+                            {
+                              label: "25th",
+                              value: "25",
+                            },
+                            {
+                              label: "26th",
+                              value: "26",
+                            },
+                            {
+                              label: "27th",
+                              value: "27",
+                            },
+                            {
+                              label: "28th/last",
+                              value: "28",
+                            },
+                            {
+                              label: "29th/last",
+                              value: "29",
+                            },
+                            {
+                              label: "30th/last",
+                              value: "30",
+                            },
+                            {
+                              label: "31st/last",
+                              value: "31",
+                            },
+                            {
+                              label: "last",
+                              value: "31",
+                            },
+                          ]}
+                          // autoHighlight
+                          // defaultValue={{
+                          //   label: "month",
+                          //   value: "month",
+                          // }}
+                          getOptionLabel={(option) => option.label}
+                          renderOption={(props, option) => (
+                            <li {...props}>{option.label}</li>
+                          )}
+                          renderInput={(params) => (
+                            <TextField
+                              helperText="12:01 am (UTC)"
+                              variant="standard"
+                              {...params}
+                              // sx={{ m: 1 }}
+                              label="On the"
+                              inputProps={{
+                                ...params.inputProps,
+                                autoComplete: "new-password",
+                              }}
+                            />
+                          )}
+                        />
+                        <Typography variant="body1">
+                          day of every
+                          <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            // label="Age"
+                            // onChange={handleChange}
+                            sx={{ width: "10ch", marginLeft: 2 }}
+                            defaultValue={"Month"}
+                          >
+                            <MenuItem value={"Week"}>Week</MenuItem>
+                            <MenuItem value={"Month"}>Month</MenuItem>
+                            <MenuItem value={"Year"}>Year</MenuItem>
+                          </Select>
+                        </Typography>
+                      </Box>
+
+                      <FormControl
+                        sx={{ marginBottom: 5 }}
+                        disabled={!editDisabled}
                       >
-                        <FormControlLabel
-                          value="Year"
-                          control={<Radio />}
-                          label="Year"
-                        />
-                        <FormControlLabel
-                          value="Month"
-                          control={<Radio />}
-                          label="Month"
-                        />
-                        <FormControlLabel
-                          value="Week"
-                          disabled
-                          control={<Radio />}
-                          label="Week"
-                        />
-                        <FormControlLabel
-                          value="Day"
-                          disabled
-                          control={<Radio />}
-                          label="Day"
-                        />
-                      </RadioGroup>
-                    </FormControl>
-                  </Box>
-                  <p>
-                    offer presets: first day of every year, month, week, 5/3
-                    days
-                  </p>
-                  <p>offer presets: warn before a week, a day,</p>
-                  <Box>
-                    <DatePicker
-                      label="On the"
-                      disabled={!editDisabled}
-                      // sx={{ m: 1 }}
-                      defaultValue={dayjs("2003-07-03")}
-                      helperText="12:01 am (UTC)"
-                    />
-                  </Box>
-                  <div className="buttons">
-                    <button
-                      className={`classicBtn ${
-                        saveDisabled && "disabledClassicBtn"
-                      }`}
-                      onClick={() => {
-                        if (saveDisabled) {
-                          console.log("disabled");
-                        } else {
-                          // updateUserDetails();
-                          console.log("updated");
-                        }
-                      }}
-                    >
-                      Submit
-                    </button>
-                    <button
-                      className={`classicBtn ${
-                        !editDisabled && "disabledClassicBtn"
-                      }`}
-                      onClick={() => {
-                        if (!editDisabled) {
-                          console.log("disabled");
-                        } else {
-                          console.log("uncomment");
-                          setSaveDisabled(true);
-                          setEditDisabled(false);
-                        }
-                      }}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      className={`classicBtn ${
-                        editDisabled && "disabledClassicBtn"
-                      }`}
-                      onClick={() => {
-                        if (editDisabled) {
-                          console.log("disabled");
-                        } else {
-                          console.log("nothing yet");
-                          setEditDisabled(true);
-                        }
-                      }}
-                    >
-                      Edit Info
-                    </button>
-                  </div>
-                  {/* <p>default - How long should delays - 1month</p> */}
-                  {/* <p>less than month = money, more = free</p> */}
+                        {/* <FormLabel helperText="12:01 am (UTC)"> */}
+                        <FormLabel>Delay Post by a</FormLabel>
+                        <RadioGroup
+                          defaultValue="Month"
+                          row
+                          aria-labelledby="demo-controlled-radio-buttons-group"
+                          name="row-radio-buttons-group"
+                        >
+                          <FormControlLabel
+                            value="Year"
+                            control={<Radio />}
+                            label="Year"
+                          />
+                          <FormControlLabel
+                            value="Month"
+                            control={<Radio />}
+                            label="Month"
+                          />
+                          <FormControlLabel
+                            value="Week"
+                            disabled
+                            control={<Radio />}
+                            label="Week"
+                          />
+                          <FormControlLabel
+                            value="Day"
+                            disabled
+                            control={<Radio />}
+                            label="Day"
+                          />
+                        </RadioGroup>
+                      </FormControl>
+                      <Box></Box>
+                      <FormControl
+                        sx={{ marginBottom: 5 }}
+                        disabled={!editDisabled}
+                      >
+                        {/* <FormLabel helperText="12:01 am (UTC)"> */}
+                        <FormLabel>Warn before</FormLabel>
+                        <RadioGroup
+                          defaultValue="Month"
+                          row
+                          aria-labelledby="demo-controlled-radio-buttons-group"
+                          name="row-radio-buttons-group"
+                        >
+                          <FormControlLabel
+                            value="1"
+                            control={<Radio />}
+                            label="A Day"
+                          />
+                          <FormControlLabel
+                            value="3"
+                            control={<Radio />}
+                            label="3 Days"
+                          />
+                          <FormControlLabel
+                            value="5"
+                            control={<Radio />}
+                            label="5 Days"
+                          />
+                          <FormControlLabel
+                            value="7"
+                            control={<Radio />}
+                            label="A Week"
+                          />
+                          <FormControlLabel
+                            value="Month"
+                            control={<Radio />}
+                            label="A Month"
+                          />
+                          <FormControlLabel
+                            value="Year"
+                            control={<Radio />}
+                            label="A Year"
+                            disabled
+                          />
+                        </RadioGroup>
+                      </FormControl>
+                    </Box>
+                  )}
+
+                  <FinalButtons />
                 </Box>
               </CustomTabPanel>
             </div>
@@ -558,60 +784,14 @@ const OwnPostPage = () => {
 
                   {/* <Typography variant="body1">Enter post ID: {id}</Typography> */}
                 </Box>
-                <div className="buttons">
-                  <button
-                    className={`classicBtn ${
-                      saveDisabled && "disabledClassicBtn"
-                    }`}
-                    onClick={() => {
-                      if (saveDisabled) {
-                        console.log("disabled");
-                      } else {
-                        // updateUserDetails();
-                        console.log("updated");
-                      }
-                    }}
-                  >
-                    Submit
-                  </button>
-                  <button
-                    className={`classicBtn ${
-                      !editDisabled && "disabledClassicBtn"
-                    }`}
-                    onClick={() => {
-                      if (!editDisabled) {
-                        console.log("disabled");
-                      } else {
-                        console.log("uncomment");
-                        setSaveDisabled(true);
-                        setEditDisabled(false);
-                      }
-                    }}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    className={`classicBtn ${
-                      editDisabled && "disabledClassicBtn"
-                    }`}
-                    onClick={() => {
-                      if (editDisabled) {
-                        console.log("disabled");
-                      } else {
-                        setEditDisabled(true);
-                      }
-                    }}
-                  >
-                    Edit Info
-                  </button>
-                </div>
+                <FinalButtons />
               </CustomTabPanel>
             </div>
-            {/* <LinkAdder
-            open={linkAdderOpen}
-            handleClose={handleLinkAdderClose}
-            info={id}
-          /> */}
+            <LinkAdder
+              open={linkAdderOpen}
+              handleClose={handleLinkAdderClose}
+              info={id}
+            />
             <DiaryMui
               open={diaryOpenMUI}
               handleClose={handleDiaryCloseMUI}
@@ -621,7 +801,14 @@ const OwnPostPage = () => {
         </Wrapper>
       ) : (
         <Content>
-          <h1>Invalid User, beep boop</h1>
+          <h1>
+            {inValidPost
+              ? "Post doesn't exist, beep boop"
+              : "Invalid User, beep boop"}
+          </h1>
+          <a href="/">
+            <button className="classicBtn">Go Home</button>
+          </a>
         </Content>
       )}
     </div>
@@ -784,9 +971,11 @@ const Wrapper = styled.main`
 const Content = styled.main`
   display: flex;
   justify-content: center;
-  padding-top: 5rem;
+  align-items: center;
+  gap: 2rem;
+  flex-direction: column;
   background-color: whitesmoke;
-  height: 100vh;
+  height: 60vh;
   overflow: hidden;
 `;
 export default OwnPostPage;

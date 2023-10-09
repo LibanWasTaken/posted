@@ -3,9 +3,9 @@ import styled from "styled-components";
 import ScreenTimeSVG from "../assets/undraw_screenTimeEdited.svg";
 import { Link } from "react-router-dom";
 import { Spinner2 } from "../components/Spinner";
-// import SliderComponent from "../components/Slider";
 import Waves from "../components/Waves";
 import PostAdder from "../components/PostAdder";
+import dayjs from "dayjs";
 
 import {
   addDoc,
@@ -20,6 +20,7 @@ import { db as FSdb } from "../services/firebase-config";
 import { useUserContext } from "../context/UserContext";
 
 function generatePostLinks(posts) {
+  // console.log();
   return posts.map((post) => (
     <Link
       key={post.id} // Make sure to provide a unique key for each mapped element
@@ -28,7 +29,9 @@ function generatePostLinks(posts) {
     >
       <div className="post">
         <p className="heading">{post.title}</p>
-        <p className="timing">14:02:52</p>
+        <p className="timing">
+          {dayjs(post.releaseDate).format("DD MMM, YYYY")}
+        </p>
       </div>
     </Link>
   ));
@@ -136,51 +139,54 @@ const OwnPage = () => {
   }, [currentUser]);
 
   return (
-    <Wrapper>
-      <span className="stylishBg">
-        <div></div>
-        {/* <img src={ReadingSVG} alt="ExamsSVG" className="ExamsSVG" /> */}
-        <img
-          src={ScreenTimeSVG}
-          alt="ScreenTimeSVG"
-          className="ScreenTimeSVG"
-        />
-      </span>
-      {userPosts ? (
-        <section className="postSection">
-          <p className="header">Your Posts</p>
-          <div className="posts">
-            {generatePostLinks(userPosts)}
-
-            <div className="post" onClick={OpenPostAdder}>
-              <span className="material-symbols-outlined addPostBtn">add</span>
-              <p>
-                Add Post <br /> {userPosts.length}/3
-              </p>
+    <div style={{ background: "whitesmoke", height: "975px" }}>
+      <Wrapper>
+        <span className="stylishBg">
+          <div></div>
+          {/* <img src={ReadingSVG} alt="ExamsSVG" className="ExamsSVG" /> */}
+          <img
+            src={ScreenTimeSVG}
+            alt="ScreenTimeSVG"
+            className="ScreenTimeSVG"
+          />
+        </span>
+        {userPosts ? (
+          <section className="postSection">
+            <p className="header">Your Posts</p>
+            <div className="posts">
+              {generatePostLinks(userPosts)}
+              <div className="post" onClick={OpenPostAdder}>
+                <span className="material-symbols-outlined addPostBtn">
+                  add
+                </span>
+                <p>
+                  Add Post <br /> {userPosts.length}/3
+                </p>
+              </div>
+              <PostAdder
+                open={postAdderState}
+                handleClose={ClosePostAdder}
+                info={{ uid: currentUser.uid, posts: userPosts }}
+              />
             </div>
-            <PostAdder
-              open={postAdderState}
-              handleClose={ClosePostAdder}
-              info={{ uid: currentUser.uid, posts: userPosts }}
-            />
-          </div>
-        </section>
-      ) : (
-        <section className="postSection loading">
-          {/* <p className="header">Loading...</p> */}
-          <Spinner2 />
-        </section>
-      )}
+          </section>
+        ) : (
+          <section className="postSection loading">
+            {/* <p className="header">Loading...</p> */}
+            <Spinner2 />
+          </section>
+        )}
 
-      {/* <h1 className="randomAssText">
+        {/* <h1 className="randomAssText">
         Lorem ipsum dolor sit amet,
         <br /> Jesnly fomer.
       </h1> */}
-      {/* <SliderComponent heading="Example Slider" slides={slideData} /> */}
-      <div className="waves">
-        <Waves />
-      </div>
-    </Wrapper>
+        {/* <SliderComponent heading="Example Slider" slides={slideData} /> */}
+        {/* <div className="waves">
+          <Waves />
+        </div> */}
+      </Wrapper>
+    </div>
   );
 };
 
@@ -192,7 +198,6 @@ const Wrapper = styled.main`
   /* margin-top: 2rem; */
   color: white;
   position: relative;
-
   .postSection {
     text-align: left;
     z-index: 1;
@@ -210,7 +215,8 @@ const Wrapper = styled.main`
   .stylishBg {
     background-color: black;
     position: absolute;
-    width: 100vw;
+    width: 100%;
+    /* overflow: hidden; */
     height: 20rem;
     left: 0;
     top: 0;

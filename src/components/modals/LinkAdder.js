@@ -11,8 +11,9 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-
 import IconButton from "@mui/material/IconButton";
+
+import { Spinner1 } from "../Spinner";
 
 import {
   doc,
@@ -62,24 +63,25 @@ const data = [
 export default function LinkAdder({ open, handleClose, info }) {
   const [urlValue, setUrlValue] = useState("");
   const [titleValue, setTitleValue] = useState("");
-  const [links, setLinks] = useState("");
+  const [links, setLinks] = useState();
+  const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
     try {
       const docRef = doc(db, "posts", info);
       const docSnap = await getDoc(docRef);
       const userInfo = docSnap.data();
-      console.log(userInfo);
+      // console.log(userInfo);
       setLinks(userInfo.links);
-      console.log(userInfo.links);
+      setLoading(false);
+      // console.log(userInfo.links);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
 
   useEffect(() => {
-    if (info) {
-      // && open, add loading
+    if (info && open) {
       fetchData();
     }
   }, [info, open]);
@@ -195,10 +197,11 @@ export default function LinkAdder({ open, handleClose, info }) {
           <DialogContentText sx={{ marginBottom: 1 }}>
             Add sites like Drive, Dropbox, Mega, iCloud, OneDrive, Docs, etc:
           </DialogContentText>
-          <List>
-            <ListItemComponents items={data} />
-            {links && <ListItemComponents items={links} />}
-          </List>
+
+          {/* {!links && <Spinner1 />} */}
+          {loading && <Spinner1 />}
+          <List>{links && <ListItemComponents items={links} />}</List>
+
           <div>
             <TextField
               sx={{ m: 1 }}

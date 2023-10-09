@@ -109,6 +109,8 @@ const SettingsPage = () => {
     setTabValue(newValue);
   };
 
+  const [updatedObj, setUpdatedObj] = useState({});
+
   const db = getDatabase();
 
   // useEffect(() => {
@@ -162,21 +164,34 @@ const SettingsPage = () => {
   // };
 
   function updateUserDetails() {
-    const updates = {};
-    updates["/users/unposted/" + currentUser.uid + "/info/"] = userInfo;
-    update(ref(db), updates);
-    console.log("updated");
+    // const updates = {};
+    // updates["/users/unposted/" + currentUser.uid + "/info/"] = userInfo;
+    // update(ref(db), updates);
+    // console.log("updated");
+
+    console.log(updatedObj);
+
     setSaveDisabled(true);
     setEditDisabled(false);
   }
 
-  function changeValueOfThis(key) {
-    const propertyName = key;
-    return {
-      value: userInfo[propertyName] || "",
-      onChange: (event) => updateInfo(key, event.target.value),
-    };
-  }
+  // function changeValueOfThis(key) {
+  //   const propertyName = key;
+  //   return {
+  //     value: userInfo[propertyName] || "",
+  //     onChange: (event) => updateInfo(key, event.target.value),
+  //   };
+  // }
+
+  const changeValueOfThis = (fieldName) => (event) => {
+    const value = event.target.value;
+    setUpdatedObj((prevObj) => ({
+      ...prevObj,
+      [fieldName]: value,
+    }));
+    console.log(updatedObj);
+    saveDisabled && setSaveDisabled(false);
+  };
 
   function updateInfo(key, info) {
     const propertyName = key;
@@ -185,7 +200,7 @@ const SettingsPage = () => {
       ...userInfo,
       [propertyName]: info,
     };
-    setUserInfo(updatedUserInfo);
+    // setUserInfo(updatedUserInfo);
     setSaveDisabled(false);
   }
 
@@ -222,7 +237,9 @@ const SettingsPage = () => {
                         id="outlined-controlled"
                         type="email"
                         required
-                        {...changeValueOfThis("mail1")}
+                        // {...changeValueOfThis("mail1")}
+                        // defaultValue={}
+                        onChange={changeValueOfThis("mail1")}
                       />
 
                       <TextField
@@ -240,7 +257,9 @@ const SettingsPage = () => {
                         label="Mail 2"
                         variant="outlined"
                         type="email"
-                        {...changeValueOfThis("mail2")}
+                        onChange={changeValueOfThis("mail2")}
+
+                        // {...changeValueOfThis("mail2")}
                       />
 
                       <TextField

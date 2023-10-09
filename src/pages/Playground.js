@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-
+import SimpleSnackbar from "./../components/Snackbar";
 import {
   collection,
   getDocs,
@@ -215,9 +215,12 @@ const Playground = () => {
     // addPostToUserDoc("samimami  ", "L1uljY8hgdZ9wnLovjJJuCr2sN63");
   }, []);
 
+  const [open, setOpen] = useState(false);
+
   return (
     <Wrapper>
       <h1>Playground</h1>
+      <SimpleSnackbar open={open} setOpen={setOpen} />
       <button onClick={addDataToFS}>Add Data</button>
       <button onClick={setDataToFS}>set Data</button>
       <button onClick={updateDataToFS}>Update Data</button>

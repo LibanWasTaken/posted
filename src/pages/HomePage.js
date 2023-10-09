@@ -90,9 +90,9 @@ const HomePage = () => {
       <section className="section4">
         <Parallax
           opacity={[0, 1]}
-          translateX={["-50%", 0]}
+          translateX={["-40%", 0]}
           endScroll={3000}
-          startScroll={2300}
+          startScroll={2200}
           easing="easeInOut"
         >
           <h1>SET</h1>
@@ -101,9 +101,9 @@ const HomePage = () => {
       <section className="section5">
         <Parallax
           opacity={[0, 1]}
-          translateX={["50%", 0]}
+          translateX={["40%", 0]}
           endScroll={3900}
-          startScroll={3300}
+          startScroll={3100}
           easing="easeInOut"
         >
           <h1>SEND</h1>
