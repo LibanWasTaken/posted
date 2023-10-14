@@ -1,10 +1,6 @@
 import { React, useState, useEffect } from "react";
 import styled from "styled-components";
 import Sidebar from "./Sidebar";
-
-// import { VscAccount } from "react-icons/vsc";
-// import { AiOutlineShopping } from "react-icons/ai";
-// import logoPng from "../assets/logo.png";
 // import Badge from "@mui/material/Badge";
 
 const Navbar = () => {
@@ -24,7 +20,6 @@ const Navbar = () => {
     <Wrapper>
       <nav>
         <a href="/" className="logo">
-          {/* <img className="logoPng" src={logoPng} alt="" /> */}
           POSTED
         </a>
         {windowWidth < 930 ? (
@@ -47,14 +42,6 @@ const Navbar = () => {
                   Others
                 </a>
               </li>
-
-              {/* {isAdmin && (
-                    <li>
-                      <a className="navLinks" href="/admin">
-                        Admin
-                      </a>
-                    </li>
-                  )} */}
             </ul>
           </div>
         )}
@@ -104,8 +91,10 @@ const Wrapper = styled.section`
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+  }
+
+  nav:hover {
     border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-    /* box-shadow: rgba(149, 157, 165, 0.1) 0px 1px 24px; */
   }
 
   .logo {

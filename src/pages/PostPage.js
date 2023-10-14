@@ -12,6 +12,8 @@ import DeletePost from "../components/modals/DeletePost";
 import DisablePost from "../components/modals/DisablePost";
 import dayjs from "dayjs";
 
+import { DATE_OPTIONS } from "../context/UserOptions";
+
 // mui
 import PropTypes from "prop-types";
 import Tabs from "@mui/material/Tabs";
@@ -20,13 +22,10 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import Autocomplete from "@mui/material/Autocomplete";
-
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -35,6 +34,10 @@ import FormLabel from "@mui/material/FormLabel";
 import Tooltip from "@mui/material/Tooltip";
 import Snackbar from "@mui/material/Snackbar";
 import Switch from "@mui/material/Switch";
+
+// mui x
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { MobileTimePicker } from "@mui/x-date-pickers/MobileTimePicker";
 
 import {
   doc,
@@ -102,18 +105,20 @@ const OwnPostPage = () => {
   const [loading2, setLoading2] = useState(true);
   const [saveDisabled, setSaveDisabled] = useState(true);
   const [editDisabled, setEditDisabled] = useState(false);
+  // const [changeOccurred, setChangeOccurred] = useState(false);
   const [saving, setSaving] = useState(false);
   const [tabValue, setTabValue] = useState(0);
   const [updatedObj, setUpdatedObj] = useState({});
   const [scheduleValue, setScheduleValue] = useState("One Time");
+  const [scheduleTypeValue, setScheduleTypeValue] = useState("Specified");
+  const [datesOptions, setDatesOptions] = useState(DATE_OPTIONS);
+  const [preset, setPreset] = useState({
+    timePeriod: "Month",
+    day: datesOptions[0].value,
+  });
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
-  };
-
-  const handleScheduleValueChange = (event) => {
-    setScheduleValue(event.target.value);
-    console.log(event.target.value);
   };
 
   const verifyUserAndGetPost = async (uid, postID) => {
@@ -175,7 +180,9 @@ const OwnPostPage = () => {
   function handleSave() {
     if (!saveDisabled) {
       console.log(updatedObj);
-      // updateUserData();
+      console.log(preset);
+
+      updateUserData();
       setSaveDisabled(true);
     }
   }
@@ -184,7 +191,6 @@ const OwnPostPage = () => {
     if (!editDisabled) {
       console.log("disabled");
     } else {
-      console.log("uncomment");
       setSaveDisabled(true);
       setEditDisabled(false);
     }
@@ -198,6 +204,52 @@ const OwnPostPage = () => {
     }
   }
 
+  // Timings
+  useEffect(() => {
+    if (postData) {
+      postData.scheduleType && setScheduleValue(postData.scheduleType);
+      postData.scheduleFormat && setScheduleTypeValue(postData.scheduleFormat);
+      postData.preset && setPreset(postData.preset);
+    }
+  }, [postData]);
+
+  useEffect(() => {
+    if (preset.timePeriod === "Month") {
+      setDatesOptions(DATE_OPTIONS);
+    } else if (preset.timePeriod === "Week") {
+      setDatesOptions(DATE_OPTIONS.slice(0, 7));
+    }
+    if (preset.timePeriod === "Week" && preset.day > 7) {
+      setPreset((prevState) => ({
+        ...prevState,
+        day: datesOptions[6].value,
+      }));
+    }
+    setUpdatedObj((prevObj) => ({
+      ...prevObj,
+      preset,
+    }));
+    console.log(preset.timePeriod, preset.day);
+  }, [preset.timePeriod, preset.day]);
+
+  function DateTimePicker() {
+    return (
+      <Box sx={{ marginBottom: 4 }}>
+        <DatePicker
+          label="On the"
+          disabled={!editDisabled}
+          sx={{ marginRight: 2 }}
+          // defaultValue={dayjs("2003-07-03")}
+          defaultValue={dayjs(postData.releaseDate) || null}
+          helperText="12:01 am (UTC)"
+        />
+        <MobileTimePicker
+          disabled={!editDisabled}
+          defaultValue={dayjs("2022-04-17T00:01")}
+        />
+      </Box>
+    );
+  }
   function FinalButtons() {
     return (
       <div className="buttons">
@@ -410,11 +462,14 @@ const OwnPostPage = () => {
                   >
                     <FormLabel>Schedule</FormLabel>
                     <RadioGroup
-                      defaultValue="One Time"
+                      defaultValue={postData.scheduleType || "One Time"}
                       row
                       name="row-radio-buttons-group"
                       value={scheduleValue}
-                      onChange={handleScheduleValueChange}
+                      onChange={(event) => {
+                        setScheduleValue(event.target.value);
+                        updateValueOf("scheduleType")(event);
+                      }}
                     >
                       <Tooltip
                         title="The
@@ -446,201 +501,109 @@ const OwnPostPage = () => {
                     </RadioGroup>
                   </FormControl>
                   {scheduleValue == "One Time" ? (
-                    <Box>
-                      <DatePicker
-                        label="On the"
-                        disabled={!editDisabled}
-                        // sx={{ m: 1 }}
-                        // defaultValue={dayjs("2003-07-03")}
-                        defaultValue={dayjs(postData.releaseDate) || null}
-                        helperText="12:01 am (UTC)"
-                      />
-                    </Box>
+                    <DateTimePicker />
                   ) : (
                     <Box>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: "row",
-                          alignItems: "center",
-                          gap: 2,
-                          marginBottom: 3,
-                        }}
+                      <FormControl
+                        sx={{ marginBottom: 2 }}
+                        disabled={!editDisabled}
                       >
-                        <Typography variant="body1">Attempt post</Typography>
-                        <Autocomplete
-                          disabled={!editDisabled}
-                          id="post-date"
-                          sx={{ width: 150 }}
-                          options={[
-                            {
-                              label: "1st",
-                              value: "1",
-                            },
-                            {
-                              label: "2nd",
-                              value: "2",
-                            },
-                            {
-                              label: "3rd",
-                              value: "3",
-                            },
-                            {
-                              label: "4th",
-                              value: "4",
-                            },
-                            {
-                              label: "5th",
-                              value: "5",
-                            },
-                            {
-                              label: "6th",
-                              value: "6",
-                            },
-                            {
-                              label: "7th",
-                              value: "7",
-                            },
-                            {
-                              label: "8th",
-                              value: "8",
-                            },
-                            {
-                              label: "9th",
-                              value: "9",
-                            },
-                            {
-                              label: "10th",
-                              value: "10",
-                            },
-                            {
-                              label: "11th",
-                              value: "11",
-                            },
-                            {
-                              label: "12th",
-                              value: "12",
-                            },
-                            {
-                              label: "13th",
-                              value: "13",
-                            },
-                            {
-                              label: "14th",
-                              value: "14",
-                            },
-                            {
-                              label: "15th",
-                              value: "15",
-                            },
-                            {
-                              label: "16th",
-                              value: "16",
-                            },
-                            {
-                              label: "17th",
-                              value: "17",
-                            },
-                            {
-                              label: "18th",
-                              value: "18",
-                            },
-                            {
-                              label: "19th",
-                              value: "19",
-                            },
-                            {
-                              label: "20th",
-                              value: "20",
-                            },
-                            {
-                              label: "21st",
-                              value: "21",
-                            },
-                            {
-                              label: "22nd",
-                              value: "22",
-                            },
-                            {
-                              label: "23rd",
-                              value: "23",
-                            },
-                            {
-                              label: "24th",
-                              value: "24",
-                            },
-                            {
-                              label: "25th",
-                              value: "25",
-                            },
-                            {
-                              label: "26th",
-                              value: "26",
-                            },
-                            {
-                              label: "27th",
-                              value: "27",
-                            },
-                            {
-                              label: "28th/last",
-                              value: "28",
-                            },
-                            {
-                              label: "29th/last",
-                              value: "29",
-                            },
-                            {
-                              label: "30th/last",
-                              value: "30",
-                            },
-                            {
-                              label: "31st/last",
-                              value: "31",
-                            },
-                            {
-                              label: "last",
-                              value: "31",
-                            },
-                          ]}
-                          // autoHighlight
-                          // defaultValue={{
-                          //   label: "month",
-                          //   value: "month",
-                          // }}
-                          getOptionLabel={(option) => option.label}
-                          renderOption={(props, option) => (
-                            <li {...props}>{option.label}</li>
-                          )}
-                          renderInput={(params) => (
-                            <TextField
-                              helperText="12:01 am (UTC)"
+                        <FormLabel>Type</FormLabel>
+                        <RadioGroup
+                          defaultValue={postData.scheduleFormat || "Specified"}
+                          row
+                          name="row-radio-buttons-group"
+                          value={scheduleTypeValue}
+                          onChange={(event) => {
+                            setScheduleTypeValue(event.target.value);
+                            updateValueOf("scheduleFormat")(event);
+                          }}
+                        >
+                          <FormControlLabel
+                            value="Specified"
+                            control={<Radio />}
+                            label="Specified"
+                          />
+                          <FormControlLabel
+                            value="Preset"
+                            control={<Radio />}
+                            label="Preset"
+                          />
+                        </RadioGroup>
+                      </FormControl>
+                      {scheduleTypeValue == "Specified" ? (
+                        <DateTimePicker />
+                      ) : (
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center",
+                            gap: 2,
+                            marginBottom: 3,
+                          }}
+                        >
+                          <Typography variant="body1">
+                            Attempt post every
+                            <Select
                               variant="standard"
-                              {...params}
-                              // sx={{ m: 1 }}
-                              label="On the"
-                              inputProps={{
-                                ...params.inputProps,
-                                autoComplete: "new-password",
+                              labelId="demo-simple-select-label"
+                              id="time-select"
+                              disabled={!editDisabled}
+                              // label="Age"
+                              onChange={(event) => {
+                                console.log(event.target.value);
+                                setPreset((prevState) => ({
+                                  ...prevState,
+                                  timePeriod: event.target.value,
+                                }));
+                                saveDisabled && setSaveDisabled(false);
                               }}
-                            />
-                          )}
-                        />
-                        <Typography variant="body1">
-                          day of every
-                          <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            // label="Age"
-                            // onChange={handleChange}
-                            sx={{ width: "10ch", marginLeft: 2 }}
-                            defaultValue={"Month"}
-                          >
-                            <MenuItem value={"Week"}>Week</MenuItem>
-                            <MenuItem value={"Month"}>Month</MenuItem>
-                            <MenuItem value={"Year"}>Year</MenuItem>
-                          </Select>
-                        </Typography>
-                      </Box>
+                              sx={{ width: "10ch", marginLeft: 2 }}
+                              defaultValue={preset.timePeriod}
+                            >
+                              <MenuItem disabled value={"Day"}>
+                                Day
+                              </MenuItem>
+                              <MenuItem value={"Week"}>Week</MenuItem>
+                              <MenuItem value={"Month"}>Month</MenuItem>
+                              <MenuItem value={"Year"}>Year</MenuItem>
+                            </Select>
+                          </Typography>
+                          <Autocomplete
+                            id="post-date"
+                            disabled={!editDisabled}
+                            options={datesOptions}
+                            defaultValue={
+                              datesOptions[postData.preset.day - 1] ||
+                              datesOptions[0]
+                            }
+                            disableClearable
+                            getOptionLabel={(option) => option.label}
+                            renderOption={(props, option) => (
+                              <li {...props}>{option.label}</li>
+                            )}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                sx={{ width: "15ch" }}
+                                label="On the"
+                                helperText="12:01 am (UTC)"
+                                variant="standard"
+                              />
+                            )}
+                            onChange={(event, newValue) => {
+                              console.log(newValue);
+                              // change preset day value to newValue.value
+                              setPreset((prevState) => ({
+                                ...prevState,
+                                day: newValue.value,
+                              }));
+                            }}
+                          />
+                          <Typography variant="body1">day</Typography>
+                        </Box>
+                      )}
 
                       <FormControl
                         sx={{ marginBottom: 5 }}
@@ -649,8 +612,11 @@ const OwnPostPage = () => {
                         {/* <FormLabel helperText="12:01 am (UTC)"> */}
                         <FormLabel>Delay Post by a</FormLabel>
                         <RadioGroup
-                          defaultValue="Month"
+                          defaultValue={postData.delayDuration || "Month"}
                           row
+                          onChange={(event) => {
+                            updateValueOf("delayDuration")(event);
+                          }}
                           aria-labelledby="demo-controlled-radio-buttons-group"
                           name="row-radio-buttons-group"
                         >
@@ -666,7 +632,6 @@ const OwnPostPage = () => {
                           />
                           <FormControlLabel
                             value="Week"
-                            disabled
                             control={<Radio />}
                             label="Week"
                           />
@@ -686,38 +651,36 @@ const OwnPostPage = () => {
                         {/* <FormLabel helperText="12:01 am (UTC)"> */}
                         <FormLabel>Warn before</FormLabel>
                         <RadioGroup
-                          defaultValue="Month"
+                          defaultValue={postData.warnDuration || 3}
                           row
                           aria-labelledby="demo-controlled-radio-buttons-group"
                           name="row-radio-buttons-group"
+                          onChange={(event) => {
+                            updateValueOf("warnDuration")(event);
+                          }}
                         >
                           <FormControlLabel
-                            value="1"
+                            value={1}
                             control={<Radio />}
                             label="A Day"
                           />
                           <FormControlLabel
-                            value="3"
+                            value={3}
                             control={<Radio />}
                             label="3 Days"
                           />
                           <FormControlLabel
-                            value="5"
-                            control={<Radio />}
-                            label="5 Days"
-                          />
-                          <FormControlLabel
-                            value="7"
+                            value={7}
                             control={<Radio />}
                             label="A Week"
                           />
                           <FormControlLabel
-                            value="Month"
+                            value={30}
                             control={<Radio />}
                             label="A Month"
                           />
                           <FormControlLabel
-                            value="Year"
+                            value={364}
                             control={<Radio />}
                             label="A Year"
                             disabled
@@ -823,10 +786,11 @@ const Wrapper = styled.main`
   align-items: center;
   text-align: center;
   position: relative;
-  /* padding-left: 15vw; */
   padding-left: 290px;
 
   .textEditor {
+    /* width: 80vw; */
+    /* background-color: red; */
   }
 
   .sidebar {
@@ -844,7 +808,8 @@ const Wrapper = styled.main`
       padding: 20rem;
       background: rgb(15, 15, 15);
       position: absolute;
-      bottom: 0;
+      top: 450px;
+
       left: 0;
       transform: rotate(45deg);
     }
@@ -852,7 +817,7 @@ const Wrapper = styled.main`
       padding: 30rem;
       background: rgba(45, 45, 45, 0.5);
       position: absolute;
-      bottom: -550px;
+      top: 550px;
       left: -500px;
       transform: rotate(45deg);
     }

@@ -422,3 +422,130 @@ export const countries = [
   { code: "ZM", label: "Zambia", phone: "260" },
   { code: "ZW", label: "Zimbabwe", phone: "263" },
 ];
+
+export const DATE_OPTIONS = [
+  {
+    label: "1st",
+    value: 1,
+  },
+  {
+    label: "2nd",
+    value: 2,
+  },
+  {
+    label: "3rd",
+    value: 3,
+  },
+  {
+    label: "4th",
+    value: 4,
+  },
+  {
+    label: "5th",
+    value: 5,
+  },
+  {
+    label: "6th",
+    value: 6,
+  },
+  {
+    label: "7th",
+    value: 7,
+  },
+  {
+    label: "8th",
+    value: 8,
+  },
+  {
+    label: "9th",
+    value: 9,
+  },
+  {
+    label: "10th",
+    value: 10,
+  },
+  {
+    label: "11th",
+    value: 11,
+  },
+  {
+    label: "12th",
+    value: 12,
+  },
+  {
+    label: "13th",
+    value: 13,
+  },
+  {
+    label: "14th",
+    value: 14,
+  },
+  {
+    label: "15th",
+    value: 15,
+  },
+  {
+    label: "16th",
+    value: 16,
+  },
+  {
+    label: "17th",
+    value: 17,
+  },
+  {
+    label: "18th",
+    value: 18,
+  },
+  {
+    label: "19th",
+    value: 19,
+  },
+  {
+    label: "20th",
+    value: 20,
+  },
+  {
+    label: "21st",
+    value: 21,
+  },
+  {
+    label: "22nd",
+    value: 22,
+  },
+  {
+    label: "23rd",
+    value: 23,
+  },
+  {
+    label: "24th",
+    value: 24,
+  },
+  {
+    label: "25th",
+    value: 25,
+  },
+  {
+    label: "26th",
+    value: 26,
+  },
+  {
+    label: "27th",
+    value: 27,
+  },
+  {
+    label: "28th/last",
+    value: 28,
+  },
+  {
+    label: "29th/last",
+    value: 29,
+  },
+  {
+    label: "30th/last",
+    value: 30,
+  },
+  {
+    label: "31st/last",
+    value: 31,
+  },
+];

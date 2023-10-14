@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import ScreenTimeSVG from "../assets/undraw_screenTimeEdited.svg";
+import ExamSVG from "../assets/undraw_exams_re_4ios.svg";
 import { Link } from "react-router-dom";
 import { Spinner2 } from "../components/Spinner";
-import Waves from "../components/Waves";
+// import Waves from "../components/Waves";
 import PostAdder from "../components/PostAdder";
 import dayjs from "dayjs";
+
+import { scrollToBottom } from "../functions/functions";
 
 import {
   addDoc,
@@ -84,7 +87,7 @@ const OwnPage = () => {
           id: doc.id,
         }));
         setUserPosts(postsData);
-        // console.log(postsData);
+        scrollToBottom(105);
       }
     );
   }
@@ -136,7 +139,9 @@ const OwnPage = () => {
       // console.log(currentUser);
       getFSData();
     }
-  }, [currentUser]);
+
+    // !loading && !currentUser && scrollToBottom(105);
+  }, [currentUser, loading]);
 
   return (
     <div style={{ background: "whitesmoke", height: "975px" }}>
@@ -172,10 +177,24 @@ const OwnPage = () => {
           </section>
         ) : (
           <section className="postSection loading">
-            {/* <p className="header">Loading...</p> */}
-            <Spinner2 />
+            {!loading && !currentUser ? (
+              <div style={{ textAlign: "center" }}>
+                <h1>Invalid User, Beep Boop</h1>
+                <h4 style={{ letterSpacing: "2px" }}>LOG IN</h4>
+              </div>
+            ) : (
+              <Spinner2 />
+            )}
           </section>
         )}
+        <div className="blabla">
+          <h2>Lorem ipsum dolor sit amet.</h2>
+          <h3>
+            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Hic ipsa
+            quae temporibus perferendis eos alias.
+          </h3>
+        </div>
+        <img src={ExamSVG} alt="ExamSVG" className="ExamSVG" />
 
         {/* <h1 className="randomAssText">
         Lorem ipsum dolor sit amet,
@@ -194,18 +213,21 @@ const Wrapper = styled.main`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  /* margin-top: 2rem; */
+  /* justify-content: center; */
+  height: 100%;
   color: white;
   position: relative;
   .postSection {
     text-align: left;
     z-index: 1;
+    height: 450px;
+    /* border: 1px solid red; */
   }
 
   .loading {
-    margin-top: 5rem;
-    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .header {
@@ -290,6 +312,33 @@ const Wrapper = styled.main`
   .addPostBtn:hover {
     transform: rotate(90deg);
     transition: 0.3s;
+  }
+
+  .blabla {
+    position: relative;
+    padding-top: 5rem;
+    border-top: 2px solid rgba(0, 0, 0, 0.1);
+    /* border-radius: 10px; */
+    color: gray;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    gap: 2rem;
+    width: 600px;
+  }
+
+  .ExamSVG {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 350px;
+    filter: saturate(0);
+    transform: scaleX(-1);
+  }
+
+  .ExamSVG:hover {
+    filter: saturate(1);
+    transition: 3s;
   }
 
   .randomAssText {

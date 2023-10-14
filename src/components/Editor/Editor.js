@@ -250,7 +250,7 @@ export default function Editor() {
         <span
           className={`material-symbols-outlined ${!editorState && "disabled"}`}
         >
-          done
+          save
         </span>
         {/* <button
           className="classicBtn"
