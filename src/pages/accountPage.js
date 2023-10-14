@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+// import { adminID } from "./../services/constants";
+
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -8,7 +10,6 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { auth, provider, db } from "./../services/firebase-config";
-// import { adminID } from "./../services/constants";
 import TextField from "@mui/material/TextField";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Spinner1 } from "../components/Spinner";
@@ -19,9 +20,11 @@ import {
   getRedirectResult,
   getAuth,
 } from "firebase/auth";
+import { collection, addDoc, getDoc, setDoc, doc } from "firebase/firestore";
+
 import { useUserContext } from "../context/UserContext";
 
-import { collection, addDoc, getDoc, setDoc, doc } from "firebase/firestore";
+import Settings from "../components/Settings";
 
 const theme = createTheme({
   palette: {
@@ -139,7 +142,7 @@ export function AccPage() {
         addAccToFireStore(user);
       })
       .catch((error) => {
-        console.error("Error getting redirect result: ", error);
+        console.warn("Error getting redirect result: ", error);
       });
   }, []);
 
@@ -182,9 +185,14 @@ export function AccPage() {
               />
               <h2>Welcome, {user.displayName}</h2>
 
-              <button onClick={logout} className="finalBtn">
+              <button
+                style={{ marginBottom: "5rem" }}
+                onClick={logout}
+                className="classicBtn"
+              >
                 Sign Out
               </button>
+              <Settings userID={user.uid} />
             </section>
           ) : (
             <section className="section ">
