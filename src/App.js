@@ -16,6 +16,7 @@ import {
   AccPage,
   OwnPage,
   OwnPostPage,
+  UserPage,
   SearchPage,
   SettingsPage,
   SinglePostsPage,
@@ -34,6 +35,7 @@ function App() {
               <Route exact path="/" element={<Home />} />
               <Route exact path="/me" element={<OwnPage />} />
               <Route exact path="/me/post/:id" element={<OwnPostPage />} />
+              <Route exact path="/user/:uid" element={<UserPage />} />
               <Route exact path="/search" element={<SearchPage />} />
               <Route exact path="/example" element={<SinglePostsPage />} />
               <Route exact path="/posts" element={<AllPostsPage />} />

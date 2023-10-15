@@ -136,7 +136,6 @@ const OwnPage = () => {
 
   useEffect(() => {
     if (currentUser) {
-      // console.log(currentUser);
       getFSData();
     }
 
@@ -187,12 +186,24 @@ const OwnPage = () => {
             )}
           </section>
         )}
-        <div className="blabla">
+        <div className="semiHeroText">
           <h2>Lorem ipsum dolor sit amet.</h2>
           <h3>
             Lorem ipsum dolor sit, amet consectetur adipisicing elit. Hic ipsa
             quae temporibus perferendis eos alias.
           </h3>
+          {currentUser && (
+            <div className="link">
+              <a
+                href={`user/${currentUser.uid}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                View your page
+              </a>
+              <span class="material-symbols-outlined">open_in_new</span>
+            </div>
+          )}
         </div>
         <img src={ExamSVG} alt="ExamSVG" className="ExamSVG" />
 
@@ -314,7 +325,7 @@ const Wrapper = styled.main`
     transition: 0.3s;
   }
 
-  .blabla {
+  .semiHeroText {
     position: relative;
     padding-top: 5rem;
     border-top: 2px solid rgba(0, 0, 0, 0.1);
@@ -325,10 +336,22 @@ const Wrapper = styled.main`
     flex-direction: column;
     gap: 2rem;
     width: 600px;
+    .link {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    a {
+      color: black;
+    }
+
+    .material-symbols-outlined {
+      font-size: 1rem;
+    }
   }
 
   .ExamSVG {
-    position: absolute;
+    position: fixed;
     bottom: 0;
     left: 0;
     width: 350px;

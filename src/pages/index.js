@@ -1,13 +1,14 @@
 import Home from "./HomePage";
 import Error from "./ErrorPage";
 import OwnPage from "./OwnPage";
-import OwnPostPage from "./PostPage";
+import OwnPostPage from "./Posts/PostPage";
 import SearchPage from "./SearchPage";
 import SettingsPage from "./SettingsPage";
 import Playground from "./Playground";
 import SinglePostsPage from "./Posts/SinglePostsPage";
 import AllPostsPage from "./Posts/AllPostsPage";
-import { AccPage } from "./accountPage";
+import UserPage from "./UserPage";
+import { AccPage } from "./AccountPage";
 
 export {
   Home,
@@ -15,6 +16,7 @@ export {
   AccPage,
   OwnPage,
   OwnPostPage,
+  UserPage,
   SearchPage,
   Playground,
   SettingsPage,

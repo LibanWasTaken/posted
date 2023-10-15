@@ -1,18 +1,18 @@
 import { React, useState, useEffect } from "react";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
-import { useUserContext } from "../context/UserContext";
+import { useUserContext } from "../../context/UserContext";
 
-import DiaryMui from "../components/Diaries/DiaryMui";
-import Editor from "../components/Editor/Editor";
-import LinkAdder from "../components/modals/LinkAdder";
-import CountDown from "../components/CountDown";
-import { Spinner3 } from "../components/Spinner";
-import DeletePost from "../components/modals/DeletePost";
-import DisablePost from "../components/modals/DisablePost";
+import DiaryMui from "../../components/Diaries/DiaryMui";
+import Editor from "../../components/Editor/Editor";
+import LinkAdder from "../../components/modals/LinkAdder";
+import CountDown from "../../components/CountDown";
+import { Spinner3 } from "../../components/Spinner";
+import DeletePost from "../../components/modals/DeletePost";
+import DisablePost from "../../components/modals/DisablePost";
 import dayjs from "dayjs";
 
-import { DATE_OPTIONS } from "../context/UserOptions";
+import { DATE_OPTIONS } from "../../context/UserOptions";
 
 // mui
 import PropTypes from "prop-types";
@@ -48,7 +48,7 @@ import {
   arrayRemove,
   and,
 } from "firebase/firestore";
-import { db } from "../services/firebase-config";
+import { db } from "../../services/firebase-config";
 
 const theme = createTheme({
   typography: {

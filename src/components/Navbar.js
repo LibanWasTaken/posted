@@ -94,7 +94,9 @@ const Wrapper = styled.section`
   }
 
   nav:hover {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    /* border-bottom: 1px solid rgba(0, 0, 0, 0.2); */
+    transition: 0.3s;
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
   }
 
   .logo {

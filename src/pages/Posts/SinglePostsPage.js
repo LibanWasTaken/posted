@@ -163,7 +163,7 @@ export default function SinglePostPage() {
         </div>
       ) : user == "noUser" ? (
         <div className="error">
-          <h1>User Not Found</h1>
+          <h1>Post Not Found</h1>
           <a href="/">
             <button className="classicBtn">Go home</button>
           </a>

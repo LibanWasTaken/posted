@@ -2,28 +2,27 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { countries } from "../context/UserOptions";
 
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import Typography from "@mui/material/Typography";
-
-import PropTypes from "prop-types";
-import Box from "@mui/material/Box";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import TextField from "@mui/material/TextField";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
-import Autocomplete from "@mui/material/Autocomplete";
 
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
-
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import FormControl from "@mui/material/FormControl";
-import FormLabel from "@mui/material/FormLabel";
+import {
+  TextField,
+  Box,
+  Autocomplete,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Typography,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  FormLabel,
+} from "@mui/material";
 
 const theme = createTheme({
   typography: {
@@ -44,9 +43,9 @@ const theme = createTheme({
     fontSize: 15,
     fontWeight: 700,
   },
-  //   palette: {
-  //     mode: "dark",
-  //   },
+  Accordion: {
+    backgroundColor: "whitesmoke",
+  },
   palette: {
     primary: {
       main: "#000",
@@ -55,49 +54,54 @@ const theme = createTheme({
       main: "#fff",
     },
   },
-  // shadows: 0,
+  shadows: 0,
 });
 
 function ExpandMoreIcon() {
-  return <span class="material-symbols-outlined">expand_more</span>;
+  return <span className="material-symbols-outlined">expand_more</span>;
 }
 
 function Settings({ userID }) {
-  const [editDisabled, setEditDisabled] = useState(true);
-
   console.log(userID);
 
   return (
     <Wrapper>
       <ThemeProvider theme={theme}>
         <div className="accordion">
-          <Accordion>
+          <Accordion
+            sx={{ m: 3, boxShadow: "rgba(0, 0, 0, 0.18) 0px 2px 4px" }}
+          >
             <AccordionSummary
               sx={{ backgroundColor: "whitesmoke" }}
               expandIcon={<ExpandMoreIcon />}
               aria-controls="panel1a-content"
-              id="panel1a-header"
+              id="User-Info"
             >
-              <Typography>Accordion 1</Typography>
+              <Typography>User Info</Typography>
             </AccordionSummary>
-            <AccordionDetails>
+            <AccordionDetails sx={{ p: 2 }}>
               <div className="howdy">
+                <TextField
+                  sx={{ m: 1, width: "35ch" }}
+                  label="Display Name"
+                  variant="outlined"
+                  inputProps={{
+                    maxLength: 25,
+                  }}
+                />
                 <div className="name">
                   <TextField
-                    disabled={!editDisabled}
                     sx={{ m: 1 }}
                     label="First Name"
                     variant="outlined"
                     required
                   />
                   <TextField
-                    disabled={!editDisabled}
                     sx={{ m: 1 }}
                     label="Middle Name"
                     variant="outlined"
                   />
                   <TextField
-                    disabled={!editDisabled}
                     sx={{ m: 1 }}
                     label="Last Name"
                     variant="outlined"
@@ -105,14 +109,12 @@ function Settings({ userID }) {
                   />
                 </div>
                 <TextField
-                  disabled={!editDisabled}
                   sx={{ m: 1, width: "5ch" }}
                   label="Prefix"
                   inputProps={{ maxLength: 5 }}
                   variant="standard"
                 />
                 <TextField
-                  disabled={!editDisabled}
                   sx={{ m: 1, width: "5ch" }}
                   label="Suffix"
                   inputProps={{ maxLength: 5 }}
@@ -121,14 +123,12 @@ function Settings({ userID }) {
                 <div className="datePicker" style={{ marginTop: "2rem" }}>
                   <DatePicker
                     label="Date of Birth"
-                    disabled={!editDisabled}
                     sx={{ m: 1 }}
                     defaultValue={dayjs("2003-07-03")}
                   />
                 </div>
                 <div>
                   <Autocomplete
-                    disabled={!editDisabled}
                     id="gender-select"
                     sx={{ width: 350, m: 1 }}
                     options={countries}
@@ -149,14 +149,12 @@ function Settings({ userID }) {
                     )}
                   />
                   <TextField
-                    disabled={!editDisabled}
                     label="Birth State"
                     variant="outlined"
                     type="text"
                     sx={{ m: 1, width: "25ch" }}
                   />
                   <TextField
-                    disabled={!editDisabled}
                     label="Birth City"
                     variant="outlined"
                     type="text"
@@ -164,7 +162,6 @@ function Settings({ userID }) {
                   />
                 </div>
                 <TextField
-                  disabled={!editDisabled}
                   label="Phone Number"
                   variant="standard"
                   type="number"
@@ -172,7 +169,6 @@ function Settings({ userID }) {
                 />
 
                 <Autocomplete
-                  disabled={!editDisabled}
                   id="gender-select"
                   sx={{ width: 150, m: 1 }}
                   options={[
@@ -196,7 +192,6 @@ function Settings({ userID }) {
                   )}
                 />
                 <TextField
-                  disabled={!editDisabled}
                   label="Own Email"
                   variant="outlined"
                   type="email"
@@ -206,14 +201,13 @@ function Settings({ userID }) {
                 {/* <p>More..</p> */}
                 <div>
                   <TextField
-                    disabled={!editDisabled}
                     sx={{ m: 1, width: "40ch" }}
                     label="Home Address"
                     inputProps={{ maxLength: 100 }}
                     variant="standard"
                   />
                   {/* <TextField
-                        disabled={!editDisabled}
+                        
                         sx={{ m: 1, width: "40ch", marginBottom: 3 }}
                         label="Mailing Address"
                         inputProps={{ maxLength: 100 }}
@@ -223,7 +217,6 @@ function Settings({ userID }) {
                   {/* <p>Spouse-s</p> */}
                   {/* <p>Children-s</p> */}
                   <Autocomplete
-                    disabled={!editDisabled}
                     id="blood-type-select"
                     sx={{ width: 150, m: 1 }}
                     options={[
@@ -253,7 +246,7 @@ function Settings({ userID }) {
                     )}
                   />
                   {/* <TextField
-                        disabled={!editDisabled}
+                        
                         sx={{ m: 1, width: "20ch" }}
                         label="Occupation"
                         inputProps={{ maxLength: 20 }}
@@ -268,27 +261,34 @@ function Settings({ userID }) {
                       <p>Online Usernames</p> */}
                 </div>
               </div>
-              <Typography>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                Suspendisse malesuada lacus ex, sit amet blandit leo lobortis
-                eget.
-              </Typography>
+              <Box sx={{ width: "100%", textAlign: "center" }}>
+                <button className="classicBtn">save</button>
+              </Box>
             </AccordionDetails>
           </Accordion>
-          <Accordion>
+          <Accordion
+            sx={{
+              m: 3,
+              boxShadow: "rgba(0, 0, 0, 0.18) 0px 2px 4px",
+            }}
+          >
             <AccordionSummary
+              sx={{ backgroundColor: "whitesmoke" }}
               expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel2a-content"
-              id="panel2a-header"
+              aria-controls="panel1a-content"
+              id="User-Settings"
             >
-              <Typography>Accordion 2</Typography>
+              <Typography>User Settings</Typography>
             </AccordionSummary>
-            <AccordionDetails>
-              <Typography>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                Suspendisse malesuada lacus ex, sit amet blandit leo lobortis
-                eget.
+            <AccordionDetails sx={{ p: 2 }}>
+              <Typography sx={{ width: "50rem" }}>
+                Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nemo,
+                corrupti. Sint tenetur quisquam fugit delectus nesciunt
+                laudantium dolor, magnam consequuntur!
               </Typography>
+              <Box sx={{ width: "100%", textAlign: "center" }}>
+                <button className="classicBtn">save</button>
+              </Box>
             </AccordionDetails>
           </Accordion>
         </div>
@@ -301,6 +301,9 @@ const Wrapper = styled.section`
     /* height: 100rem;
     width: 10rem; */
     /* border: 1px solid red; */
+  }
+  .accordion {
+    margin-bottom: 5rem;
   }
 `;
 

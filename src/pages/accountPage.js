@@ -9,7 +9,7 @@ import {
   signOut,
   updateProfile,
 } from "firebase/auth";
-import { auth, provider, db } from "./../services/firebase-config";
+import { auth, provider, db } from "../services/firebase-config";
 import TextField from "@mui/material/TextField";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Spinner1 } from "../components/Spinner";
