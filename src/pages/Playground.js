@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import SimpleSnackbar from "./../components/Snackbar";
+// import Snackbar from "./../components/Snackbar";
+import { openSnackbar } from "../components/Snackbar";
 import {
   collection,
   getDocs,
@@ -211,16 +212,30 @@ const Playground = () => {
   }
 
   useEffect(() => {
-    fetchPost();
+    // fetchPost();
     // addPostToUserDoc("samimami  ", "L1uljY8hgdZ9wnLovjJJuCr2sN63");
   }, []);
 
-  const [open, setOpen] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  function handleSnackbar() {
+    setOpenSnackbar(true);
+  }
 
+  const handleShowSnackbar = () => {
+    openSnackbar(true, { vertical: "top", horizontal: "center" });
+  };
   return (
     <Wrapper>
       <h1>Playground</h1>
-      <SimpleSnackbar open={open} setOpen={setOpen} />
+      <button className="classicBtn" onClick={handleSnackbar}>
+        open snackbar
+      </button>
+      <button onClick={handleShowSnackbar}>Show Snackbar</button>
+      {/* 
+      <Snackbar
+        open={true}
+        position={{ vertical: "top", horizontal: "center" }}
+      /> */}
       <button onClick={addDataToFS}>Add Data</button>
       <button onClick={setDataToFS}>set Data</button>
       <button onClick={updateDataToFS}>Update Data</button>

@@ -384,7 +384,7 @@ export const countries = [
   { code: "UG", label: "Uganda", phone: "256" },
   {
     code: "US",
-    label: "United States",
+    label: "United States of America",
     phone: "1",
     suggested: true,
   },

@@ -1,49 +1,32 @@
-import * as React from "react";
-import Button from "@mui/material/Button";
+import React, { useState } from "react";
 import Snackbar from "@mui/material/Snackbar";
-import IconButton from "@mui/material/IconButton";
 
-export default function SimpleSnackbar(props) {
-  const { open, setOpen } = props;
+export default function PositionedSnackbar() {
+  const [state, setState] = useState({
+    open: false,
+    vertical: "top",
+    horizontal: "center",
+  });
 
-  const handleClick = () => {
-    setOpen(true);
+  const handleClose = () => {
+    setState({ ...state, open: false });
   };
 
-  const handleClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setOpen(false);
+  const openSnackbar = (open, position) => {
+    setState({ open, ...position });
   };
-
-  const action = (
-    <React.Fragment>
-      <Button color="secondary" size="small" onClick={handleClose}>
-        UNDO
-      </Button>
-      <IconButton
-        size="small"
-        aria-label="close"
-        color="inherit"
-        onClick={handleClose}
-      >
-        <span className=" material-symbols-outlined">close</span>
-      </IconButton>
-    </React.Fragment>
-  );
 
   return (
-    <div>
-      <Button onClick={handleClick}>Open simple snackbar</Button>
-      <Snackbar
-        open={open}
-        autoHideDuration={6000}
-        onClose={handleClose}
-        message="Note archived"
-        action={action}
-      />
-    </div>
+    <Snackbar
+      anchorOrigin={{ vertical: state.vertical, horizontal: state.horizontal }}
+      open={state.open}
+      onClose={handleClose}
+      message="I love snacks"
+      key={state.vertical + state.horizontal}
+    />
   );
+}
+
+export function openSnackbar(open, position) {
+  PositionedSnackbar.openSnackbar(open, position);
 }
