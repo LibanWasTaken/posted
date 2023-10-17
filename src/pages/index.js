@@ -9,6 +9,7 @@ import SinglePostsPage from "./Posts/SinglePostsPage";
 import AllPostsPage from "./Posts/AllPostsPage";
 import UserPage from "./UserPage";
 import { AccPage } from "./AccountPage";
+import EmailVerification from "./EmailVerification";
 
 export {
   Home,
@@ -22,4 +23,5 @@ export {
   SettingsPage,
   SinglePostsPage,
   AllPostsPage,
+  EmailVerification,
 };

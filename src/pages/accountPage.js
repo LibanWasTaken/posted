@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-// import { adminID } from "./../services/constants";
+import { useNavigate } from "react-router-dom";
+
+import TextField from "@mui/material/TextField";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 import {
   createUserWithEmailAndPassword,
@@ -8,22 +11,18 @@ import {
   onAuthStateChanged,
   signOut,
   updateProfile,
-} from "firebase/auth";
-import { auth, provider, db } from "../services/firebase-config";
-import TextField from "@mui/material/TextField";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { Spinner1 } from "../components/Spinner";
-import {
-  // signInWithPopup,
   GoogleAuthProvider,
-  signInWithRedirect,
-  getRedirectResult,
+  signInWithPopup,
+  sendEmailVerification,
+  // signInWithRedirect,
+  // getRedirectResult,
   getAuth,
 } from "firebase/auth";
+import { auth, provider, db } from "../services/firebase-config";
+import { Spinner1 } from "../components/Spinner";
 import { collection, addDoc, getDoc, setDoc, doc } from "firebase/firestore";
 
 import { useUserContext } from "../context/UserContext";
-
 import Settings from "../components/Settings";
 
 const theme = createTheme({
@@ -46,6 +45,8 @@ export function AccPage() {
   const [loginPassword, setLoginPassword] = useState("");
   const [userName, setUserName] = useState("");
   const [errMsg, setErrMsg] = useState("");
+  const [btnLoading, setBtnLoading] = useState(false);
+  const navigate = useNavigate();
 
   const formatErr = (str) => {
     const words = str.split(" ");
@@ -77,8 +78,19 @@ export function AccPage() {
     }
   };
 
+  const verifyEmailAndRedirect = async (user) => {
+    try {
+      await sendEmailVerification(user);
+      console.log("Verification email sent");
+      navigate("/verify-email");
+    } catch (error) {
+      console.error("Email verification error:", error);
+    }
+  };
+
   const register = async () => {
     try {
+      setBtnLoading(true);
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         registerEmail,
@@ -86,9 +98,12 @@ export function AccPage() {
       );
       const newUser = userCredential.user;
       await updateProfile(newUser, { displayName: userName });
-
       addAccToFireStore(newUser);
+
+      verifyEmailAndRedirect(newUser);
     } catch (error) {
+      setBtnLoading(false);
+
       const errorCode = error.code;
       const errorMessage = error.message;
       console.log(`Registration error [${errorCode}]: ${errorMessage}`);
@@ -98,13 +113,16 @@ export function AccPage() {
 
   const login = async () => {
     try {
+      setBtnLoading(true);
       const userCredential = await signInWithEmailAndPassword(
         auth,
         loginEmail,
         loginPassword
       );
       const loggedInUser = userCredential.user;
+      setBtnLoading(false);
     } catch (error) {
+      setBtnLoading(false);
       const errorCode = error.code;
       const errorMessage = error.message;
       console.log(`Login error [${errorCode}]: ${errorMessage}`);
@@ -114,42 +132,60 @@ export function AccPage() {
 
   const loginGmail = () => {
     const auth = getAuth();
-    signInWithRedirect(auth, provider).catch((error) => {
-      console.error("Error initiating redirect: ", error);
-    });
-
-    // getRedirectResult(auth)
-    //   .then((result) => {
-    //     const credential = GoogleAuthProvider.credentialFromResult(result);
-    //     const token = credential.accessToken;
-    //     const user = result.user;
-    //     console.log("User authenticated: ", user);
-    //     addAccToFireStore(user);
+    // Start the redirect flow
+    // signInWithRedirect(auth, provider)
+    //   .then(() => {
+    //     // After the page redirects back, get the result
+    //     getRedirectResult(auth)
+    //       .then((result) => {
+    //         const credential = GoogleAuthProvider.credentialFromResult(result);
+    //         const token = credential.accessToken;
+    //         const user = result.user;
+    //         console.log("User authenticated: ", user);
+    //         addAccToFireStore(user);
+    //       })
+    //       .catch((error) => {
+    //         console.error("Error getting redirect result: ", error);
+    //       });
     //   })
     //   .catch((error) => {
-    //     console.error("Error getting redirect result: ", error);
+    //     console.error("Error initiating redirect: ", error);
     //   });
-  };
-
-  useEffect(() => {
-    const auth = getAuth();
-    getRedirectResult(auth)
+    signInWithPopup(auth, provider)
       .then((result) => {
         const credential = GoogleAuthProvider.credentialFromResult(result);
         const token = credential.accessToken;
         const user = result.user;
-        console.log("Gmail User authenticated: ", user);
+        console.log("User authenticated: ", user);
         addAccToFireStore(user);
       })
       .catch((error) => {
-        console.warn("Error getting redirect result: ", error);
+        console.error("Error getting pop-up result: ", error);
       });
-  }, []);
+  };
+
+  // useEffect(() => {
+  //   const auth = getAuth();
+  //   getRedirectResult(auth)
+  //     .then((result) => {
+  //       const credential = GoogleAuthProvider.credentialFromResult(result);
+  //       const token = credential.accessToken;
+  //       const user = result.user;
+  //       console.log("Gmail User authenticated: ", user);
+  //       addAccToFireStore(user);
+  //     })
+  //     .catch((error) => {
+  //       console.warn("Error getting redirect result: ", error);
+  //     });
+  // }, []);
 
   const logout = async () => {
     try {
+      setBtnLoading(true);
       await signOut(auth);
+      location.reload();
     } catch (error) {
+      setBtnLoading(false);
       const errorCode = error.code;
       const errorMessage = error.message;
       console.log(`Logout error [${errorCode}]: ${errorMessage}`);
@@ -180,7 +216,7 @@ export function AccPage() {
                   user.photoURL ||
                   "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Windows_10_Default_Profile_Picture.svg/2048px-Windows_10_Default_Profile_Picture.svg.png"
                 }
-                alt="profile picture"
+                alt="pfp"
                 className="profilePic"
               />
               <h2>Welcome, {user.displayName}</h2>
@@ -188,7 +224,9 @@ export function AccPage() {
               <button
                 style={{ marginBottom: "5rem" }}
                 onClick={logout}
-                className="classicBtn"
+                className={`classicBtn ${
+                  btnLoading && "loadingClassicBtn disabledClassicBtn"
+                }`}
               >
                 Sign Out
               </button>
@@ -236,7 +274,13 @@ export function AccPage() {
                     />
                   </div>
                   <a href="/">Forgot your password?</a>
-                  <button className="finalBtn" onClick={login}>
+                  <button
+                    className={`classicBtn ${
+                      btnLoading && "loadingClassicBtn disabledClassicBtn"
+                    }`}
+                    style={{ marginTop: "4rem" }}
+                    onClick={login}
+                  >
                     SIGN IN
                   </button>
                 </div>
@@ -270,7 +314,13 @@ export function AccPage() {
                       }
                     />
                   </div>
-                  <button className="finalBtn" onClick={register}>
+                  <button
+                    className={`classicBtn ${
+                      btnLoading && "loadingClassicBtn disabledClassicBtn"
+                    }`}
+                    style={{ marginTop: "4rem" }}
+                    onClick={register}
+                  >
                     SIGN UP
                   </button>
                 </div>
@@ -300,6 +350,7 @@ const Wrapper = styled.main`
     font-size: 0.75rem;
     text-transform: uppercase;
     font-weight: 100;
+    margin-top: 1rem;
   }
 
   .inputs {
@@ -317,24 +368,6 @@ const Wrapper = styled.main`
 
   .section {
     margin-bottom: 15rem;
-  }
-
-  .finalBtn {
-    background-color: black;
-    padding: 1.5rem 2.5rem;
-    margin-top: 4rem;
-    color: white;
-    letter-spacing: 2px;
-    outline: none;
-    text-transform: uppercase;
-    border: none;
-  }
-
-  .finalBtn:hover {
-    cursor: pointer;
-    padding: 1.5rem 2.7rem;
-    letter-spacing: 3px;
-    transition: 0.3s;
   }
 
   .containers {

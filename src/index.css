@@ -41,6 +41,7 @@ body {
 .disabledClassicBtn {
   color: black;
   background-color: whitesmoke;
+  pointer-events: none;
 }
 
 .disabledClassicBtn:hover {

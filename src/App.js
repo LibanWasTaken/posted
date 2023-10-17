@@ -22,6 +22,7 @@ import {
   SinglePostsPage,
   AllPostsPage,
   Playground,
+  EmailVerification,
 } from "./pages";
 
 function App() {
@@ -33,6 +34,11 @@ function App() {
             <Navbar />
             <Routes>
               <Route exact path="/" element={<Home />} />
+              <Route
+                exact
+                path="/verify-email"
+                element={<EmailVerification />}
+              />
               <Route exact path="/me" element={<OwnPage />} />
               <Route exact path="/me/post/:id" element={<OwnPostPage />} />
               <Route exact path="/user/:uid" element={<UserPage />} />
