@@ -183,7 +183,7 @@ export function AccPage() {
     try {
       setBtnLoading(true);
       await signOut(auth);
-      location.reload();
+      window.location.reload();
     } catch (error) {
       setBtnLoading(false);
       const errorCode = error.code;

@@ -4,29 +4,49 @@ import { getDatabase, ref, onValue } from "firebase/database";
 import { Spinner1 } from "../../components/Spinner";
 import Card from "../../components/PostCard";
 
-export default function AllProductPage() {
-  const db = getDatabase();
-  const [users, setUsers] = useState();
+import { getDocs, collection } from "firebase/firestore";
+import { db } from "../../services/firebase-config";
 
-  useEffect(() => {
-    const prodRef = ref(db, "users/unposted/"); // TODO: change to posted late
-    onValue(prodRef, (snapshot) => {
-      let data = snapshot.val();
-      setUsers(data);
+export default function AllProductPage() {
+  // const db = getDatabase();
+  const [posts, setPosts] = useState();
+  const [loading, setLoading] = useState(true);
+
+  async function getFSData() {
+    await getDocs(collection(db, `/posts`)).then((querySnapshot) => {
+      const postsData = querySnapshot.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
+      console.log(postsData);
+      setPosts(postsData);
+      setLoading(false);
     });
+  }
+  useEffect(() => {
+    getFSData();
   }, []);
 
   return (
     <Wrapper>
-      {users ? (
-        <div className="section">
-          USERS
-          {Object.values(users).map((user) => {
-            return <Card key={user.id} user={user} loading={false} />;
-          })}
-        </div>
-      ) : (
+      {loading ? (
         <Spinner1 />
+      ) : (
+        <section>
+          <p>Posts:</p>
+          <div className="posts">
+            {Object.values(posts).map((post) => {
+              return (
+                <Card
+                  key={post.id}
+                  postTitle={post.title}
+                  postID={post.id}
+                  releaseDate={post.releaseDate}
+                />
+              );
+            })}
+          </div>
+        </section>
       )}
     </Wrapper>
   );
@@ -36,6 +56,8 @@ const Wrapper = styled.main`
   display: flex;
   justify-content: center;
   margin-top: 2rem;
-  .section {
+  .posts {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
   }
 `;

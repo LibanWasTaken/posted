@@ -87,13 +87,12 @@ const Search = () => {
 
   return (
     <Wrapper>
-      <h4>https://extensions.dev/extensions/firebase/firestore-send-email</h4>
+      {/* <h4>https://extensions.dev/extensions/firebase/firestore-send-email</h4>
       <form
         ref={form}
         className="form"
         onSubmit={console.log("enable it dummy")}
       >
-        {/* <form ref={form} className="form" onSubmit={sendEmailForm}> */}
         <CssTextField
           id="outlined-basic"
           className="input"
@@ -130,7 +129,8 @@ const Search = () => {
         <button type="submit" className="classicBtn">
           Submit
         </button>
-      </form>
+      </form> */}
+      <h1>hmm</h1>
     </Wrapper>
   );
 };

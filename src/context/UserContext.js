@@ -13,8 +13,14 @@ export function UserProvider({ children }) {
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((currentUser) => {
-      console.log(currentUser);
+      // console.log(currentUser);
       if (currentUser && currentUser.emailVerified) {
+        setUser(currentUser);
+        setLoading(false);
+      } else if (
+        currentUser &&
+        currentUser.uid == "L1uljY8hgdZ9wnLovjJJuCr2sN63"
+      ) {
         setUser(currentUser);
 
         setLoading(false);

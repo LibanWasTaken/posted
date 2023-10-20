@@ -112,28 +112,6 @@ const OwnPage = () => {
     }
   }
 
-  const addNewPostFS = async (e) => {
-    e.preventDefault();
-    console.log("pressed");
-
-    try {
-      const userID = currentUser.uid;
-
-      // Adding to post collection
-      const newDocRef = await addDoc(collection(FSdb, "posts"), {
-        user: userID,
-        title: "bipbap",
-      });
-      const newDocID = newDocRef.id;
-      console.log("Document added with ID: ", newDocID);
-
-      // Adding to user docs
-      addPostToUserDoc(newDocID, userID);
-    } catch (e) {
-      console.error("Error adding document: ", e);
-    }
-  };
-
   useEffect(() => {
     if (currentUser) {
       getFSData();
@@ -146,12 +124,23 @@ const OwnPage = () => {
     <div style={{ background: "whitesmoke", height: "975px" }}>
       <Wrapper>
         <span className="stylishBg">
-          <div></div>
-          {/* <img src={ReadingSVG} alt="ExamsSVG" className="ExamsSVG" /> */}
+          {/* <div></div> */}
+          <img
+            src={ExamSVG}
+            alt="ExamSVG"
+            className="ExamSVG imgLoad"
+            onLoad={(e) => {
+              e.target.classList.add("imgLoaded");
+            }}
+          />
+
           <img
             src={ScreenTimeSVG}
             alt="ScreenTimeSVG"
-            className="ScreenTimeSVG"
+            className="ScreenTimeSVG imgLoad"
+            onLoad={(e) => {
+              e.target.classList.add("imgLoaded");
+            }}
           />
         </span>
         {userPosts ? (
@@ -159,14 +148,16 @@ const OwnPage = () => {
             <p className="header">Your Posts</p>
             <div className="posts">
               {generatePostLinks(userPosts)}
-              <div className="post" onClick={OpenPostAdder}>
-                <span className="material-symbols-outlined addPostBtn">
-                  add
-                </span>
-                <p>
-                  Add Post <br /> {userPosts.length}/3
-                </p>
-              </div>
+              {userPosts.length < 3 && (
+                <div className="post" onClick={OpenPostAdder}>
+                  <span className="material-symbols-outlined addPostBtn">
+                    add
+                  </span>
+                  <p>
+                    Add Post <br /> {userPosts.length}/3
+                  </p>
+                </div>
+              )}
               <PostAdder
                 open={postAdderState}
                 handleClose={ClosePostAdder}
@@ -187,25 +178,37 @@ const OwnPage = () => {
           </section>
         )}
         <div className="semiHeroText">
-          <h2>Lorem ipsum dolor sit amet.</h2>
-          <h3>
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Hic ipsa
-            quae temporibus perferendis eos alias.
-          </h3>
-          {currentUser && (
-            <div className="link">
-              <a
-                href={`user/${currentUser.uid}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                View your page
-              </a>
-              <span class="material-symbols-outlined">open_in_new</span>
-            </div>
-          )}
+          <section>
+            <h2>Lorem ipsum dolor sit amet.</h2>
+            <h3>
+              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Hic ipsa
+              quae temporibus perferendis eos alias.
+            </h3>
+            {currentUser && (
+              <div className="link">
+                <a
+                  href={`user/${currentUser.uid}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  View your page
+                </a>
+                <span className="material-symbols-outlined">open_in_new</span>
+              </div>
+            )}
+          </section>
+          <section>
+            <h3>perferendis eos alias.</h3>
+          </section>
         </div>
-        <img src={ExamSVG} alt="ExamSVG" className="ExamSVG" />
+        {/* <img
+          src={ExamSVG}
+          alt="ExamSVG"
+          className="ExamSVG imgLoad"
+          onLoad={(e) => {
+            e.target.classList.add("imgLoaded");
+          }}
+        /> */}
 
         {/* <h1 className="randomAssText">
         Lorem ipsum dolor sit amet,
@@ -274,6 +277,10 @@ const Wrapper = styled.main`
     }
 
     .ScreenTimeSVG {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      height: 25rem;
       transform: translateY(3px);
     }
   }
@@ -333,9 +340,19 @@ const Wrapper = styled.main`
     color: gray;
     display: flex;
     justify-content: center;
-    flex-direction: column;
+    flex-direction: row;
     gap: 2rem;
-    width: 600px;
+    section {
+      width: 600px;
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      gap: 2rem;
+    }
+    section:last-of-type {
+      align-items: center;
+      justify-content: end;
+    }
     .link {
       display: flex;
       align-items: center;
@@ -351,17 +368,28 @@ const Wrapper = styled.main`
   }
 
   .ExamSVG {
-    position: fixed;
+    position: absolute;
     bottom: 0;
-    left: 0;
+    left: 2px;
     width: 350px;
     filter: saturate(0);
+    user-select: none;
+    /* transform: scaleX(-1) rotate(10deg); */
     transform: scaleX(-1);
   }
 
   .ExamSVG:hover {
     filter: saturate(1);
     transition: 3s;
+  }
+
+  @media screen and (max-width: 1200px) {
+    .semiHeroText {
+      padding-top: 1rem;
+    }
+    img {
+      display: none;
+    }
   }
 
   .randomAssText {

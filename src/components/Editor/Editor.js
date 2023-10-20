@@ -29,6 +29,8 @@ import AutoLinkPlugin from "./plugins/AutoLinkPlugin";
 import "./styles.css";
 
 // me:
+import { useParams } from "react-router-dom";
+
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useUserContext } from "../../context/UserContext";
 import {
@@ -40,8 +42,10 @@ import {
   remove,
 } from "firebase/database";
 
-import { getDoc, doc } from "firebase/firestore";
+import { getDoc, doc, updateDoc } from "firebase/firestore";
 import { db as FSdb } from "../../services/firebase-config";
+
+// import FloatingTextFormatToolbarPlugin from "./playground/plugins/FloatingTextFormatToolbarPlugin/SpeechToTextPlugin";
 
 const editorConfig = {
   theme: ExampleTheme,
@@ -138,6 +142,9 @@ export default function Editor() {
   const [editorValue, setEditorValue] = useState(emptyState);
   const [editorValueReceived, setEditorValueReceived] = useState();
   const [editorValueReceivedFS, setEditorValueReceivedFS] = useState();
+  const [saving, setSaving] = useState(false);
+  const [incoming, setIncoming] = useState(true);
+  const { id } = useParams();
 
   const [valueApplied, setValueApplied] = useState(false);
   const { user: currentUser, loading } = useUserContext();
@@ -159,10 +166,11 @@ export default function Editor() {
   }, [currentUser]);
 
   async function getFSData() {
-    const docRef = doc(FSdb, "posts", "DZL3b9ij1vWSZ4d72aa2");
+    const docRef = doc(FSdb, "posts", id);
     const docSnap = await getDoc(docRef);
     const userInfo = docSnap.data();
-    setEditorValueReceivedFS(userInfo.letter);
+    userInfo.letter && setEditorValueReceivedFS(userInfo.letter);
+    setIncoming(false);
     console.log("editorValueReceivedFS set");
   }
 
@@ -180,14 +188,6 @@ export default function Editor() {
     const [editor] = useLexicalComposerContext();
 
     useEffect(() => {
-      // Realtime Database
-      // if (editorValueReceived && !valueApplied) {
-      //   const newEditorState = editor.parseEditorState(editorValueReceived);
-      //   editor.setEditorState(newEditorState);
-      //   setValueApplied(true);
-      // }
-
-      // Firestore
       if (editorValueReceivedFS && !valueApplied) {
         const newEditorState = editor.parseEditorState(editorValueReceivedFS);
         editor.setEditorState(newEditorState);
@@ -195,22 +195,28 @@ export default function Editor() {
       }
     }, [editorValueReceived, editor, valueApplied]);
 
-    return null; // You can simply return null since you don't need any JSX here
+    return null;
   };
 
-  function updateUserPost() {
-    const updates = {};
-    updates["/users/unposted/" + currentUser.uid + "/post/letter/"] =
-      editorValue;
-    update(ref(db), updates);
-    console.log("updated");
+  async function updateUserData() {
+    setSaving(true);
+    try {
+      const postRef = doc(FSdb, "posts", id);
+      await updateDoc(postRef, { letter: editorValue });
+      console.log("Document successfully updated");
+      // setEditDisabled(false);
+      setSaving(false);
+    } catch (error) {
+      console.error("Error updating document: ", error);
+      setSaving(false);
+    }
   }
 
   function Placeholder() {
     return (
       <div className="editor-placeholder">
-        {loading ? (
-          "Loading"
+        {setIncoming ? (
+          "Loading.."
         ) : (
           <>
             Leave your legacy or thoughts for posterity... <br />I want
@@ -238,6 +244,7 @@ export default function Editor() {
           <ListPlugin />
           <LinkPlugin />
           <AutoLinkPlugin />
+          {/* <FloatingTextFormatToolbarPlugin /> */}
           <ListMaxIndentLevelPlugin maxDepth={7} />
           <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
           <UpdatePlugin />
@@ -248,7 +255,10 @@ export default function Editor() {
           />
         </div>
         <span
-          className={`material-symbols-outlined ${!editorState && "disabled"}`}
+          onClick={updateUserData}
+          className={`material-symbols-outlined ${!editorState && "disabled"} ${
+            saving && "loadingClassicBtn"
+          }`}
         >
           save
         </span>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 // import Snackbar from "./../components/Snackbar";
 import { openSnackbar } from "../components/Snackbar";
+// import Editor from "../components/Editor/uhh";
 import {
   collection,
   getDocs,
@@ -107,7 +108,6 @@ const Playground = () => {
       version: 1,
     },
   };
-
   const addDataToFS = async (e) => {
     e.preventDefault();
     console.log("pressed");
@@ -123,7 +123,6 @@ const Playground = () => {
       console.error("Error adding document: ", e);
     }
   };
-
   const setDataToFS = async (e) => {
     e.preventDefault();
     console.log("pressed");
@@ -142,7 +141,6 @@ const Playground = () => {
       console.error("Error adding document: ", e);
     }
   };
-
   const updateDataToFS = async (e) => {
     e.preventDefault();
     console.log("pressed");
@@ -162,7 +160,6 @@ const Playground = () => {
       console.error("Error updating document with custom ID: ", error);
     }
   };
-
   const fetchPost = async () => {
     await getDocs(collection(db, "users")).then((querySnapshot) => {
       const newData = querySnapshot.docs.map((doc) => ({
@@ -172,7 +169,6 @@ const Playground = () => {
       console.log(newData);
     });
   };
-
   async function getCustomData() {
     const docRef = doc(db, "users", "your_custom_id_here");
     const docSnap = await getDoc(docRef);
@@ -190,7 +186,6 @@ const Playground = () => {
       }
     }
   }
-
   async function addPostToUserDoc(postID, uid) {
     try {
       console.log("its happening");
@@ -210,7 +205,6 @@ const Playground = () => {
       console.error("Error adding collection: ", e);
     }
   }
-
   useEffect(() => {
     // fetchPost();
     // addPostToUserDoc("samimami  ", "L1uljY8hgdZ9wnLovjJJuCr2sN63");
@@ -224,12 +218,14 @@ const Playground = () => {
   const handleShowSnackbar = () => {
     openSnackbar(true, { vertical: "top", horizontal: "center" });
   };
+
   return (
     <Wrapper>
       <h1>Playground</h1>
       <button className="classicBtn" onClick={handleSnackbar}>
         open snackbar
       </button>
+      {/* <Editor /> */}
       <button onClick={handleShowSnackbar}>Show Snackbar</button>
       {/* 
       <Snackbar

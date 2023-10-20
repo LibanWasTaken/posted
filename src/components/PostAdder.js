@@ -84,7 +84,6 @@ export default function PostAdder({ open, handleClose, info }) {
 
   const navigate = useNavigate();
   function redirect(postID) {
-    // Use the history.push method to navigate to the desired URL
     navigate(`/me/post/${postID}`);
   }
 
@@ -195,7 +194,7 @@ export default function PostAdder({ open, handleClose, info }) {
           <div className="form">
             <div>
               <h1>Add a title for your post</h1>
-              <p>Can be changed later</p>
+              <p>These can be changed later</p>
             </div>
             <TextField
               disabled={disabled}
@@ -239,7 +238,14 @@ export default function PostAdder({ open, handleClose, info }) {
             </button>
           </div>
           <div className="imgContainer">
-            <img src={NotesSVG} alt="NotesSVG" className="NotesSVG" />
+            <img
+              src={NotesSVG}
+              alt="NotesSVG"
+              className="NotesSVG imgLoad"
+              onLoad={(e) => {
+                e.target.classList.add("imgLoaded");
+              }}
+            />
           </div>
         </Wrapper>
       </Dialog>

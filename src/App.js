@@ -115,10 +115,14 @@ export default App;
 https://github.com/Steveeeie/react-page-transition
 https://react-scroll-parallax.damnthat.tv/docs/
 https://zapier.com/app/dashboard
+https://www.npmjs.com/package/clsx
+https://gsap.com/docs/v3/Installation/
+
 
 text editors:
 quill
 tiptap
 draftjs
+https://www.tiny.cloud/docs/tinymce/6/full-featured-premium-demo/
 
 */

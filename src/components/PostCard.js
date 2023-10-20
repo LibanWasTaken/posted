@@ -4,21 +4,23 @@ import styled from "styled-components";
 import Rating from "@mui/material/Rating";
 import { Spinner2 } from "./Spinner";
 
-function Card({ user, loading }) {
+function Card({ postTitle, postID, releaseDate }) {
   return (
     <Wrapper>
-      <a className="card" href={`posts/${user.id}`}>
+      <a className="card" href={`posts/${postID}`}>
         <div className="heading">
-          <p>{user.info.firstName}, Adam</p>
+          <p>{postTitle || "title"}</p>
         </div>
         <div className="info">
-          <p>Released: 07-08-21</p>
+          <p>{releaseDate || "03 Oct, 2023"}</p>
         </div>
       </a>
     </Wrapper>
   );
 }
 const Wrapper = styled.section`
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+
   margin: 1rem;
   display: flex;
   /* align-items: center; */
