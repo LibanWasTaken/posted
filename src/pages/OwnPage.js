@@ -386,6 +386,7 @@ const Wrapper = styled.main`
   @media screen and (max-width: 1200px) {
     .semiHeroText {
       padding-top: 1rem;
+      flex-direction: column;
     }
     img {
       display: none;

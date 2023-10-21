@@ -8,6 +8,7 @@ import Dialog from "@mui/material/Dialog";
 import Slide from "@mui/material/Slide";
 import TextField from "@mui/material/TextField";
 import { DatePicker } from "@mui/x-date-pickers";
+import { MobileTimePicker } from "@mui/x-date-pickers/MobileTimePicker";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 
@@ -219,13 +220,20 @@ export default function PostAdder({ open, handleClose, info }) {
               onChange={handleDateChange}
               onError={handleError}
               sx={{ m: 1, width: "30ch" }}
-              slotProps={{
-                textField: {
-                  size: "medium",
-                  helperText: "12:01 am (UTC)",
-                },
-              }}
+              // slotProps={{
+              //   textField: {
+              //     size: "medium",
+              //     helperText: "12:01 am (UTC)",
+              //   },
+              // }}
               views={["year", "month", "day"]}
+            />
+            <MobileTimePicker
+              defaultValue={dayjs("2022-04-17T00:00")}
+              // orientation="landscape"
+              value={selectedDate}
+              onChange={handleDateChange}
+              sx={{ m: 1, width: "20ch" }}
             />
             <p className={`errText ${hidden && "hidden"}`}>{errorText}</p>
             <button
@@ -279,9 +287,9 @@ const Wrapper = styled.main`
   .form {
     font-family: "Raleway";
     position: relative;
-    bottom: 5rem;
+    bottom: 2rem;
     width: 45rem;
-    height: 35rem;
+    height: 40rem;
     margin-left: 10rem;
     display: flex;
     justify-content: space-around;

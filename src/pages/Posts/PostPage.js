@@ -11,6 +11,7 @@ import { Spinner3 } from "../../components/Spinner";
 import DeletePost from "../../components/modals/DeletePost";
 import DisablePost from "../../components/modals/DisablePost";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 
 import { DATE_OPTIONS } from "../../context/UserOptions";
 
@@ -46,7 +47,6 @@ import {
   updateDoc,
   arrayUnion,
   arrayRemove,
-  and,
 } from "firebase/firestore";
 import { db } from "../../services/firebase-config";
 
@@ -111,6 +111,7 @@ const OwnPostPage = () => {
   const [updatedObj, setUpdatedObj] = useState({});
   const [scheduleValue, setScheduleValue] = useState("One Time");
   const [scheduleTypeValue, setScheduleTypeValue] = useState("Specified");
+  const [releaseDate, setReleaseDate] = useState();
   const [datesOptions, setDatesOptions] = useState(DATE_OPTIONS);
   const [preset, setPreset] = useState({
     timePeriod: "Month",
@@ -180,9 +181,9 @@ const OwnPostPage = () => {
   function handleSave() {
     if (!saveDisabled) {
       console.log(updatedObj);
-      console.log(preset);
+      console.log(releaseDate);
 
-      updateUserData();
+      // updateUserData();
       setSaveDisabled(true);
     }
   }
@@ -210,6 +211,7 @@ const OwnPostPage = () => {
       postData.scheduleType && setScheduleValue(postData.scheduleType);
       postData.scheduleFormat && setScheduleTypeValue(postData.scheduleFormat);
       postData.preset && setPreset(postData.preset);
+      postData.releaseDate && setReleaseDate(dayjs(postData.releaseDate));
     }
   }, [postData]);
 
@@ -229,8 +231,17 @@ const OwnPostPage = () => {
       ...prevObj,
       preset,
     }));
-    console.log(preset.timePeriod, preset.day);
+    // console.log(preset.timePeriod, preset.day);
   }, [preset.timePeriod, preset.day]);
+
+  function handleDateChange(date) {
+    setReleaseDate(dayjs(date));
+    setUpdatedObj((prevObj) => ({
+      ...prevObj,
+      releaseDate: String(date),
+    }));
+    saveDisabled && setSaveDisabled(false);
+  }
 
   function DateTimePicker() {
     return (
@@ -240,12 +251,17 @@ const OwnPostPage = () => {
           disabled={!editDisabled}
           sx={{ marginRight: 2 }}
           // defaultValue={dayjs("2003-07-03")}
-          defaultValue={dayjs(postData.releaseDate) || null}
-          helperText="12:01 am (UTC)"
+          value={releaseDate || null}
+          onChange={(date) => {
+            handleDateChange(date);
+          }}
         />
         <MobileTimePicker
           disabled={!editDisabled}
-          defaultValue={dayjs("2022-04-17T00:01")}
+          value={releaseDate || null}
+          onChange={(date) => {
+            handleDateChange(date);
+          }}
         />
       </Box>
     );

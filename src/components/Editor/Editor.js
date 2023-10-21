@@ -204,7 +204,6 @@ export default function Editor() {
       const postRef = doc(FSdb, "posts", id);
       await updateDoc(postRef, { letter: editorValue });
       console.log("Document successfully updated");
-      // setEditDisabled(false);
       setSaving(false);
     } catch (error) {
       console.error("Error updating document: ", error);
@@ -215,8 +214,8 @@ export default function Editor() {
   function Placeholder() {
     return (
       <div className="editor-placeholder">
-        {setIncoming ? (
-          "Loading.."
+        {incoming ? (
+          <>Loading..</>
         ) : (
           <>
             Leave your legacy or thoughts for posterity... <br />I want

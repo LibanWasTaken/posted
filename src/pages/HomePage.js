@@ -45,8 +45,8 @@ const HomePage = () => {
             <Divergence value={value} />
           </div>
         </Parallax>
-        <a href="/me">
-          <button>get started &#12297;</button>
+        <a href="/me/them">
+          <button>fix ur toaster &#12297;</button>
         </a>
       </div>
       <section className="section2">
