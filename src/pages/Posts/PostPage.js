@@ -727,6 +727,7 @@ const OwnPostPage = () => {
                       id="outlined-controlled"
                       type="text"
                       defaultValue={postData.title}
+                      onChange={updateValueOf("title")}
                     />
                   </Box>
                   <div

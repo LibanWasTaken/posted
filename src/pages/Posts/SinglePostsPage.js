@@ -8,8 +8,17 @@ import { doc, getDoc } from "firebase/firestore";
 import { Spinner1 } from "../../components/Spinner";
 import { PlainTextPlugin } from "@lexical/react/LexicalPlainTextPlugin";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
+import { LexicalRichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
+import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
+import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
+
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
+
+// plugins
+
+import AutoLinkPlugin from "../../components/Editor/plugins/AutoLinkPlugin";
+import Viewer from "../../components/Editor/Viewer";
 
 function LinkList({ links }) {
   return (
@@ -146,14 +155,20 @@ export default function SinglePostPage() {
   };
 
   const UpdatePlugin = () => {
-    const [editor] = useLexicalComposerContext();
-    const newEditorState = editor.parseEditorState(postData.letter);
-    editor.setEditorState(newEditorState);
+    if (postData.letter) {
+      const [editor] = useLexicalComposerContext();
+      const newEditorState = editor.parseEditorState(postData.letter);
+      editor.setEditorState(newEditorState);
+      console.log(postData.letter);
+    }
   };
 
   const initialConfig = {
     namespace: "MyEditor",
     editable: false,
+    onError(error) {
+      throw error;
+    },
   };
 
   return (
@@ -184,13 +199,24 @@ export default function SinglePostPage() {
           </section>
 
           <section className="letter">
-            <LexicalComposer initialConfig={initialConfig}>
-              <PlainTextPlugin
+            {postData.letter && <Viewer state={postData.letter} />}
+
+            {/* <LexicalComposer initialConfig={initialConfig}>
+               <PlainTextPlugin
                 contentEditable={<ContentEditable className="editor-input" />}
                 placeholder={<div>Loading...</div>}
-              />
+              /> 
               <UpdatePlugin />
             </LexicalComposer>
+            <LexicalComposer initialConfig={initialConfig}>
+              <RichTextPlugin
+                contentEditable={<ContentEditable className="editor-input" />}
+                ErrorBoundary={LexicalErrorBoundary}
+                placeholder={<div>Loading...</div>}
+              />
+              <ContentEditable className="editor-input" />
+              <UpdatePlugin />
+            </LexicalComposer> */}
           </section>
         </div>
       )}
@@ -208,9 +234,8 @@ const Wrapper = styled.main`
     justify-content: space-around;
     width: 100%;
     section {
-      box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
-        rgba(0, 0, 0, 0.3) 0px 30px 60px -30px,
-        rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+      box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+        rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
       padding: 3rem;
       border-radius: 10px;
     }
