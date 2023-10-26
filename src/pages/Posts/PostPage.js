@@ -40,14 +40,7 @@ import Switch from "@mui/material/Switch";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { MobileTimePicker } from "@mui/x-date-pickers/MobileTimePicker";
 
-import {
-  doc,
-  getDoc,
-  setDoc,
-  updateDoc,
-  arrayUnion,
-  arrayRemove,
-} from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../services/firebase-config";
 
 const theme = createTheme({
@@ -163,6 +156,7 @@ const OwnPostPage = () => {
       console.log("Document successfully updated");
       setEditDisabled(false);
       setSaving(false);
+      window.location.reload();
     } catch (error) {
       console.error("Error updating document: ", error);
       setSaving(false);
@@ -183,7 +177,7 @@ const OwnPostPage = () => {
       console.log(updatedObj);
       console.log(releaseDate);
 
-      // updateUserData();
+      updateUserData();
       setSaveDisabled(true);
     }
   }
@@ -326,6 +320,29 @@ const OwnPostPage = () => {
             <div className="sidebar">
               <span className="box1"></span>
               <span className="box2"></span>
+              <p className="title">Post Addons</p>
+              <div className="components">
+                <button className="add diary" onClick={handleDiaryOpenMUI}>
+                  <p>Diary</p>
+                  <span className="icon material-symbols-outlined">
+                    add_notes
+                  </span>
+                </button>
+                <button className="add link" onClick={handleLinkAdderOpen}>
+                  <p>Links</p>
+                  <span className="icon material-symbols-outlined">
+                    add_link
+                  </span>
+                </button>
+                {/* <a href="/me/them"> */}
+                <button className="add etc">
+                  <p>Settings</p>
+                  <span className="icon material-symbols-outlined">
+                    settings
+                  </span>
+                </button>
+                {/* </a> */}
+              </div>
             </div>
 
             <div className="tabs">
@@ -346,26 +363,11 @@ const OwnPostPage = () => {
               <h2>{postData.title ? postData.title : "Title"}</h2>
             </div>
 
-            <CustomTabPanel value={tabValue} index={0}>
-              {/* <div className="postForm"> */}
-              <div className="textEditor">
+            <div className="textEditor">
+              <CustomTabPanel value={tabValue} index={0}>
                 <Editor initialConfig={{ editable: true }} />
-              </div>
-              <div className="components">
-                <button className="add diary" onClick={handleDiaryOpenMUI}>
-                  <span className="material-symbols-outlined">add_notes</span>
-                </button>
-                <button className="add link" onClick={handleLinkAdderOpen}>
-                  <span className="material-symbols-outlined">add_link</span>
-                </button>
-                <a href="/me/them">
-                  <button className="add etc">
-                    <span className="material-symbols-outlined">settings</span>
-                  </button>
-                </a>
-              </div>
-              {/* </div> */}
-            </CustomTabPanel>
+              </CustomTabPanel>
+            </div>
 
             <div className="postForm">
               <CustomTabPanel value={tabValue} index={1}>
@@ -806,7 +808,7 @@ const Wrapper = styled.main`
   padding-left: 290px;
 
   .textEditor {
-    /* width: 80vw; */
+    width: 90%;
     /* background-color: red; */
   }
 
@@ -820,7 +822,14 @@ const Wrapper = styled.main`
     min-height: 100vh;
     height: 100%;
     overflow: hidden;
+    color: white;
+    padding-top: 4rem;
 
+    .title {
+      letter-spacing: 1px;
+      text-align: left;
+      padding-left: 10%;
+    }
     .box1 {
       padding: 20rem;
       background: rgb(15, 15, 15);
@@ -837,6 +846,46 @@ const Wrapper = styled.main`
       top: 550px;
       left: -500px;
       transform: rotate(45deg);
+    }
+  }
+
+  .components {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 0.75rem;
+    .add {
+      outline: none;
+      border: none;
+      background-color: black;
+      border-radius: 5px;
+      background-color: rgba(255, 255, 255, 0.15);
+
+      padding: 0px 15px;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      width: 90%;
+      p {
+        font-size: 1rem;
+        font-family: "Raleway";
+      }
+
+      .icon {
+        font-size: 1.5rem;
+        opacity: 0.8;
+        padding-right: 10px;
+      }
+    }
+    .add:hover {
+      cursor: pointer;
+      transition: 0.3s;
+      /* padding: 1.5rem 2.7rem; */
+      /* color: black; */
+      background-color: rgba(255, 255, 255, 0.25);
     }
   }
 
@@ -917,35 +966,6 @@ const Wrapper = styled.main`
       /* color: red;
       border: 1px solid red; */
       text-shadow: 0 0 1px red;
-    }
-  }
-
-  .components {
-    margin-top: 4rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: row;
-    .add {
-      outline: none;
-      border: none;
-      margin: 0 2rem;
-      background-color: black;
-      border-radius: 10px;
-      /* border-radius: 50%; */
-      padding: 2rem;
-      color: white;
-
-      .material-symbols-outlined {
-        font-size: 2rem;
-      }
-    }
-    .add:hover {
-      cursor: pointer;
-      transition: 0.3s;
-      /* padding: 1.5rem 2.7rem; */
-      color: black;
-      background-color: white;
     }
   }
 `;

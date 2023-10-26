@@ -125,4 +125,6 @@ tiptap
 draftjs
 https://www.tiny.cloud/docs/tinymce/6/full-featured-premium-demo/
 
+replace ahref with Link (keeps the navbar?)
+
 */

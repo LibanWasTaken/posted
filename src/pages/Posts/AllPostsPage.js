@@ -7,6 +7,17 @@ import Card from "../../components/PostCard";
 import { getDocs, collection } from "firebase/firestore";
 import { db } from "../../services/firebase-config";
 
+function generateCards(posts) {
+  return Object.values(posts).map((post) => (
+    <Card
+      key={post.id}
+      postTitle={post.title}
+      postID={post.id}
+      releaseDate={post.releaseDate}
+    />
+  ));
+}
+
 export default function AllProductPage() {
   // const db = getDatabase();
   const [posts, setPosts] = useState();
@@ -18,7 +29,6 @@ export default function AllProductPage() {
         ...doc.data(),
         id: doc.id,
       }));
-      console.log(postsData);
       setPosts(postsData);
       setLoading(false);
     });
@@ -33,18 +43,9 @@ export default function AllProductPage() {
         <Spinner1 />
       ) : (
         <section>
-          <p>Posts:</p>
           <div className="posts">
-            {Object.values(posts).map((post) => {
-              return (
-                <Card
-                  key={post.id}
-                  postTitle={post.title}
-                  postID={post.id}
-                  releaseDate={post.releaseDate}
-                />
-              );
-            })}
+            {generateCards(posts)}
+            {generateCards(posts)}
           </div>
         </section>
       )}
@@ -58,9 +59,15 @@ const Wrapper = styled.main`
   margin-top: 2rem;
   .posts {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
+    gap: 2rem;
   }
 
+  @media screen and (max-width: 1620px) {
+    .posts {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
   @media screen and (max-width: 1420px) {
     .posts {
       grid-template-columns: repeat(3, 1fr);

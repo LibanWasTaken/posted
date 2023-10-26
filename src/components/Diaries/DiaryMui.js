@@ -234,7 +234,10 @@ export default function Diary({ open, handleClose, info }) {
           <img
             src={DiaryPNG}
             alt="Transparent Notebook Paper Png"
-            className="DiaryPNG"
+            className="DiaryPNG imgLoad"
+            onLoad={(e) => {
+              e.target.classList.add("imgLoaded");
+            }}
           ></img>
         </Wrapper>
       </Dialog>

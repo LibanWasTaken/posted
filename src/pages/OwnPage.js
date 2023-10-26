@@ -23,10 +23,9 @@ import { db as FSdb } from "../services/firebase-config";
 import { useUserContext } from "../context/UserContext";
 
 function generatePostLinks(posts) {
-  // console.log();
   return posts.map((post) => (
     <Link
-      key={post.id} // Make sure to provide a unique key for each mapped element
+      key={post.id}
       to={`/me/post/${post.id}`}
       style={{ textDecoration: "none" }}
     >
@@ -90,26 +89,6 @@ const OwnPage = () => {
         scrollToBottom(105);
       }
     );
-  }
-
-  async function addPostToUserDoc(postID, uid) {
-    try {
-      console.log("its happening");
-
-      const userPostsRef = doc(FSdb, `users/${uid}/posts`, postID);
-      const docSnap = await getDoc(userPostsRef);
-
-      if (docSnap.exists()) {
-        await setDoc(userPostsRef, { postID }, { merge: true });
-        console.log("Document updated in user's collection with ID: ", postID);
-      } else {
-        console.log("No such document! Creating one");
-        await setDoc(userPostsRef, { postID });
-        console.log("Document created in user's collection with ID: ", postID);
-      }
-    } catch (e) {
-      console.error("Error adding collection: ", e);
-    }
   }
 
   useEffect(() => {
@@ -235,7 +214,6 @@ const Wrapper = styled.main`
     text-align: left;
     z-index: 1;
     height: 450px;
-    /* border: 1px solid red; */
   }
 
   .loading {
@@ -252,7 +230,7 @@ const Wrapper = styled.main`
     background-color: black;
     position: absolute;
     width: 100%;
-    /* overflow: hidden; */
+    overflow: hidden;
     height: 20rem;
     left: 0;
     top: 0;
