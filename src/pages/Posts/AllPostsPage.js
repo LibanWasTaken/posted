@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { getDatabase, ref, onValue } from "firebase/database";
-import { Spinner1 } from "../../components/Spinner";
+import { Spinner3 } from "../../components/Spinner";
 import Card from "../../components/PostCard";
+import { Skeleton } from "@mui/material";
 
-import { getDocs, collection } from "firebase/firestore";
+import { getDocs, collection, query, orderBy, limit } from "firebase/firestore";
 import { db } from "../../services/firebase-config";
 
 function generateCards(posts) {
@@ -19,19 +19,32 @@ function generateCards(posts) {
 }
 
 export default function AllProductPage() {
-  // const db = getDatabase();
   const [posts, setPosts] = useState();
   const [loading, setLoading] = useState(true);
 
   async function getFSData() {
-    await getDocs(collection(db, `/posts`)).then((querySnapshot) => {
-      const postsData = querySnapshot.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }));
+    // await getDocs(collection(db, `/posts`)).then((querySnapshot) => {
+    //   const postsData = querySnapshot.docs.map((doc) => ({
+    //     ...doc.data(),
+    //     id: doc.id,
+    //   }));
+    //   setPosts(postsData);
+    //   setLoading(false);
+    // });
+
+    const queryRecieved = query(collection(db, `/posts`), limit(2));
+    const querySnapshot = await getDocs(queryRecieved);
+    const postsData = querySnapshot.docs.map((doc) => ({
+      ...doc.data(),
+      id: doc.id,
+    }));
+    if (posts) {
+      setPosts((prevPosts) => [...prevPosts, ...postsData]);
+    } else {
       setPosts(postsData);
-      setLoading(false);
-    });
+    }
+    // setLastPost(querySnapshot.docs[querySnapshot.docs.length - 1]);
+    setLoading(false);
   }
   useEffect(() => {
     getFSData();
@@ -40,11 +53,19 @@ export default function AllProductPage() {
   return (
     <Wrapper>
       {loading ? (
-        <Spinner1 />
+        <Spinner3 />
       ) : (
         <section>
           <div className="posts">
-            {generateCards(posts)}
+            {/* <Skeleton
+              // sx={{ bgcolor: "black" }}
+              variant="rectangular"
+              width={280}
+              height={360}
+              animation="wave"
+            />
+            
+            {generateCards(posts)} */}
             {generateCards(posts)}
           </div>
         </section>

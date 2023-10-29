@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
+import dayjs from "dayjs";
 
 import { db } from "../../services/firebase-config";
 import { doc, getDoc } from "firebase/firestore";
@@ -58,118 +59,18 @@ export default function SinglePostPage() {
   }
   useEffect(() => {
     getFSData();
+
+    if (postData) {
+      console.log(postData.releaseDate);
+      console.log(dayjs(postData.timestamp).format("DD/MM/YYYY"));
+      // console.log(dayjs("Tue, 04 May 2055 18:00:00 GMT").valueOf());
+      console.log(dayjs("Wed, 05 May 2055 18:00:00 GMT").valueOf());
+    }
   }, []);
 
-  const tester = {
-    root: {
-      children: [
-        {
-          children: [
-            {
-              detail: 0,
-              format: 0,
-              mode: "normal",
-              style: "",
-              text: "Okay hopefully this is the ",
-              type: "text",
-              version: 1,
-            },
-            {
-              detail: 0,
-              format: 1,
-              mode: "normal",
-              style: "",
-              text: "final ",
-              type: "text",
-              version: 1,
-            },
-            {
-              detail: 0,
-              format: 0,
-              mode: "normal",
-              style: "",
-              text: "test of this ",
-              type: "text",
-              version: 1,
-            },
-            {
-              detail: 0,
-              format: 2,
-              mode: "normal",
-              style: "",
-              text: "saga",
-              type: "text",
-              version: 1,
-            },
-            {
-              detail: 0,
-              format: 0,
-              mode: "normal",
-              style: "",
-              text: "..",
-              type: "text",
-              version: 1,
-            },
-            { type: "linebreak", version: 1 },
-            {
-              detail: 0,
-              format: 0,
-              mode: "normal",
-              style: "",
-              text: "Though I ",
-              type: "text",
-              version: 1,
-            },
-            {
-              detail: 0,
-              format: 8,
-              mode: "normal",
-              style: "",
-              text: "have to change",
-              type: "text",
-              version: 1,
-            },
-            {
-              detail: 0,
-              format: 0,
-              mode: "normal",
-              style: "",
-              text: " stuff around...",
-              type: "text",
-              version: 1,
-            },
-          ],
-          direction: "ltr",
-          format: "",
-          indent: 0,
-          type: "paragraph",
-          version: 1,
-        },
-      ],
-      direction: "ltr",
-      format: "",
-      indent: 0,
-      type: "root",
-      version: 1,
-    },
-  };
-
-  const UpdatePlugin = () => {
-    if (postData.letter) {
-      const [editor] = useLexicalComposerContext();
-      const newEditorState = editor.parseEditorState(postData.letter);
-      editor.setEditorState(newEditorState);
-      console.log(postData.letter);
-    }
-  };
-
-  const initialConfig = {
-    namespace: "MyEditor",
-    editable: false,
-    onError(error) {
-      throw error;
-    },
-  };
+  // TODO: change releaseDate to .valueOf() integer values
+  // .collection("posts")
+  // .orderBy("releaseDate", "desc")
 
   return (
     <Wrapper>

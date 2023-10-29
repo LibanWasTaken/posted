@@ -1,17 +1,11 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
-import { Spinner2 } from "../components/Spinner";
-import {
-  addDoc,
-  getDoc,
-  getDocs,
-  setDoc,
-  collection,
-  doc,
-  updateDoc,
-} from "firebase/firestore";
+import { Spinner3 } from "../components/Spinner";
+import { getDoc, getDocs, collection, doc } from "firebase/firestore";
 import { db } from "../services/firebase-config";
+import { Link } from "react-router-dom";
+import dayjs from "dayjs";
 
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -22,6 +16,8 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
+
+
 
 const theme = createTheme({
   typography: {
@@ -55,7 +51,9 @@ const theme = createTheme({
 const UserPage = () => {
   const { uid } = useParams();
   const [loading, setLoading] = useState(true);
+  const [loadingPosts, setLoadingPosts] = useState(true);
   const [user, setUser] = useState();
+  const [userPosts, setUserPosts] = useState();
   const [userExists, setUserExists] = useState();
   const [openPrivateModal, setOpenPrivateModal] = useState(false);
   const handleOpenPrivateModal = () => {
@@ -66,9 +64,8 @@ const UserPage = () => {
     setOpenPrivateModal(false);
   };
 
-  const userDocRef = doc(db, "users", uid);
-
   const fetchUserDoc = async () => {
+    const userDocRef = doc(db, "users", uid);
     try {
       const docSnapshot = await getDoc(userDocRef);
       if (docSnapshot.exists()) {
@@ -82,13 +79,48 @@ const UserPage = () => {
         console.log("No such document!");
       }
     } catch (error) {
-      console.log("Error getting document:", error);
+      console.log("Error getting user docs:", error);
     }
   };
 
+  async function getPostsData() {
+    try {
+      const querySnapshot = await getDocs(
+        collection(db, `/users/${uid}/posts`)
+      );
+      const postsData = querySnapshot.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
+
+      setUserPosts(postsData);
+      setLoadingPosts(false);
+    } catch (error) {
+      console.log("Error getting posts data:", error);
+    }
+  }
+
   useEffect(() => {
     fetchUserDoc();
+    getPostsData();
   }, []);
+
+  function generatePostLinks(posts) {
+    return posts.map((post) => (
+      <Link
+        key={post.id}
+        to={`/posts/${post.id}`}
+        style={{ textDecoration: "none", color: "black" }}
+      >
+        <div className="post">
+          <p className="heading">{post.title}</p>
+          <p className="timing">
+            {dayjs(post.releaseDate).format("DD MMM, YYYY")}
+          </p>
+        </div>
+      </Link>
+    ));
+  }
 
   function PrivatePostModal({ open, handleClose, postID = "xxx" }) {
     const [postIDValue, setPostIDValue] = useState("");
@@ -103,8 +135,8 @@ const UserPage = () => {
     return (
       <ThemeProvider theme={theme}>
         <Dialog open={open} onClose={handleClose}>
-          <DialogTitle>Deletion</DialogTitle>
-          <DialogContent sx={{ m: 4, overflow: "hidden" }}>
+          <DialogTitle>Verification</DialogTitle>
+          <DialogContent sx={{ m: 1, overflow: "hidden" }}>
             <DialogContentText sx={{ marginBottom: 5 }}>
               Enter post ID:
             </DialogContentText>
@@ -144,13 +176,16 @@ const UserPage = () => {
     <Wrapper>
       <h1>UserPage</h1>
       {loading ? (
-        <Spinner2 />
+        <Spinner3 />
       ) : userExists ? (
         <div className="section">
           <h1>Yo this is {user.displayName}</h1>
           <div className="posts">
-            <div className="post"></div>
-            <div className="post"></div>
+            {loadingPosts ? (
+              <>Loading..</>
+            ) : (
+              <>{userPosts && generatePostLinks(userPosts)}</>
+            )}
             <div className="post" onClick={handleOpenPrivateModal}>
               if its private, do a modal asking for post id
             </div>
@@ -175,20 +210,32 @@ const Wrapper = styled.main`
   margin-top: 2rem;
 
   .posts {
-    border: 1px solid red;
-    padding: 2rem;
+    /* border: 1px solid red; */
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 1rem;
+    max-width: 80vw;
+    flex-direction: column;
+    margin-bottom: 3rem;
     .post {
-      border: 1px solid lime;
-      width: 20rem;
-      height: 15rem;
+      /* border: 1px solid lime; */
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      gap: 1rem;
+      width: 30rem;
+      height: 10rem;
+      font-size: 2rem;
+      cursor: pointer;
+      background-color: whitesmoke;
+      box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
+        rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
     }
 
-    .post:last-of-type {
-      cursor: pointer;
+    .post:hover {
+      transition: 0.3s;
+      box-shadow: none;
     }
   }
 `;

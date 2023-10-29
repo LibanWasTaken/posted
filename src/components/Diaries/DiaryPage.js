@@ -9,6 +9,8 @@ import DialogTitle from "@mui/material/DialogTitle";
 
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
+import Editor from "../../components/Editor/Editor";
+
 const theme = createTheme({
   typography: {
     fontFamily: [
@@ -52,7 +54,7 @@ export default function DiaryPage({ open, handleClose, info }) {
 
   return (
     <ThemeProvider theme={theme}>
-      <Dialog open={open} onClose={handleClose}>
+      <Dialog open={open} onClose={handleClose} fullWidth={true} maxWidth="md">
         <DialogTitle>Page</DialogTitle>
         <DialogContent>
           <DialogContentText sx={{ marginBottom: 1 }}>
@@ -66,9 +68,7 @@ export default function DiaryPage({ open, handleClose, info }) {
             type="text"
             variant="standard"
           />
-          <div style={{ margin: 2 }}>
-            <textarea name="" id="" cols="70" rows="30"></textarea>
-          </div>
+          <Editor />
         </DialogContent>
         <DialogActions>
           <Button

@@ -13,7 +13,7 @@ import ListItemText from "@mui/material/ListItemText";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import IconButton from "@mui/material/IconButton";
 
-import { Spinner1 } from "../Spinner";
+import { Spinner3 } from "../Spinner";
 
 import {
   doc,
@@ -198,8 +198,7 @@ export default function LinkAdder({ open, handleClose, info }) {
             Add sites like Drive, Dropbox, Mega, iCloud, OneDrive, Docs, etc:
           </DialogContentText>
 
-          {/* {!links && <Spinner1 />} */}
-          {loading && <Spinner1 />}
+          {loading && <p>Loading ...</p>}
           <List>{links && <ListItemComponents items={links} />}</List>
 
           <div>

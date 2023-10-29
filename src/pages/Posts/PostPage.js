@@ -17,24 +17,27 @@ import { DATE_OPTIONS } from "../../context/UserOptions";
 
 // mui
 import PropTypes from "prop-types";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import TextField from "@mui/material/TextField";
-import Autocomplete from "@mui/material/Autocomplete";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import FormControl from "@mui/material/FormControl";
-import FormLabel from "@mui/material/FormLabel";
-import Tooltip from "@mui/material/Tooltip";
-import Snackbar from "@mui/material/Snackbar";
-import Switch from "@mui/material/Switch";
+import {
+  Tabs,
+  Tab,
+  Typography,
+  Box,
+  TextField,
+  Autocomplete,
+  InputLabel,
+  MenuItem,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  FormControl,
+  FormLabel,
+  Tooltip,
+  Snackbar,
+  Switch,
+  Button,
+} from "@mui/material";
 
 // mui x
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -334,14 +337,17 @@ const OwnPostPage = () => {
                     add_link
                   </span>
                 </button>
-                {/* <a href="/me/them"> */}
-                <button className="add etc">
+                <button
+                  className="add etc"
+                  onClick={() => {
+                    setTabValue(3);
+                  }}
+                >
                   <p>Settings</p>
                   <span className="icon material-symbols-outlined">
                     settings
                   </span>
                 </button>
-                {/* </a> */}
               </div>
             </div>
 
@@ -365,6 +371,36 @@ const OwnPostPage = () => {
 
             <div className="textEditor">
               <CustomTabPanel value={tabValue} index={0}>
+                <Box sx={{ display: "flex", gap: "1rem" }}>
+                  <TextField
+                    sx={{
+                      marginTop: 0,
+                      bgcolor: "white",
+                      "& fieldset": { border: "none" },
+                      border: "1px solid #eee",
+                    }}
+                    fullWidth
+                    label="Description"
+                    variant="outlined"
+                    id="outlined-controlled"
+                    type="text"
+                    placeholder="Keep it short"
+                    defaultValue={postData.description || ""}
+                    inputProps={{ maxLength: 150 }}
+                  />
+                  <Button
+                    sx={{
+                      bgcolor: "white",
+                      borderColor: "whitesmoke",
+                    }}
+                    disabled
+                    // className="loadingClassicBtn"
+                    variant="text"
+                  >
+                    save
+                  </Button>
+                </Box>
+
                 <Editor initialConfig={{ editable: true }} />
               </CustomTabPanel>
             </div>
