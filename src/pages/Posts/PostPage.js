@@ -371,7 +371,7 @@ const OwnPostPage = () => {
 
             <div className="textEditor">
               <CustomTabPanel value={tabValue} index={0}>
-                <Box sx={{ display: "flex", gap: "1rem" }}>
+                {/* <Box sx={{ display: "flex", gap: "1rem" }}>
                   <TextField
                     sx={{
                       marginTop: 0,
@@ -399,7 +399,7 @@ const OwnPostPage = () => {
                   >
                     save
                   </Button>
-                </Box>
+                </Box> */}
 
                 <Editor initialConfig={{ editable: true }} />
               </CustomTabPanel>

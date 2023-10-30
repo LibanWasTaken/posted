@@ -45,6 +45,8 @@ import {
 import { getDoc, doc, updateDoc } from "firebase/firestore";
 import { db as FSdb } from "../../services/firebase-config";
 
+import { Box, TextField, Button } from "@mui/material";
+
 // import FloatingTextFormatToolbarPlugin from "./playground/plugins/FloatingTextFormatToolbarPlugin/SpeechToTextPlugin";
 
 const editorConfig = {
@@ -140,27 +142,17 @@ export default function Editor() {
 
   const [editorState, setEditorState] = useState();
   const [editorValue, setEditorValue] = useState(emptyState);
-  const [editorValueReceived, setEditorValueReceived] = useState();
   const [editorValueReceivedFS, setEditorValueReceivedFS] = useState();
+  const [description, setDescription] = useState();
   const [saving, setSaving] = useState(false);
   const [incoming, setIncoming] = useState(true);
+  const [changed, setChanged] = useState(false);
   const { id } = useParams();
 
   const [valueApplied, setValueApplied] = useState(false);
   const { user: currentUser, loading } = useUserContext();
-  const db = getDatabase();
   useEffect(() => {
     if (currentUser) {
-      // console.log(currentUser);
-      const postRef = ref(
-        db,
-        "users/unposted/" + currentUser.uid + "/post/letter"
-      );
-      onValue(postRef, (snapshot) => {
-        let data = snapshot.val();
-        setEditorValueReceived(data);
-      });
-
       getFSData();
     }
   }, [currentUser]);
@@ -170,13 +162,15 @@ export default function Editor() {
     const docSnap = await getDoc(docRef);
     const userInfo = docSnap.data();
     userInfo.letter && setEditorValueReceivedFS(userInfo.letter);
+    userInfo.description && setDescription(userInfo.description);
     setIncoming(false);
-    console.log("editorValueReceivedFS set");
+    console.log("editor value set");
   }
 
   function OnChangePlugin({ onChange }) {
     const [editor] = useLexicalComposerContext();
     useEffect(() => {
+      !changed && setChanged(true); //FIXME: changed when loads
       setEditorValue(JSON.stringify(editor.getEditorState()));
       return editor.registerUpdateListener((editorState) => {
         onChange(editorState);
@@ -193,7 +187,7 @@ export default function Editor() {
         editor.setEditorState(newEditorState);
         setValueApplied(true);
       }
-    }, [editorValueReceived, editor, valueApplied]);
+    }, [editor, valueApplied]);
 
     return null;
   };
@@ -202,7 +196,16 @@ export default function Editor() {
     setSaving(true);
     try {
       const postRef = doc(FSdb, "posts", id);
-      await updateDoc(postRef, { letter: editorValue });
+      if (description) {
+        await updateDoc(postRef, {
+          letter: editorValue,
+          description: description,
+        });
+      } else {
+        await updateDoc(postRef, {
+          letter: editorValue,
+        });
+      }
       console.log("Document successfully updated");
       setSaving(false);
     } catch (error) {
@@ -227,51 +230,77 @@ export default function Editor() {
   }
 
   return (
-    <LexicalComposer initialConfig={editorConfig}>
-      <div className="editor-container">
-        <ToolbarPlugin />
-        <div className="editor-inner">
-          <RichTextPlugin
-            contentEditable={<ContentEditable className="editor-input" />}
-            placeholder={<Placeholder />}
-            ErrorBoundary={LexicalErrorBoundary}
-          />
-          <HistoryPlugin />
-          {/* <TreeViewPlugin /> */}
-          <AutoFocusPlugin />
-          <CodeHighlightPlugin />
-          <ListPlugin />
-          <LinkPlugin />
-          <AutoLinkPlugin />
-          {/* <FloatingTextFormatToolbarPlugin /> */}
-          <ListMaxIndentLevelPlugin maxDepth={7} />
-          <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
-          <UpdatePlugin />
-          <OnChangePlugin
-            onChange={(editorState) =>
-              setEditorState(JSON.stringify(editorState))
-            }
-          />
-        </div>
-        <span
+    <>
+      <Box sx={{ display: "flex", gap: "1rem" }}>
+        <TextField
+          sx={{
+            marginTop: 0,
+            bgcolor: "white",
+            "& fieldset": { border: "none" },
+            border: "1px solid #eee",
+          }}
+          fullWidth
+          label="Description"
+          variant="outlined"
+          id="outlined-controlled"
+          type="text"
+          placeholder="Keep it short"
+          value={description || ""}
+          inputProps={{ maxLength: 150 }}
+          onChange={(e) => {
+            !changed && setChanged(true);
+            setDescription(e.target.value);
+          }}
+        />
+        <Button
+          sx={{
+            bgcolor: "white",
+            borderColor: "whitesmoke",
+          }}
+          disabled={!changed}
+          className={`${saving && "loadingClassicBtn"}`}
           onClick={updateUserData}
-          className={`material-symbols-outlined ${!editorState && "disabled"} ${
-            saving && "loadingClassicBtn"
-          }`}
+          variant="text"
         >
           save
-        </span>
-        {/* <button
-          className="classicBtn"
-          style={{ margin: 15, position: "relative", right: "-75%" }}
-          onClick={() => {
-            // console.log(editorValue);
-            updateUserPost();
-          }}
-        >
-          Save
-        </button> */}
-      </div>
-    </LexicalComposer>
+        </Button>
+      </Box>
+      <LexicalComposer initialConfig={editorConfig}>
+        <div className="editor-container">
+          <ToolbarPlugin />
+          <div className="editor-inner">
+            <RichTextPlugin
+              contentEditable={<ContentEditable className="editor-input" />}
+              placeholder={<Placeholder />}
+              ErrorBoundary={LexicalErrorBoundary}
+            />
+            <HistoryPlugin />
+            {/* <TreeViewPlugin /> */}
+            <AutoFocusPlugin />
+            <CodeHighlightPlugin />
+            <ListPlugin />
+            <LinkPlugin />
+            <AutoLinkPlugin />
+            {/* <FloatingTextFormatToolbarPlugin /> */}
+            <ListMaxIndentLevelPlugin maxDepth={7} />
+            <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
+            <UpdatePlugin />
+            <OnChangePlugin
+              onChange={(editorState) =>
+                setEditorState(JSON.stringify(editorState))
+              }
+            />
+          </div>
+          {/* <span
+            onClick={updateUserData}
+            className={`material-symbols-outlined ${
+              !editorState && "disabled"
+            } ${saving && "loadingClassicBtn"}`}
+          >
+            save
+          </span> */}
+        </div>
+      </LexicalComposer>
+    </>
   );
 }
