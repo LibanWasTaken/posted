@@ -1,34 +1,27 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
-import dayjs from "dayjs";
+import { Spinner1 } from "../../components/Spinner";
+import { scrollToBottom } from "../../functions/functions";
 
+import Viewer from "../../components/Editor/Viewer";
+
+import dayjs from "dayjs";
 import { db } from "../../services/firebase-config";
 import { doc, getDoc } from "firebase/firestore";
-
-import { Spinner1 } from "../../components/Spinner";
-import { PlainTextPlugin } from "@lexical/react/LexicalPlainTextPlugin";
-import { LexicalComposer } from "@lexical/react/LexicalComposer";
-import { LexicalRichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
-import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
-import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
-
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { ContentEditable } from "@lexical/react/LexicalContentEditable";
-
-// plugins
-
-import AutoLinkPlugin from "../../components/Editor/plugins/AutoLinkPlugin";
-import Viewer from "../../components/Editor/Viewer";
+import { Tooltip, Button } from "@mui/material";
 
 function LinkList({ links }) {
   return (
-    <div>
+    <div className="links">
       {links.map((link, index) => (
-        <div key={index}>
-          <h4>{link.primary}</h4>
-          <p>{link.secondary}</p>
-        </div>
+        <Tooltip title={link.secondary} placement="right" arrow>
+          <a href={link.secondary} target="_blank">
+            <p key={index} className="link">
+              {link.primary}
+            </p>
+          </a>
+        </Tooltip>
       ))}
     </div>
   );
@@ -86,38 +79,32 @@ export default function SinglePostPage() {
           </a>
         </div>
       ) : (
-        <div className="post">
+        <div className="postContainer">
           <section className="info">
-            <h1>{postData.title}</h1>
-            <h3>{postData.releaseDate}</h3>
+            <div>
+              <p className="title">{postData.title}</p>
+              <h3>{dayjs(postData.releaseDate).format("DD MMM, YYYY")}</h3>
+              <p>- {postData.user}</p>
+            </div>
 
-            {postData.links && <LinkList links={postData.links} />}
+            <span
+              className="scrollBottomBtn material-symbols-outlined"
+              onClick={() => {
+                scrollToBottom();
+              }}
+            >
+              keyboard_double_arrow_down
+            </span>
+          </section>
 
+          <section className="post">
+            <div className="letter">
+              {postData.letter && <Viewer state={postData.letter} />}
+            </div>
             <div className="diary">
               <button className="classicBtn">Diary</button>
             </div>
-            <h4>{postData.user}</h4>
-          </section>
-
-          <section className="letter">
-            {postData.letter && <Viewer state={postData.letter} />}
-
-            {/* <LexicalComposer initialConfig={initialConfig}>
-               <PlainTextPlugin
-                contentEditable={<ContentEditable className="editor-input" />}
-                placeholder={<div>Loading...</div>}
-              /> 
-              <UpdatePlugin />
-            </LexicalComposer>
-            <LexicalComposer initialConfig={initialConfig}>
-              <RichTextPlugin
-                contentEditable={<ContentEditable className="editor-input" />}
-                ErrorBoundary={LexicalErrorBoundary}
-                placeholder={<div>Loading...</div>}
-              />
-              <ContentEditable className="editor-input" />
-              <UpdatePlugin />
-            </LexicalComposer> */}
+            {postData.links && <LinkList links={postData.links} />}
           </section>
         </div>
       )}
@@ -126,28 +113,80 @@ export default function SinglePostPage() {
 }
 
 const Wrapper = styled.main`
-  display: flex;
-  /* justify-content: center; */
-  margin: 2rem 3rem;
-  .post {
+  margin: 2rem;
+  .postContainer {
     display: flex;
     align-items: center;
     justify-content: space-around;
+    flex-direction: column;
     width: 100%;
     section {
-      box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
-        rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
-      padding: 3rem;
+      padding: 1rem 2rem;
       border-radius: 10px;
+      width: 90%;
+    }
+
+    .scrollBottomBtn {
+      background-color: whitesmoke;
+      padding: 1rem;
+      margin: 1rem;
+      border-radius: 50%;
+
+      cursor: pointer;
     }
 
     .info {
-      width: 30%;
-      /* box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px; */
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      .title {
+        font-size: 4rem;
+        padding: 0;
+        margin: 0;
+      }
+      h3 {
+        padding: 0;
+        margin: 0 0 2rem 0;
+      }
     }
 
-    .letter {
-      width: 50%;
+    .post {
+      /* border: 1px solid #ddd; */
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+
+      .letter {
+        /* width: 50%; */
+        /* border: 1px solid red; */
+      }
+
+      .links {
+        border: 1px solid red;
+        padding: 1rem;
+        display: flex;
+        gap: 1rem;
+        grid-template-columns: 1fr 1fr 1fr;
+
+        a {
+          text-decoration: none;
+          color: black;
+          margin: 0;
+        }
+        .link {
+          cursor: pointer;
+          width: 10rem;
+          height: 3rem;
+          margin: 0;
+          text-align: center;
+
+          /* padding: 1rem 1rem; */
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: whitesmoke;
+        }
+      }
     }
   }
 

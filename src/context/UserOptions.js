@@ -549,3 +549,18 @@ export const DATE_OPTIONS = [
     value: 31,
   },
 ];
+
+export const NAV_OPTIONS = [
+  {
+    label: "You",
+    value: "/me",
+  },
+  {
+    label: "To Who",
+    value: "/me/them",
+  },
+  {
+    label: "Others",
+    value: "/posts",
+  },
+];

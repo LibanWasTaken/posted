@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import styled from "styled-components";
 import TextField from "@mui/material/TextField";
 import emailjs from "@emailjs/browser";
-import { SERVICE_ID, TEMPLATE_ID, USER_PUBLIC_ID } from "../services/constants";
+// import { SERVICE_ID, TEMPLATE_ID, USER_PUBLIC_ID } from "../services/constants";
 
 const CssTextField = styled(TextField)({
   "& label.Mui-focused": {
@@ -29,20 +29,20 @@ const Search = () => {
   const [end, setEnd] = useState("");
   const form = useRef();
 
-  const sendEmailForm = (e) => {
-    e.preventDefault();
+  // const sendEmailForm = (e) => {
+  //   e.preventDefault();
 
-    emailjs
-      .sendForm(SERVICE_ID, TEMPLATE_ID, form.current, USER_PUBLIC_ID)
-      .then(
-        (result) => {
-          console.log(result.text);
-        },
-        (error) => {
-          console.log(error.text);
-        }
-      );
-  };
+  //   emailjs
+  //     .sendForm(SERVICE_ID, TEMPLATE_ID, form.current, USER_PUBLIC_ID)
+  //     .then(
+  //       (result) => {
+  //         console.log(result.text);
+  //       },
+  //       (error) => {
+  //         console.log(error.text);
+  //       }
+  //     );
+  // };
 
   function sendEmail(
     to_mail_value = "UNDEFINED",

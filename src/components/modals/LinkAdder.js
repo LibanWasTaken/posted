@@ -71,10 +71,8 @@ export default function LinkAdder({ open, handleClose, info }) {
       const docRef = doc(db, "posts", info);
       const docSnap = await getDoc(docRef);
       const userInfo = docSnap.data();
-      // console.log(userInfo);
       setLinks(userInfo.links);
       setLoading(false);
-      // console.log(userInfo.links);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -196,6 +194,8 @@ export default function LinkAdder({ open, handleClose, info }) {
         <DialogContent>
           <DialogContentText sx={{ marginBottom: 1 }}>
             Add sites like Drive, Dropbox, Mega, iCloud, OneDrive, Docs, etc:
+            <br />
+            {`${links && links.length}/100`}
           </DialogContentText>
 
           {loading && <p>Loading ...</p>}
@@ -235,6 +235,7 @@ export default function LinkAdder({ open, handleClose, info }) {
           <Button
             sx={{ letterSpacing: 1, fontWeight: 400 }}
             onClick={handleAddLink}
+            disabled={links && links && links.length > 99}
           >
             Add
           </Button>

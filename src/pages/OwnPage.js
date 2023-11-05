@@ -100,7 +100,7 @@ const OwnPage = () => {
   }, [currentUser, loading]);
 
   return (
-    <div style={{ background: "whitesmoke", height: "975px" }}>
+    <div style={{ background: "whitesmoke", height: "100%" }}>
       <Wrapper>
         <span className="stylishBg">
           {/* <div></div> */}
@@ -210,6 +210,7 @@ const Wrapper = styled.main`
   height: 100%;
   color: white;
   position: relative;
+  padding-bottom: 2rem;
   .postSection {
     text-align: left;
     z-index: 1;
@@ -312,7 +313,7 @@ const Wrapper = styled.main`
 
   .semiHeroText {
     position: relative;
-    padding-top: 5rem;
+    padding-top: 4rem;
     border-top: 2px solid rgba(0, 0, 0, 0.1);
     /* border-radius: 10px; */
     color: gray;
@@ -325,7 +326,7 @@ const Wrapper = styled.main`
       display: flex;
       justify-content: center;
       flex-direction: column;
-      gap: 2rem;
+      gap: 1rem;
     }
     section:last-of-type {
       align-items: center;
@@ -359,16 +360,6 @@ const Wrapper = styled.main`
   .ExamSVG:hover {
     filter: saturate(1);
     transition: 3s;
-  }
-
-  @media screen and (max-width: 1200px) {
-    .semiHeroText {
-      padding-top: 1rem;
-      flex-direction: column;
-    }
-    img {
-      display: none;
-    }
   }
 
   .randomAssText {
@@ -408,6 +399,57 @@ const Wrapper = styled.main`
     position: fixed;
     bottom: 0;
     overflow: hidden;
+  }
+
+  @media screen and (max-width: 1200px) {
+    .semiHeroText {
+      padding-top: 1rem;
+      flex-direction: column;
+    }
+    img {
+      display: none;
+    }
+  }
+
+  @media screen and (max-width: 880px) {
+    .posts {
+      gap: 1rem;
+    }
+    .post {
+      width: 10em;
+      height: 12rem;
+      justify-content: left;
+      align-items: start;
+      padding: 1rem;
+      p {
+        margin: 0.5rem;
+      }
+      .heading {
+        font-size: 1.25rem;
+      }
+      .timing {
+        letter-spacing: 0;
+        font-size: 1rem;
+      }
+    }
+
+    .stylishBg {
+      height: 15rem;
+    }
+  }
+
+  @media screen and (max-width: 610px) {
+    .posts {
+      grid-template-columns: 1fr;
+    }
+    .post {
+      width: 15em;
+      height: 5rem;
+    }
+
+    .stylishBg {
+      height: 15rem;
+    }
   }
 `;
 

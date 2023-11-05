@@ -7,6 +7,7 @@ function Card({
   postTitle,
   postID,
   releaseDate = "Sun, 01 Oct 2023 18:00:00 GMT",
+  description,
 }) {
   const formattedDate = dayjs(releaseDate, {
     format: "ddd, DD MMM YYYY HH:mm:ss [GMT]",
@@ -122,7 +123,7 @@ function Card({
         <div className="card2">
           <p className="title">{postTitle || "title"}</p>
           <p className="release">{formattedDate}</p>
-          <h4>{getRandomSentence()}</h4>
+          <h4>{description || getRandomSentence()}</h4>
           <p className="userName">- {getRandomName()} </p>
         </div>
       </Link>

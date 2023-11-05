@@ -1,9 +1,12 @@
-export function scrollToBottom(defined) {
+export function scrollToBottom(defined, duration = 1000) {
   const element = document.documentElement;
   const start = element.scrollTop;
-  const end = defined; //  element.scrollHeight - element.clientHeight; / 105
-  const duration = 1000; // Adjust the duration as needed
-
+  let end;
+  if (!defined) {
+    end = element.scrollHeight - element.clientHeight;
+  } else {
+    end = defined;
+  }
   const startTime = performance.now();
 
   function animateScroll(time) {

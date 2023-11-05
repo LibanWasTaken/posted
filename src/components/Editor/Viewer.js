@@ -80,7 +80,7 @@ export default function Viewer(state) {
 
   return (
     <LexicalComposer initialConfig={editorConfig}>
-      <div className="editor-inner" style={{ border: "1px solid red" }}>
+      <div className="editor-inner" style={{ border: "1px solid #ddd" }}>
         <RichTextPlugin
           contentEditable={<ContentEditable className="editor-input" />}
           placeholder={<Placeholder />}

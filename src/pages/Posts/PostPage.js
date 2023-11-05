@@ -371,36 +371,6 @@ const OwnPostPage = () => {
 
             <div className="textEditor">
               <CustomTabPanel value={tabValue} index={0}>
-                {/* <Box sx={{ display: "flex", gap: "1rem" }}>
-                  <TextField
-                    sx={{
-                      marginTop: 0,
-                      bgcolor: "white",
-                      "& fieldset": { border: "none" },
-                      border: "1px solid #eee",
-                    }}
-                    fullWidth
-                    label="Description"
-                    variant="outlined"
-                    id="outlined-controlled"
-                    type="text"
-                    placeholder="Keep it short"
-                    defaultValue={postData.description || ""}
-                    inputProps={{ maxLength: 150 }}
-                  />
-                  <Button
-                    sx={{
-                      bgcolor: "white",
-                      borderColor: "whitesmoke",
-                    }}
-                    disabled
-                    // className="loadingClassicBtn"
-                    variant="text"
-                  >
-                    save
-                  </Button>
-                </Box> */}
-
                 <Editor initialConfig={{ editable: true }} />
               </CustomTabPanel>
             </div>
@@ -410,6 +380,7 @@ const OwnPostPage = () => {
                 <Box
                   sx={{
                     padding: 8,
+                    paddingBottom: 0,
                     textAlign: "left",
                   }}
                 >
@@ -753,6 +724,7 @@ const OwnPostPage = () => {
                 <Box
                   sx={{
                     padding: 8,
+                    paddingBottom: 1,
                     textAlign: "left",
                   }}
                 >
@@ -842,6 +814,8 @@ const Wrapper = styled.main`
   text-align: center;
   position: relative;
   padding-left: 290px;
+  height: 100%;
+  overflow: hidden;
 
   .textEditor {
     width: 90%;

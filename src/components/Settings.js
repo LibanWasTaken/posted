@@ -146,6 +146,7 @@ function Settings({ userID }) {
                     label="Display Name"
                     variant="outlined"
                     defaultValue={user.displayName || ""}
+                    onChange={updateValueOf("displayName")}
                     inputProps={{
                       maxLength: 25,
                     }}

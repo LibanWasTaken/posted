@@ -48,11 +48,11 @@ const Navbar = () => {
 
         <div className="icons">
           {windowWidth < 930 ? (
-            <span className="icon">
-              S.B.
-              {/* <Sidebar /> */}
-            </span>
+            <Sidebar />
           ) : (
+            // <span className="icon">
+            //   S.B.
+            // </span>
             <div>
               <a href="/search" className="icon">
                 <span className="material-symbols-outlined">search</span>

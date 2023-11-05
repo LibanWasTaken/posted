@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { Spinner3 } from "../../components/Spinner";
 import Card from "../../components/PostCard";
 import { Skeleton } from "@mui/material";
+import dayjs from "dayjs";
 
 import { getDocs, collection, query, orderBy, limit } from "firebase/firestore";
 import { db } from "../../services/firebase-config";
@@ -14,6 +15,7 @@ function generateCards(posts) {
       postTitle={post.title}
       postID={post.id}
       releaseDate={post.releaseDate}
+      description={post.description}
     />
   ));
 }
@@ -31,8 +33,8 @@ export default function AllProductPage() {
     //   setPosts(postsData);
     //   setLoading(false);
     // });
-
-    const queryRecieved = query(collection(db, `/posts`), limit(2));
+    // const queryRecieved = query(collection(db, `/posts`), limit(2));
+    const queryRecieved = query(collection(db, `/posts`));
     const querySnapshot = await getDocs(queryRecieved);
     const postsData = querySnapshot.docs.map((doc) => ({
       ...doc.data(),
