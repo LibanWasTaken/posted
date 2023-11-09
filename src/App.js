@@ -1,4 +1,4 @@
-// import "./App.css";
+import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 // import Footer from "./components/Footer";
@@ -40,7 +40,15 @@ function App() {
                 element={<EmailVerification />}
               />
               <Route exact path="/me" element={<OwnPage />} />
-              <Route exact path="/me/post/:id" element={<OwnPostPage />} />
+              <Route
+                exact
+                path="/me/post/:id"
+                element={
+                  //<div className="bgWhiteSmoke">
+                  <OwnPostPage />
+                  //</div>
+                }
+              />
               <Route exact path="/user/:uid" element={<UserPage />} />
               <Route exact path="/search" element={<SearchPage />} />
               <Route exact path="/example" element={<SinglePostsPage />} />
@@ -125,6 +133,8 @@ tiptap
 draftjs
 https://www.tiny.cloud/docs/tinymce/6/full-featured-premium-demo/
 
-replace ahref with Link (keeps the navbar?)
+TODO: replace ahref with Link (keeps the navbar?)
+
+https://www.npmjs.com/package/react-responsive
 
 */

@@ -33,19 +33,11 @@ import { useParams } from "react-router-dom";
 
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useUserContext } from "../../context/UserContext";
-import {
-  getDatabase,
-  ref,
-  set,
-  onValue,
-  update,
-  remove,
-} from "firebase/database";
 
 import { getDoc, doc, updateDoc } from "firebase/firestore";
 import { db as FSdb } from "../../services/firebase-config";
 
-import { Box, TextField, Button } from "@mui/material";
+import { Box, TextField, Button, Skeleton } from "@mui/material";
 
 // import FloatingTextFormatToolbarPlugin from "./playground/plugins/FloatingTextFormatToolbarPlugin/SpeechToTextPlugin";
 
@@ -73,53 +65,6 @@ const editorConfig = {
 };
 
 export default function Editor() {
-  const testState = {
-    root: {
-      children: [
-        {
-          children: [
-            {
-              detail: 0,
-              format: 0,
-              mode: "normal",
-              style: "",
-              text: "Well, this is test number ",
-              type: "text",
-              version: 1,
-            },
-            {
-              detail: 0,
-              format: 1,
-              mode: "normal",
-              style: "",
-              text: "two",
-              type: "text",
-              version: 1,
-            },
-            {
-              detail: 0,
-              format: 0,
-              mode: "normal",
-              style: "",
-              text: ".",
-              type: "text",
-              version: 1,
-            },
-          ],
-          direction: "ltr",
-          format: "",
-          indent: 0,
-          type: "paragraph",
-          version: 1,
-        },
-      ],
-      direction: "ltr",
-      format: "",
-      indent: 0,
-      type: "root",
-      version: 1,
-    },
-  };
   const emptyState = {
     root: {
       children: [
@@ -274,6 +219,7 @@ export default function Editor() {
               placeholder={<Placeholder />}
               ErrorBoundary={LexicalErrorBoundary}
             />
+
             <HistoryPlugin />
             {/* <TreeViewPlugin /> */}
             <AutoFocusPlugin />

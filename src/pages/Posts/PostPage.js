@@ -305,7 +305,13 @@ const OwnPostPage = () => {
 
   return (
     <div
-      style={{ background: "whitesmoke", minHeight: "100vh", height: "100%" }}
+      style={{
+        background: "whitesmoke",
+        minHeight: "100vh",
+        height: "100%",
+        // border: "5px dashed red",
+        // padding: "0 0 5rem 0",
+      }}
     >
       {loading2 ? (
         <Content>
@@ -455,7 +461,7 @@ const OwnPostPage = () => {
                       sx={{ marginTop: 2 }}
                       disabled={!editDisabled}
                       value="start"
-                      control={<Switch />}
+                      control={<Switch defaultChecked={postData.public} />}
                       label="Public"
                       labelPlacement="start"
                       onChange={(event) => {
@@ -468,6 +474,22 @@ const OwnPostPage = () => {
                       }}
                     />
                   </Tooltip>
+                  <FormControlLabel
+                    sx={{ marginTop: 2 }}
+                    disabled={!editDisabled}
+                    value="start"
+                    control={<Switch defaultChecked={postData.anonymity} />}
+                    label="Anonymous"
+                    labelPlacement="start"
+                    onChange={(event) => {
+                      console.log(event.target.checked);
+                      setUpdatedObj((prevObj) => ({
+                        ...prevObj,
+                        anonymity: event.target.checked,
+                      }));
+                      saveDisabled && setSaveDisabled(false);
+                    }}
+                  />
                 </Box>
                 <FinalButtons />
               </CustomTabPanel>
@@ -814,8 +836,9 @@ const Wrapper = styled.main`
   text-align: center;
   position: relative;
   padding-left: 290px;
-  height: 100%;
   overflow: hidden;
+
+  /* background-color: red; */
 
   .textEditor {
     width: 90%;
@@ -824,6 +847,7 @@ const Wrapper = styled.main`
 
   .sidebar {
     position: absolute;
+
     top: 0;
     left: 0;
     background-color: black;

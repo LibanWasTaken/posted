@@ -129,6 +129,7 @@ const Wrapper = styled.main`
     flex-direction: column;
     filter: saturate(0) brightness(1.5);
     /* padding: 2rem 0; */
+    padding-top: 2rem;
     text-align: center;
     width: 100%;
     height: 95vh;
@@ -138,7 +139,11 @@ const Wrapper = styled.main`
     img {
       user-select: none;
       width: 5vw;
-      cursor: wait;
+      min-width: 4rem;
+      margin: 0 1rem;
+      /* cursor: wait; */
+      /* box-shadow: 0px 0px 10px 00px rgba(255, 255, 255, 0.1); */
+      border-radius: 10px;
     }
     button {
       font-size: 1rem;
@@ -194,6 +199,9 @@ const Wrapper = styled.main`
 
     h1 {
       font-size: 30rem;
+      /* width: 90vw; */
+      /* text-align: center; */
+
       /* color: white; */
     }
     overflow: hidden;
@@ -233,8 +241,11 @@ const Wrapper = styled.main`
     overflow: hidden;
   }
 
-  @media screen and (max-width: 1450px) {
+  @media screen and (max-width: 1200px) {
     .hero {
+      img {
+        margin: 0;
+      }
     }
   }
 `;

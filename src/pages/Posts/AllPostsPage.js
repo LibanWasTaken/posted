@@ -9,15 +9,22 @@ import { getDocs, collection, query, orderBy, limit } from "firebase/firestore";
 import { db } from "../../services/firebase-config";
 
 function generateCards(posts) {
-  return Object.values(posts).map((post) => (
-    <Card
-      key={post.id}
-      postTitle={post.title}
-      postID={post.id}
-      releaseDate={post.releaseDate}
-      description={post.description}
-    />
-  ));
+  return Object.values(posts).map((post) => {
+    if (true) {
+      // TODO: change true -> post.public
+      return (
+        <Card
+          key={post.id}
+          postTitle={post.title}
+          postID={post.id}
+          releaseDate={post.releaseDate}
+          description={post.description}
+          user={post.anonymity ? "Anonymous" : post.user}
+        />
+      );
+    }
+    return null;
+  });
 }
 
 export default function AllProductPage() {
@@ -65,9 +72,9 @@ export default function AllProductPage() {
               width={280}
               height={360}
               animation="wave"
-            />
-            
-            {generateCards(posts)} */}
+            />*/}
+
+            {generateCards(posts)}
             {generateCards(posts)}
           </div>
         </section>
@@ -79,7 +86,7 @@ export default function AllProductPage() {
 const Wrapper = styled.main`
   display: flex;
   justify-content: center;
-  margin-top: 2rem;
+  margin: 2rem 0;
   .posts {
     display: grid;
     grid-template-columns: repeat(5, 1fr);

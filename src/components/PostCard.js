@@ -8,6 +8,7 @@ function Card({
   postID,
   releaseDate = "Sun, 01 Oct 2023 18:00:00 GMT",
   description,
+  user,
 }) {
   const formattedDate = dayjs(releaseDate, {
     format: "ddd, DD MMM YYYY HH:mm:ss [GMT]",
@@ -117,14 +118,23 @@ function Card({
     return names[randomIndex];
   };
 
+  // const randomTilt = Math.random() * 10 - 5;
+  const randomTilt = 0;
+
   return (
     <Wrapper>
-      <Link to={postID} style={{ textDecoration: "none" }}>
-        <div className="card2">
+      <Link
+        to={postID}
+        style={{
+          textDecoration: "none",
+          transform: `rotate(${randomTilt}deg)`,
+        }}
+      >
+        <div className="card2" style={{}}>
           <p className="title">{postTitle || "title"}</p>
           <p className="release">{formattedDate}</p>
           <h4>{description || getRandomSentence()}</h4>
-          <p className="userName">- {getRandomName()} </p>
+          <p className="userName">- {user || getRandomName()} </p>
         </div>
       </Link>
     </Wrapper>
@@ -138,10 +148,11 @@ const Wrapper = styled.section`
     height: 20rem;
     background-color: black;
     padding: 20px;
-    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    /* box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px; */
     text-decoration: none;
     position: relative;
     /* border-radius: 10px; */
+
     .title {
       font-weight: 600;
       margin: 0;
@@ -158,11 +169,15 @@ const Wrapper = styled.section`
     position: absolute;
     bottom: 10px;
     letter-spacing: 1px;
-    /* font-style: italic; */
+    font-size: 0.75rem;
+    font-style: italic;
   }
 
   .card2:hover {
-    background-color: #333;
+    background-color: whitesmoke;
+    color: black;
+    /* padding: 10px; */
+    transform: scale(1.025);
     cursor: pointer;
     transition: 0.3s;
   }

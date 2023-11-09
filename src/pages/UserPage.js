@@ -17,8 +17,6 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 
-
-
 const theme = createTheme({
   typography: {
     fontFamily: [
@@ -110,7 +108,7 @@ const UserPage = () => {
       <Link
         key={post.id}
         to={`/posts/${post.id}`}
-        style={{ textDecoration: "none", color: "black" }}
+        style={{ textDecoration: "none" }}
       >
         <div className="post">
           <p className="heading">{post.title}</p>
@@ -174,21 +172,39 @@ const UserPage = () => {
 
   return (
     <Wrapper>
-      <h1>UserPage</h1>
       {loading ? (
         <Spinner3 />
       ) : userExists ? (
         <div className="section">
-          <h1>Yo this is {user.displayName}</h1>
+          <h1>{user.displayName}</h1>
           <div className="posts">
             {loadingPosts ? (
               <>Loading..</>
             ) : (
               <>{userPosts && generatePostLinks(userPosts)}</>
             )}
-            <div className="post" onClick={handleOpenPrivateModal}>
+            {/* <div className="post" onClick={handleOpenPrivateModal}>
               if its private, do a modal asking for post id
-            </div>
+            </div> */}
+          </div>
+
+          <div className="pageBreak"></div>
+          <div className="info">
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quae hic
+            quibusdam, repudiandae culpa facere repellat aut laboriosam sit
+            consectetur perspiciatis corporis illo. Quod quas saepe tenetur,
+            placeat quae facere perferendis unde adipisci quam! Voluptas,
+            commodi dolores expedita doloremque iste culpa exercitationem rerum
+            est esse illum veniam deleniti consequatur quod at.
+            <br />
+            <br />
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Excepturi
+            delectus repudiandae minima, facilis ut tempora.
+            <br />
+            <br />
+            corporis illo. Quod quas saepe tenetur, placeat quae facere
+            perferendis unde adipisci quam! Voluptas, commodi dolores expedita
+            dolorem
           </div>
         </div>
       ) : (
@@ -206,37 +222,65 @@ const Wrapper = styled.main`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  margin-top: 2rem;
+  /* justify-content: center; */
+  padding-top: 3rem;
+  background-color: black;
+  color: white;
+  min-height: 100vh;
+  text-align: center;
+  overflow-x: hidden;
 
-  .posts {
-    /* border: 1px solid red; */
+  .section {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 1rem;
-    max-width: 80vw;
     flex-direction: column;
-    margin-bottom: 3rem;
+  }
+
+  .posts {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    gap: 1rem;
+    width: 95vw;
+    /* flex-direction: column; */
+    margin-top: 3rem;
     .post {
-      /* border: 1px solid lime; */
+      border: 1px solid white;
       display: flex;
       align-items: center;
       justify-content: space-around;
-      gap: 1rem;
-      width: 30rem;
-      height: 10rem;
-      font-size: 2rem;
+      gap: 1.5rem;
+      width: 25rem;
+      height: 5rem;
+      font-size: 1.5rem;
+      color: white;
       cursor: pointer;
-      background-color: whitesmoke;
-      box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
-        rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+      /* background-color: whitesmoke; */
+      /* box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, */
+      /* rgba(0, 0, 0, 0.3) 0px 1px 3px -1px; */
     }
 
     .post:hover {
       transition: 0.3s;
-      box-shadow: none;
+      background-color: white;
+      color: black;
+      /* box-shadow: none; */
+      /* height: 30rem; */
     }
+  }
+
+  .info {
+    color: gray;
+    text-align: left;
+    width: 80vw;
+  }
+
+  .pageBreak {
+    margin: 5rem 0;
+    background-color: rgba(255, 255, 255, 0.15);
+    width: 90vw;
+    height: 1px;
   }
 `;
 

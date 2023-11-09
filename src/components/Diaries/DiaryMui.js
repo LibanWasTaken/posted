@@ -56,7 +56,7 @@ function renderListItems(data) {
   ));
 }
 
-export default function Diary({ open, handleClose, info }) {
+export default function Diary({ open, handleClose, info, editable = true }) {
   const arrExample = [
     {
       primary: "09 Dec, 2021",
@@ -218,12 +218,14 @@ export default function Diary({ open, handleClose, info }) {
               </span>
               <p>Diary</p>
             </div>
-            <span
-              className="btnIcon material-symbols-outlined"
-              onClick={handlePageAdderOpen}
-            >
-              add
-            </span>
+            {editable && (
+              <span
+                className="btnIcon material-symbols-outlined"
+                onClick={handlePageAdderOpen}
+              >
+                add
+              </span>
+            )}
           </div>
           <section className="list">
             <Paper style={{ maxHeight: "80vh", overflow: "auto" }}>
