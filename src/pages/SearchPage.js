@@ -74,7 +74,7 @@ const Search = () => {
     );
   }
 
-  sendEmail();
+  // sendEmail();
 
   function ending(e) {
     e.preventDefault();

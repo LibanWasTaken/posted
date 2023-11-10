@@ -48,6 +48,7 @@ export default function DeletePost({
   handleClose,
   postID = "",
   userID = "",
+  fromDB = "posts",
 }) {
   const [postIDValue, setPostIDValue] = useState("");
   const [deleting, setDeleting] = useState(false);
@@ -63,7 +64,7 @@ export default function DeletePost({
       setDeleting(true);
       console.log("Deleting post:", postID, "from user:", userID);
 
-      const postDocRef = doc(db, "posts", postID);
+      const postDocRef = doc(db, fromDB, postID);
       try {
         await deleteDoc(postDocRef);
         console.log("Document successfully deleted from posts");
