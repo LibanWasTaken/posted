@@ -177,10 +177,15 @@ export default function SinglePostPage() {
                       gap: "1rem",
                     }}
                   >
-                    <h2 className="releaseDate">
-                      {dayjs(postData.releaseDate).format("DD MMM, YYYY")}
-                    </h2>
-                    <p>{dayjs(postData.releaseDate).format("HH:mm:ss")}</p>
+                    <Tooltip
+                      title={dayjs(postData.releaseDate).format("HH:mm:ss")}
+                      placement="right"
+                      arrow
+                    >
+                      <h2 className="releaseDate">
+                        {dayjs(postData.releaseDate).format("DD MMM, YYYY")}
+                      </h2>
+                    </Tooltip>
                   </span>
                 </div>
               </div>
@@ -208,23 +213,29 @@ export default function SinglePostPage() {
                 </span>
                 {/* TODO: render even if no user, when click, say log in */}
 
-                <span
+                {/* <span
                   className="buttonIcon material-symbols-outlined"
                   onClick={() => {
                     scrollToBottom();
                   }}
                 >
                   keyboard_double_arrow_down
-                </span>
+                </span> */}
                 {currentUser && postData && (
-                  <span
-                    className={`heart material-symbols-outlined ${
-                      hearted && "hearted"
-                    } ${hearting && "liking"}`}
-                    onClick={handleHeart}
+                  <Tooltip
+                    title={postData.likes ? postData.likes.length : "uhh"}
+                    placement="top"
+                    arrow
                   >
-                    {hearted ? "heart_check" : "favorite"}
-                  </span>
+                    <span
+                      className={`heart material-symbols-outlined ${
+                        hearted && "hearted"
+                      } ${hearting && "liking"}`}
+                      onClick={handleHeart}
+                    >
+                      {hearted ? "heart_check" : "favorite"}
+                    </span>
+                  </Tooltip>
                 )}
                 {postAdmin && (
                   <span

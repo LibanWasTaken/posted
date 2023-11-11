@@ -123,7 +123,7 @@ const OwnPostPage = () => {
       const docRef = doc(db, "posts", postID);
       const docSnap = await getDoc(docRef);
       const postDataReceived = docSnap.data();
-      console.log(postDataReceived);
+      // console.log(postDataReceived);
       if (postDataReceived == undefined) {
         setInValidPost(true);
         setValidUser(false);
