@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
-import { Spinner1 } from "../../components/Spinner";
+import { Spinner3 } from "../../components/Spinner";
 import { scrollToBottom } from "../../functions/functions";
 
 import Viewer from "../../components/Editor/Viewer";
@@ -18,7 +18,12 @@ function LinkList({ links }) {
   return (
     <div className="links">
       {links.map((link, index) => (
-        <Tooltip title={link.secondary} placement="bottom" arrow>
+        <Tooltip
+          title={link.secondary}
+          key={link.secondary}
+          placement="bottom"
+          arrow
+        >
           <a href={link.secondary} target="_blank">
             <p key={index} className="link">
               {link.primary}
@@ -41,7 +46,37 @@ export default function SinglePostPage() {
   const [hearting, setHearting] = useState(false);
   const [inValidPost, setInValidPost] = useState(false);
   const [settingsEnabled, setSettingsEnabled] = useState(false);
-  let scrollPosition;
+  const [hidePost, setHidePost] = useState(false);
+  // let scrollPosition;
+
+  const targetRef = useRef(null);
+  useEffect(() => {
+    if (settingsEnabled) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) {
+              // Call your function when the settingsContainer goes out of view
+              handleSettingsExit();
+            }
+          });
+        },
+        { threshold: 0 } // Use a threshold of 0 to trigger when the element is not fully in view
+      );
+
+      // Start observing the settingsContainer element
+      if (targetRef.current) {
+        observer.observe(targetRef.current);
+      }
+
+      // Cleanup the observer when the component is unmounted
+      return () => {
+        if (targetRef.current) {
+          observer.unobserve(targetRef.current);
+        }
+      };
+    }
+  }, [hidePost]);
 
   async function getFSData() {
     try {
@@ -134,12 +169,24 @@ export default function SinglePostPage() {
   function handleSettings() {
     setSettingsEnabled(true);
     setTimeout(() => {
-      scrollToBottom();
-      scrollPosition = window.scrollY;
+      scrollToBottom(null, 1000);
+      // scrollPosition = window.scrollY;
 
       // Disable scrolling
-      document.body.style.overflow = "hidden";
+      // document.body.style.overflow = "hidden";
     }, 10);
+    setTimeout(() => {
+      setHidePost(true);
+    }, 1000);
+  }
+  function handleSettingsExit() {
+    setHidePost(false);
+    // scrollToBottom(null, 1);
+    scrollToBottom(0.1, 1000);
+    setTimeout(() => {
+      setSettingsEnabled(false);
+      // document.body.style.overflow = "auto";
+    }, 1000);
   }
 
   const [diaryOpenMUI, setDiaryOpenMUI] = useState(false);
@@ -153,7 +200,7 @@ export default function SinglePostPage() {
     <Wrapper>
       {loading ? (
         <div className="error">
-          <Spinner1 />
+          <Spinner3 />
         </div>
       ) : inValidPost ? (
         <div className="error">
@@ -164,7 +211,7 @@ export default function SinglePostPage() {
         </div>
       ) : (
         <section className="Container">
-          <div className="postContainer">
+          <div className={`postContainer ${hidePost && "hidden"}`}>
             <section className="info">
               {/* <div style={{ display: "flex", gap: "5rem", alignItems: "center" }}> */}
               <div>
@@ -189,7 +236,7 @@ export default function SinglePostPage() {
                   </span>
                 </div>
               </div>
-              <div style={{ textAlign: "center" }}>
+              <div style={{ textAlign: "center", margin: "0 2rem" }}>
                 <h4 className="description">
                   {postData.description && postData.description}
                 </h4>
@@ -206,7 +253,7 @@ export default function SinglePostPage() {
 
               <div className="buttons">
                 <span
-                  class="buttonIcon material-symbols-outlined"
+                  className="buttonIcon material-symbols-outlined"
                   onClick={handleDiaryOpenMUI}
                 >
                   book_5
@@ -239,7 +286,7 @@ export default function SinglePostPage() {
                 )}
                 {postAdmin && (
                   <span
-                    class="buttonIcon material-symbols-outlined settings"
+                    className="buttonIcon material-symbols-outlined settings"
                     onClick={handleSettings}
                   >
                     settings
@@ -264,18 +311,13 @@ export default function SinglePostPage() {
               />
             )}
           </div>
+
           {settingsEnabled && (
-            <div className="settingsContainer">
+            <div ref={targetRef} className="settingsContainer">
               <div className="title">
                 <span
                   className="buttonIcon material-symbols-outlined"
-                  onClick={() => {
-                    scrollToBottom(0.1, 1000);
-                    setTimeout(() => {
-                      setSettingsEnabled(false);
-                      document.body.style.overflow = "auto";
-                    }, 1000);
-                  }}
+                  onClick={handleSettingsExit}
                 >
                   keyboard_double_arrow_up
                 </span>
@@ -289,6 +331,9 @@ export default function SinglePostPage() {
                   delete post
                 </button>
               </div>
+              <span className="material-symbols-outlined settingImg">
+                settings
+              </span>
 
               <DeletePost
                 open={deletePostOpen}
@@ -307,6 +352,7 @@ export default function SinglePostPage() {
 
 const Wrapper = styled.main`
   margin: 1rem 2rem;
+  overflow-x: hidden;
 
   .buttonIcon {
     background-color: whitesmoke;
@@ -327,6 +373,8 @@ const Wrapper = styled.main`
     justify-content: space-around;
     flex-direction: column;
     width: 100%;
+    /* overflow-x: hidden; */
+
     /* width: 95vw; */
     section {
       padding: 1rem 2rem;
@@ -414,7 +462,7 @@ const Wrapper = styled.main`
         max-height: 3rem;
         overflow-x: scroll;
         padding: 0.5rem;
-        padding-bottom: 1rem;
+        padding-bottom: 1.5rem;
         display: flex;
         gap: 1rem;
         grid-template-columns: 1fr 1fr 1fr;
@@ -445,10 +493,28 @@ const Wrapper = styled.main`
     width: 95%;
     padding: 1rem;
     height: 85vh;
-    margin-top: 250vh;
+    margin-top: 300vh;
     margin-bottom: 2rem;
     border: 1px solid #ddd;
     border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    .settingImg {
+      position: absolute;
+      right: -20rem;
+      font-size: 50rem;
+      color: whitesmoke;
+      animation: spin 30s linear infinite;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
     .title {
       display: flex;
       margin: 0 2rem;
@@ -495,5 +561,9 @@ const Wrapper = styled.main`
     flex-direction: column;
     width: 100vw;
     height: 50vh;
+  }
+
+  .hidden {
+    visibility: hidden;
   }
 `;
