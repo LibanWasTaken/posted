@@ -100,7 +100,9 @@ const OwnPage = () => {
   }, [currentUser, loading]);
 
   return (
-    <div style={{ background: "whitesmoke", height: "100%" }}>
+    <div
+      style={{ background: "whitesmoke", height: "100%", minHeight: "100vh" }}
+    >
       <Wrapper>
         <span className="stylishBg">
           {/* <div></div> */}

@@ -174,10 +174,13 @@ const Wrapper = styled.section`
   }
 
   .card2:hover {
-    background-color: whitesmoke;
-    color: black;
+    /* background-color: whitesmoke;
+    color: black; */
+    background-color: #222;
+
     /* padding: 10px; */
-    transform: scale(1.025);
+    /* transform: scale(1.025); */
+    /* transform: rotate(-1deg); */
     cursor: pointer;
     transition: 0.3s;
   }

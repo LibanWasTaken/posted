@@ -309,6 +309,7 @@ const OwnPostPage = () => {
         background: "whitesmoke",
         minHeight: "100vh",
         height: "100%",
+        overflow: "hidden",
         // border: "5px dashed red",
         // padding: "0 0 5rem 0",
       }}
@@ -836,7 +837,7 @@ const Wrapper = styled.main`
   text-align: center;
   position: relative;
   padding-left: 290px;
-  overflow: hidden;
+  /* overflow: hidden; */
 
   /* background-color: red; */
 

@@ -8,6 +8,7 @@ import Viewer from "../../components/Editor/Viewer";
 import Diary from "../../components/Diaries/DiaryMui";
 import { useUserContext } from "../../context/UserContext";
 import DeletePost from "../../components/modals/DeletePost";
+import Comments from "../../components/Comments";
 
 import dayjs from "dayjs";
 import { db } from "../../services/firebase-config";
@@ -43,12 +44,13 @@ export default function SinglePostPage() {
   const [postAdmin, setPostAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [hearted, setHearted] = useState(false);
+  const [likesCount, setLikesCount] = useState("uhh");
   const [hearting, setHearting] = useState(false);
   const [inValidPost, setInValidPost] = useState(false);
   const [settingsEnabled, setSettingsEnabled] = useState(false);
   const [hidePost, setHidePost] = useState(false);
-  // let scrollPosition;
 
+  // scrolling;
   const targetRef = useRef(null);
   useEffect(() => {
     if (settingsEnabled) {
@@ -124,6 +126,7 @@ export default function SinglePostPage() {
       if (postData.likes) {
         const isCurrentUserLiked = postData.likes.includes(currentUser.uid);
         setHearted(isCurrentUserLiked);
+        setLikesCount(postData.likes.length);
         // console.log(isCurrentUserLiked);
       }
       if (!postAdmin && currentUser.uid == postData.user) {
@@ -147,8 +150,10 @@ export default function SinglePostPage() {
 
       if (hearted) {
         postDataLikes = postDataLikes.filter((userId) => userId !== uid);
+        setLikesCount(likesCount - 1);
       } else {
         postDataLikes.push(uid);
+        setLikesCount(likesCount + 1);
       }
 
       const postRef = doc(db, "posts", id); // TODO: change to posted
@@ -258,32 +263,23 @@ export default function SinglePostPage() {
                 >
                   book_5
                 </span>
-                {/* TODO: render even if no user, when click, say log in */}
-
-                {/* <span
-                  className="buttonIcon material-symbols-outlined"
-                  onClick={() => {
-                    scrollToBottom();
-                  }}
+                {/* TODO: +/- length when liking */}
+                {/* {currentUser && postData && ( */}
+                <Tooltip
+                  title={currentUser ? likesCount : "Log in"}
+                  placement="top"
+                  arrow
                 >
-                  keyboard_double_arrow_down
-                </span> */}
-                {currentUser && postData && (
-                  <Tooltip
-                    title={postData.likes ? postData.likes.length : "uhh"}
-                    placement="top"
-                    arrow
+                  <span
+                    className={`heart material-symbols-outlined ${
+                      hearted && "hearted"
+                    } ${hearting && "liking"}`}
+                    onClick={currentUser && handleHeart}
                   >
-                    <span
-                      className={`heart material-symbols-outlined ${
-                        hearted && "hearted"
-                      } ${hearting && "liking"}`}
-                      onClick={handleHeart}
-                    >
-                      {hearted ? "heart_check" : "favorite"}
-                    </span>
-                  </Tooltip>
-                )}
+                    {hearted ? "heart_check" : "favorite"}
+                  </span>
+                </Tooltip>
+                {/* )} */}
                 {postAdmin && (
                   <span
                     className="buttonIcon material-symbols-outlined settings"
@@ -301,8 +297,10 @@ export default function SinglePostPage() {
               </div>
               {postData.links && <LinkList links={postData.links} />}
             </section>
-            {/* TODO: {postData.diary && } */}
+            <Comments postID={id} />
+
             {true && (
+              // TODO: {postData.diary && }
               <Diary
                 open={diaryOpenMUI}
                 handleClose={handleDiaryCloseMUI}
@@ -324,9 +322,11 @@ export default function SinglePostPage() {
                 <h1>Settings</h1>
               </div>
               <div className="form">
+                <p>Show comments?</p>
                 <p>Change this</p>
                 <p>Also Change this</p>
                 <p>what about this Change this</p>
+                <p>see views = pay money</p>
                 <button className="deleteBtn" onClick={handleDeletePostOpen}>
                   delete post
                 </button>
@@ -354,36 +354,22 @@ const Wrapper = styled.main`
   margin: 1rem 2rem;
   overflow-x: hidden;
 
-  .buttonIcon {
-    background-color: whitesmoke;
-    padding: 1rem;
-    border-radius: 50%;
-    cursor: pointer;
-  }
-  .buttonIcon:hover {
-    background-color: #eee;
-  }
-  .buttonIcon:active {
-    background-color: #ddd;
-  }
-
   .postContainer {
     display: flex;
     align-items: center;
     justify-content: space-around;
     flex-direction: column;
     width: 100%;
-    /* overflow-x: hidden; */
 
     /* width: 95vw; */
     section {
-      padding: 1rem 2rem;
-      /* border-radius: 10px; */
-      width: 90%;
+      /* padding: 1rem 2rem; */
+      /* width: 90%; */
     }
 
     .info {
       width: 95%;
+      padding-bottom: 2rem;
       border-bottom: 1px solid whitesmoke;
       display: flex;
       align-items: center;
@@ -451,6 +437,7 @@ const Wrapper = styled.main`
       display: flex;
       flex-direction: column;
       gap: 2rem;
+      margin-top: 2rem;
 
       .letter {
         /* width: 50%; */
@@ -505,6 +492,7 @@ const Wrapper = styled.main`
       font-size: 50rem;
       color: whitesmoke;
       animation: spin 30s linear infinite;
+      user-select: none;
     }
 
     @keyframes spin {
@@ -565,5 +553,18 @@ const Wrapper = styled.main`
 
   .hidden {
     visibility: hidden;
+  }
+
+  .buttonIcon {
+    background-color: whitesmoke;
+    padding: 1rem;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  .buttonIcon:hover {
+    background-color: #eee;
+  }
+  .buttonIcon:active {
+    background-color: #ddd;
   }
 `;
