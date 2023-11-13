@@ -73,7 +73,7 @@ export default function Viewer(state) {
   function Placeholder() {
     return (
       <div className="editor-placeholder">
-        {incoming ? <>Loading..</> : <>Nuthing here ig</>}
+        {incoming ? <>Loading..</> : <>This appears to be empty..</>}
       </div>
     );
   }

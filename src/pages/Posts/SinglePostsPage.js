@@ -364,7 +364,6 @@ const Wrapper = styled.main`
     /* width: 95vw; */
     section {
       /* padding: 1rem 2rem; */
-      /* width: 90%; */
     }
 
     .info {
@@ -413,6 +412,8 @@ const Wrapper = styled.main`
         font-size: 3.5rem;
         padding: 0;
         margin: 0;
+        max-width: 35rem;
+        word-wrap: break-word;
       }
       .releaseDate {
         padding: 0;
@@ -422,6 +423,8 @@ const Wrapper = styled.main`
       .description {
         padding: 0;
         margin: 0 0 0.5rem 0;
+        width: 50rem;
+        word-wrap: break-word;
       }
 
       .username {
@@ -437,10 +440,11 @@ const Wrapper = styled.main`
       display: flex;
       flex-direction: column;
       gap: 2rem;
-      margin-top: 2rem;
+      margin: 2rem 0;
+      width: 90%;
 
       .letter {
-        /* width: 50%; */
+        min-width: 90%;
         /* border: 1px solid red; */
       }
 

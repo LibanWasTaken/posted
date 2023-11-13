@@ -131,10 +131,16 @@ function Card({
         }}
       >
         <div className="card2" style={{}}>
-          <p className="title">{postTitle || "title"}</p>
-          <p className="release">{formattedDate}</p>
-          <h4>{description || getRandomSentence()}</h4>
-          <p className="userName">- {user || getRandomName()} </p>
+          <div className="group group">
+            <p className="title">{postTitle || "title"}</p>
+            <p className="release">{formattedDate}</p>
+          </div>
+          <div className="group group2">
+            <h4 className="description">
+              {description || getRandomSentence()}
+            </h4>
+            <p className="userName">- {user || getRandomName()} </p>
+          </div>
         </div>
       </Link>
     </Wrapper>
@@ -146,23 +152,32 @@ const Wrapper = styled.section`
     color: white;
     width: 15rem;
     height: 20rem;
+    /* max-height: 20rem; */
     background-color: black;
     padding: 20px;
     /* box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px; */
     text-decoration: none;
     position: relative;
     /* border-radius: 10px; */
+    margin: 0;
+  }
+  .title {
+    font-weight: 600;
+    margin: 0;
+    padding: 0;
+    font-size: 2rem;
+    /* word-wrap: break-word; */
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .release {
+    margin: 5px 0;
+    padding: 0;
+  }
 
-    .title {
-      font-weight: 600;
-      margin: 0;
-      padding: 0;
-      font-size: 2rem;
-    }
-    .release {
-      margin: 5px 0;
-      padding: 0;
-    }
+  .description {
+    margin-bottom: 5rem;
+    word-wrap: break-word;
   }
 
   .userName {
@@ -171,6 +186,7 @@ const Wrapper = styled.section`
     letter-spacing: 1px;
     font-size: 0.75rem;
     font-style: italic;
+    padding-top: 10.5rem;
   }
 
   .card2:hover {
@@ -183,6 +199,52 @@ const Wrapper = styled.section`
     /* transform: rotate(-1deg); */
     cursor: pointer;
     transition: 0.3s;
+  }
+
+  @media screen and (min-width: 1421px) {
+    .card2 {
+      width: 100%;
+      height: 5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .title {
+      width: 20rem;
+      /* border: 1px solid red; */
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      /* width: 100%; */
+      max-width: 80vw;
+    }
+    .userName {
+      position: relative;
+      letter-spacing: 1px;
+      font-size: 0.75rem;
+      font-style: italic;
+      padding: 0;
+      margin: 0;
+    }
+
+    .description {
+      margin: 0;
+      flex-direction: row;
+      padding: 0;
+      width: 50rem;
+      /* border: 1px solid red; */
+      overflow: hidden;
+    }
+
+    .group2 {
+      text-align: right;
+      display: flex;
+      /* align-items: center; */
+      /* justify-content: space-betwe en; */
+      gap: 1rem;
+      flex-direction: column;
+    }
   }
 `;
 

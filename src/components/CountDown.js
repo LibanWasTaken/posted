@@ -10,8 +10,8 @@ dayjs.extend(utc);
 dayjs.extend(duration);
 
 const CountDown = (props) => {
-  const [delayDisabled, setDelayDisabled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [delaying, setDelaying] = useState(false);
   const releaseDate = props.info.releaseDate;
   const disabled = props.info.disabled;
 
@@ -19,7 +19,7 @@ const CountDown = (props) => {
   const targetDate = dayjs(releaseDate);
 
   function handleDelay() {
-    setDelayDisabled(true);
+    setDelaying(true);
     // import the function
   }
 
@@ -104,12 +104,18 @@ const CountDown = (props) => {
               <span className="label">seconds</span>
             </div>
           </div>
-          <button
-            className={`classicBtn ${delayDisabled && "disabledClassicBtn"}`}
-            onClick={handleDelay}
-          >
-            Delay
-          </button>
+          <div className="delay">
+            <p>{targetDate.format("DD/MM/YYYY")}</p>
+            <button
+              className={`classicBtn ${
+                delaying && "disabledClassicBtn loadingClassicBtn "
+              }`}
+              onClick={handleDelay}
+            >
+              Delay To
+            </button>
+            <p>{targetDate.format("DD/MM/YYYY")}</p>
+          </div>
         </section>
       ) : (
         <section className="small">
@@ -135,6 +141,13 @@ const CountDown = (props) => {
 const Wrapper = styled.main`
   width: 90%;
   position: relative;
+
+  .delay {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+  }
 
   .closeBtn {
     position: absolute;

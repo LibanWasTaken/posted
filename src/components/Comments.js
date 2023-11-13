@@ -2,11 +2,19 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import dayjs from "dayjs";
 import { db } from "../services/firebase-config";
-import { addDoc, collection, query, getDocs } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  query,
+  getDocs,
+  doc,
+  getDoc,
+} from "firebase/firestore";
+import { Spinner1 } from "./Spinner";
+import { useUserContext } from "../context/UserContext";
 
 import { Button, TextField } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { Spinner1 } from "./Spinner";
 
 const theme = createTheme({
   typography: {
@@ -38,9 +46,12 @@ const theme = createTheme({
 });
 
 const Comments = ({ postID }) => {
+  const { user: currentUser, loading: loadingUser } = useUserContext();
+
   const [commentValue, setCommentValue] = useState();
   const [loading, setLoading] = useState(true);
   const [comments, setComments] = useState();
+  const [userData, setUserData] = useState();
 
   async function getFSData() {
     setLoading(true);
@@ -53,18 +64,33 @@ const Comments = ({ postID }) => {
     }));
     console.log(commentsDocs);
     setComments(commentsDocs);
-    // setLastPost(querySnapshot.docs[querySnapshot.docs.length - 1]);
+    // setLastPost(querySnapshot.docs[querySnapshot.docs.length - 1]);\
     setLoading(false);
   }
-  useEffect(() => {
-    getFSData();
-  }, []);
 
   const handleInputChange = (event) => {
     const { id, value } = event.target;
     console.log(id, value);
     setCommentValue(value);
   };
+
+  async function getUserData(uid) {
+    try {
+      const docRef = doc(db, "users", uid);
+      const docSnap = await getDoc(docRef);
+      const userDataReceived = docSnap.data();
+      // console.log(userDataReceived);
+      if (userDataReceived == undefined) {
+        setLoading(false);
+      } else {
+        console.log(userDataReceived);
+        setUserData(userDataReceived);
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      alert("Error fetching user data.");
+    }
+  }
 
   const handleSubmit = async () => {
     if (commentValue) {
@@ -75,16 +101,25 @@ const Comments = ({ postID }) => {
           {
             comment: commentValue,
             timestamp: String(dayjs().valueOf()),
+            userName: userData.displayName,
+            uid: currentUser.uid,
           }
         );
 
         console.log("Document written with ID:", docRef.id);
+        setCommentValue();
         getFSData();
       } catch (e) {
         console.error("Error adding document:", e);
       }
     }
   };
+
+  useEffect(() => {
+    getFSData();
+
+    currentUser && getUserData(currentUser.uid);
+  }, []);
 
   function generateComments(comments) {
     return comments.map((comment) => (
@@ -93,7 +128,13 @@ const Comments = ({ postID }) => {
           <span className="img material-symbols-outlined">person</span>
           <div>
             <p className="text">{comment.comment}</p>
-            <p className="user">John Smith</p>
+            <a
+              href={`/user/${comment.uid}`}
+              target="_blank"
+              style={{ textDecoration: "none", color: "black" }}
+            >
+              <p className="user">{comment.userName || "John Smith"}</p>
+            </a>
           </div>
         </div>
         <div className="content">
@@ -101,9 +142,10 @@ const Comments = ({ postID }) => {
             {new Date(Number(comment.timestamp)).toLocaleTimeString()} -{" "}
             {new Date(Number(comment.timestamp)).toLocaleDateString()}
           </p>
-          <button>
+          <div className="vote">
             <span className="material-symbols-outlined">thumb_up</span>
-          </button>
+            {/* <p>15</p> */}
+          </div>
         </div>
       </div>
     ));
@@ -118,7 +160,9 @@ const Comments = ({ postID }) => {
             <p>{comments && "-"}</p>
             <p>{comments && comments.length}</p>
           </div>
-          <button className="sort">Sort by x</button>
+          <div className="sort">
+            <span class="material-symbols-outlined">sort</span>
+          </div>
         </div>
         {loading ? (
           <div className="loading">
@@ -136,20 +180,24 @@ const Comments = ({ postID }) => {
                   border: "none",
                 }}
                 id="title"
-                label="Comment.."
+                label={!userData && "Log in to comment"}
+                placeholder="Join the discussion"
                 type="text"
                 variant="standard"
                 value={commentValue}
+                inputProps={{ maxLength: 1234 }}
                 fullWidth
                 onChange={handleInputChange}
+                disabled={!userData}
               />
               <Button
                 sx={{
                   letterSpacing: 1,
                   fontWeight: 400,
-                  //   backgroundColor: "white",
+                  backgroundColor: "#eee",
                   p: 2,
                 }}
+                disabled={!commentValue}
                 onClick={handleSubmit}
               >
                 Add
@@ -170,12 +218,16 @@ const Comments = ({ postID }) => {
 };
 
 const Wrapper = styled.main`
-  margin: 1rem 0;
+  margin: 2rem 0;
   padding: 1rem 2rem;
   /* border: 5px solid whitesmoke;
       border-radius: 10px; */
-  background-color: whitesmoke;
+  /* background-color: whitesmoke; */
+  background-color: #f8f8f8;
   width: 95%;
+  .material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+  }
   .title {
     .heading {
       display: flex;
@@ -193,6 +245,17 @@ const Wrapper = styled.main`
     padding: 0.5rem 0 1rem 1rem;
   }
 
+  .sort {
+    transform: scaleX(-1);
+    padding: 10px;
+    background-color: #eee;
+    cursor: pointer;
+  }
+
+  .sort:hover {
+    background-color: #ddd;
+  }
+
   .addComment {
     display: flex;
     align-items: center;
@@ -200,7 +263,7 @@ const Wrapper = styled.main`
     gap: 1rem;
     padding: 1rem 2rem;
     margin: 2rem 1rem;
-    background-color: white;
+    background-color: #f2f2f2;
   }
 
   .comments {
@@ -230,6 +293,12 @@ const Wrapper = styled.main`
         display: flex;
         align-items: center;
         gap: 1rem;
+      }
+      .vote {
+        cursor: pointer;
+        fill: black;
+      }
+      .vote:active {
       }
     }
   }

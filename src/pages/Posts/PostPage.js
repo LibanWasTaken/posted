@@ -151,6 +151,8 @@ const OwnPostPage = () => {
     }
   }, [currentUser, loading]);
 
+  function updateUserDB() {}
+
   async function updateUserData() {
     setSaving(true);
     try {
@@ -179,8 +181,14 @@ const OwnPostPage = () => {
     if (!saveDisabled) {
       console.log(updatedObj);
       console.log(releaseDate);
+      // checking
+      if (updatedObj.releaseDate) {
+        console.log("yeah");
+        // TODO: wont it be better if release date had releaseDate: {timestamp: , preset:..}
+        // TODO: also if oublic/private change, update it to updateUserData()
+      }
 
-      updateUserData();
+      // updateUserData();
       setSaveDisabled(true);
     }
   }
@@ -232,6 +240,7 @@ const OwnPostPage = () => {
   }, [preset.timePeriod, preset.day]);
 
   function handleDateChange(date) {
+    // TODO: change to .valueOf + update user db? check
     setReleaseDate(dayjs(date));
     setUpdatedObj((prevObj) => ({
       ...prevObj,
@@ -759,6 +768,7 @@ const OwnPostPage = () => {
                       variant="outlined"
                       id="outlined-controlled"
                       type="text"
+                      inputProps={{ maxLength: 20 }}
                       defaultValue={postData.title}
                       onChange={updateValueOf("title")}
                     />

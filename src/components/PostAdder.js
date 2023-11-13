@@ -209,7 +209,7 @@ export default function PostAdder({ open, handleClose, info }) {
               }}
               value={title}
               onChange={handleInputChange}
-              inputProps={{ maxLength: 15, style: { fontSize: 25 } }}
+              inputProps={{ maxLength: 20, style: { fontSize: 25 } }}
               InputLabelProps={{ style: { fontSize: 25 } }}
             />
             <DatePicker

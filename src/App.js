@@ -134,6 +134,20 @@ draftjs
 https://www.tiny.cloud/docs/tinymce/6/full-featured-premium-demo/
 
 TODO: replace ahref with Link (keeps the navbar?)
+add a whitelist array. to ban/temp ban people. then almost everywhere if(userid == thatId0 dont do it), no need to delete. in case unbanning
+
+make the private post thing only available to one of the posts (unless prem)
+in the user db add post.private etc (for the user page and other stuff and the thing above this)
+
+premium:
+
+4000 letter comments:
+10 posts
+views and like viewer
+more configuration in posts
+edit diaries?
+extra password lock posts
+
 
 https://www.npmjs.com/package/react-responsive
 

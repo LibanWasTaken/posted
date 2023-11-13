@@ -20,6 +20,7 @@ function generateCards(posts) {
           releaseDate={post.releaseDate}
           description={post.description}
           user={post.anonymity ? "Anonymous" : post.user}
+          className="post"
         />
       );
     }
@@ -65,6 +66,16 @@ export default function AllProductPage() {
         <Spinner3 />
       ) : (
         <section>
+          <div className="filter">
+            <h4>Filter</h4>
+            <p>Search</p>
+            <p>Lorem ipsum dolor sit amet.</p>
+
+            <div className="layout">
+              <div></div>
+              <div></div>
+            </div>
+          </div>
           <div className="posts">
             {/* <Skeleton
               // sx={{ bgcolor: "black" }}
@@ -87,20 +98,64 @@ const Wrapper = styled.main`
   display: flex;
   justify-content: center;
   margin: 2rem 0;
-  .posts {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 2rem;
+
+  section {
+    display: flex;
+    /* align-items: center; */
+    justify-content: center;
+    gap: 5rem;
+    flex-direction: row-reverse;
+    /* overflow: hidden; */
   }
 
-  @media screen and (max-width: 1620px) {
+  .filter {
+    display: flex;
+    /* align-items: center;
+    justify-content: center; */
+    flex-direction: column;
+
+    padding: 2rem;
+    height: 50vh;
+    background-color: whitesmoke;
+    width: 15rem;
+  }
+
+  .posts {
+    display: grid;
+    /* grid-template-columns: repeat(5, 1fr); */
+    grid-template-columns: repeat(1, 1fr);
+    gap: 1rem;
+    /* width: 80vw; */
+  }
+
+  .post {
+  }
+
+  /* @media screen and (max-width: 1620px) {
     .posts {
       grid-template-columns: repeat(4, 1fr);
     }
+  } */
+  @media screen and (max-width: 1669px) {
+    section {
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .filter {
+      flex-direction: row;
+      gap: 1rem;
+      align-items: center;
+      height: 4rem;
+      width: 100%;
+    }
   }
   @media screen and (max-width: 1420px) {
+    /* flex-direction: column; */
+
     .posts {
       grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
     }
   }
   @media screen and (max-width: 1120px) {

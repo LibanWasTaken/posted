@@ -191,7 +191,7 @@ export default function Editor() {
           type="text"
           placeholder="Keep it short"
           value={description || ""}
-          inputProps={{ maxLength: 150 }}
+          inputProps={{ maxLength: 100 }}
           onChange={(e) => {
             !changed && setChanged(true);
             setDescription(e.target.value);

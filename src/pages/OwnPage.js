@@ -10,26 +10,18 @@ import dayjs from "dayjs";
 
 import { scrollToBottom } from "../functions/functions";
 
-import {
-  addDoc,
-  getDoc,
-  getDocs,
-  setDoc,
-  collection,
-  doc,
-  updateDoc,
-} from "firebase/firestore";
+import { getDocs, collection } from "firebase/firestore";
 import { db as FSdb } from "../services/firebase-config";
 import { useUserContext } from "../context/UserContext";
 
-function generatePostLinks(posts) {
+function generatePostLinks(posts, whereTo) {
   return posts.map((post) => (
     <Link
       key={post.id}
-      to={`/me/post/${post.id}`}
+      to={`/${whereTo}/${post.id}`}
       style={{ textDecoration: "none" }}
     >
-      <div className="post">
+      <div className={`post ${whereTo == "posts" && "posted"}`}>
         <p className="heading">{post.title}</p>
         <p className="timing">
           {dayjs(post.releaseDate).format("DD MMM, YYYY")}
@@ -50,35 +42,9 @@ const OwnPage = () => {
     setPostAdderState(true);
   };
 
-  // const slideData = [
-  //   {
-  //     index: 0,
-  //     headline: "New Fashion Apparel",
-  //     button: "Shop now",
-  //     src: "https://s3-us-west-2.amazonaws.com/s.cdpn.io/225363/fashion.jpg",
-  //   },
-  //   {
-  //     index: 1,
-  //     headline: "In The Wilderness",
-  //     button: "Book travel",
-  //     src: "https://s3-us-west-2.amazonaws.com/s.cdpn.io/225363/forest.jpg",
-  //   },
-  //   {
-  //     index: 2,
-  //     headline: "For Your Current Mood",
-  //     button: "Listen",
-  //     src: "https://s3-us-west-2.amazonaws.com/s.cdpn.io/225363/guitar.jpg",
-  //   },
-  //   {
-  //     index: 3,
-  //     headline: "Focus On The Writing",
-  //     button: "Get Focused",
-  //     src: "https://s3-us-west-2.amazonaws.com/s.cdpn.io/225363/typewriter.jpg",
-  //   },
-  // ];
-
   async function getFSData() {
     const userID = currentUser.uid;
+    // TODO: also get from users/posted
     await getDocs(collection(FSdb, `/users/${userID}/posts`)).then(
       (querySnapshot) => {
         const postsData = querySnapshot.docs.map((doc) => ({
@@ -128,7 +94,20 @@ const OwnPage = () => {
           <section className="postSection">
             <p className="header">Your Posts</p>
             <div className="posts">
-              {generatePostLinks(userPosts)}
+              {generatePostLinks(userPosts, "me/post")}
+              {/* change to posted */}
+              {/* {generatePostLinks(userPosts, "posts")}
+              {currentUser.uid == "L1uljY8hgdZ9wnLovjJJuCr2sN63" && (
+                // TODO: remove this
+                <div className="post" onClick={OpenPostAdder}>
+                  <span className="material-symbols-outlined addPostBtn">
+                    add
+                  </span>
+                  <p>
+                    Add Post <br /> {userPosts.length}/3
+                  </p>
+                </div>
+              )} */}
               {userPosts.length < 3 && (
                 <div className="post" onClick={OpenPostAdder}>
                   <span className="material-symbols-outlined addPostBtn">
@@ -182,23 +161,6 @@ const OwnPage = () => {
             <h3>perferendis eos alias.</h3>
           </section>
         </div>
-        {/* <img
-          src={ExamSVG}
-          alt="ExamSVG"
-          className="ExamSVG imgLoad"
-          onLoad={(e) => {
-            e.target.classList.add("imgLoaded");
-          }}
-        /> */}
-
-        {/* <h1 className="randomAssText">
-        Lorem ipsum dolor sit amet,
-        <br /> Jesnly fomer.
-      </h1> */}
-        {/* <SliderComponent heading="Example Slider" slides={slideData} /> */}
-        {/* <div className="waves">
-          <Waves />
-        </div> */}
       </Wrapper>
     </div>
   );
@@ -267,9 +229,21 @@ const Wrapper = styled.main`
   }
 
   .posts {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    display: flex;
+    /* grid-template-columns: 1fr 1fr 1fr; */
     gap: 2rem;
+    max-width: 90vw;
+    overflow-x: scroll;
+    padding-bottom: 2rem;
+  }
+
+  .posts::-webkit-scrollbar {
+    display: none;
+  }
+
+  .posts {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 
   .post {
@@ -289,6 +263,9 @@ const Wrapper = styled.main`
 
     .heading {
       font-size: 1.5rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 95%;
     }
     .timing {
       letter-spacing: 1px;
@@ -303,6 +280,10 @@ const Wrapper = styled.main`
   .post:hover {
     cursor: pointer;
     background-color: whitesmoke;
+  }
+
+  .posted {
+    background-color: #eee;
   }
 
   .addPostBtn {

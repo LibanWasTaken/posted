@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
-import { Spinner3 } from "../components/Spinner";
+import { Spinner2 } from "../components/Spinner";
 import { getDoc, getDocs, collection, doc } from "firebase/firestore";
 import { db } from "../services/firebase-config";
 import { Link } from "react-router-dom";
@@ -173,7 +173,7 @@ const UserPage = () => {
   return (
     <Wrapper>
       {loading ? (
-        <Spinner3 />
+        <Spinner2 />
       ) : userExists ? (
         <div className="section">
           <h1>{user.displayName}</h1>
@@ -259,6 +259,11 @@ const Wrapper = styled.main`
       /* background-color: whitesmoke; */
       /* box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, */
       /* rgba(0, 0, 0, 0.3) 0px 1px 3px -1px; */
+    }
+
+    .heading {
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .post:hover {
