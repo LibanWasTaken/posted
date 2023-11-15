@@ -6,21 +6,31 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import duration from "dayjs/plugin/duration";
 
+import Tooltip from "@mui/material/Tooltip";
+
 dayjs.extend(utc);
 dayjs.extend(duration);
 
 const CountDown = (props) => {
   const [open, setOpen] = useState(false);
   const [delaying, setDelaying] = useState(false);
+  const [warn, setWarn] = useState(false);
   const releaseDate = props.info.releaseDate;
   const disabled = props.info.disabled;
+  const preset = props.info.preset;
+  const warnDuration = props.info.warnDuration;
 
   // const targetDate = dayjs.utc("2023-09-30T00:01:00Z");
   const targetDate = dayjs(releaseDate);
 
   function handleDelay() {
     setDelaying(true);
-    // import the function
+    console.log(dayjs(releaseDate).format());
+    const newDate = dayjs(releaseDate).add(1, "day");
+    console.log(dayjs(newDate).format());
+    // now that its in numbered format, i can subtract and get the value == uhh the warning thing. and if its true, delay enabled
+
+    setDelaying(false);
   }
 
   function handleClose() {
@@ -52,6 +62,9 @@ const CountDown = (props) => {
   const [timeRemaining, setTimeRemaining] = useState(calculateTimeRemaining);
 
   useEffect(() => {
+    if (!warn) {
+      if (timeRemaining.days <= warnDuration) setWarn(true);
+    }
     const interval = setInterval(() => {
       setTimeRemaining(calculateTimeRemaining());
       // TODO: if second < -1, refresh page?
@@ -59,10 +72,26 @@ const CountDown = (props) => {
 
     return () => clearInterval(interval);
   }, []);
+
+  function WarningSign() {
+    return (
+      <Tooltip
+        title="The remaining time is now less than the configured warning duration. Simultaneously, a notification email should have been dispatched.
+      "
+        placement="bottom"
+        arrow
+      >
+        <span className="material-symbols-outlined exclamation">error</span>
+      </Tooltip>
+    );
+  }
   return (
     <Wrapper>
       {open ? (
         <section className="section full">
+          {warn && <WarningSign />}
+          {/* <span class="material-symbols-outlined exclamation">error</span> */}
+
           <div className="close">
             <span
               className="material-symbols-outlined closeBtn"
@@ -119,6 +148,8 @@ const CountDown = (props) => {
         </section>
       ) : (
         <section className="small">
+          {warn && <WarningSign />}
+
           <p className={disabled && "crossed"}>
             {timeRemaining.years > 0 && <span>{timeRemaining.years}:</span>}
             {timeRemaining.months > 0 && <span>{timeRemaining.months}:</span>}
@@ -141,6 +172,15 @@ const CountDown = (props) => {
 const Wrapper = styled.main`
   width: 90%;
   position: relative;
+
+  .exclamation {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    font-size: 3rem;
+    color: black;
+    border-radius: 50%;
+  }
 
   .delay {
     display: flex;
@@ -244,6 +284,10 @@ const Wrapper = styled.main`
     p {
       margin: 10px 10px 10px 0;
       font-family: monospace;
+    }
+
+    .exclamation {
+      top: auto;
     }
   }
 

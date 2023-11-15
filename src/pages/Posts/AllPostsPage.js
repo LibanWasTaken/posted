@@ -5,60 +5,91 @@ import Card from "../../components/PostCard";
 import { Skeleton } from "@mui/material";
 import dayjs from "dayjs";
 
+import { Tooltip } from "@mui/material";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+
 import { getDocs, collection, query, orderBy, limit } from "firebase/firestore";
 import { db } from "../../services/firebase-config";
 
-function generateCards(posts) {
-  return Object.values(posts).map((post) => {
-    if (true) {
-      // TODO: change true -> post.public
-      return (
-        <Card
-          key={post.id}
-          postTitle={post.title}
-          postID={post.id}
-          releaseDate={post.releaseDate}
-          description={post.description}
-          user={post.anonymity ? "Anonymous" : post.user}
-          className="post"
-        />
-      );
-    }
-    return null;
-  });
-}
-
 export default function AllProductPage() {
   const [posts, setPosts] = useState();
+  const [countPosts, setCountPosts] = useState(2);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [sortType, setSortType] = useState("desc");
+  const [filtering, setFiltering] = useState(false);
 
   async function getFSData() {
-    // await getDocs(collection(db, `/posts`)).then((querySnapshot) => {
-    //   const postsData = querySnapshot.docs.map((doc) => ({
-    //     ...doc.data(),
-    //     id: doc.id,
-    //   }));
-    //   setPosts(postsData);
-    //   setLoading(false);
-    // });
-    // const queryRecieved = query(collection(db, `/posts`), limit(2));
-    const queryRecieved = query(collection(db, `/posts`));
-    const querySnapshot = await getDocs(queryRecieved);
+    const queryReceived = query(
+      collection(db, `/posts`),
+      orderBy("releaseDate", sortType),
+      limit(countPosts)
+    );
+    // const queryReceived = query(collection(db, `/posts`), limit(countPosts));
+    const querySnapshot = await getDocs(queryReceived);
     const postsData = querySnapshot.docs.map((doc) => ({
       ...doc.data(),
       id: doc.id,
     }));
-    if (posts) {
-      setPosts((prevPosts) => [...prevPosts, ...postsData]);
-    } else {
-      setPosts(postsData);
-    }
-    // setLastPost(querySnapshot.docs[querySnapshot.docs.length - 1]);
+    setPosts(postsData);
     setLoading(false);
+    setLoadingMore(false);
   }
+
+  function runLoadingBar() {
+    setFiltering(true);
+    setTimeout(() => {
+      setFiltering(false);
+    }, 2010);
+  }
+
   useEffect(() => {
     getFSData();
-  }, []);
+  }, [sortType, countPosts]);
+
+  // if (posts) {
+  //   setPosts((prevPosts) => [...prevPosts, ...postsData]);
+  // } else {
+  //   setPosts(postsData);
+  // }
+
+  function handleLoadMore() {
+    runLoadingBar();
+    setLoadingMore(true);
+    setCountPosts((prevCount) => prevCount + 2);
+    getFSData();
+  }
+
+  function handleSort() {
+    runLoadingBar();
+
+    console.log("swithching");
+    if (sortType == "asc") {
+      setSortType("desc");
+    } else {
+      setSortType("asc");
+    }
+  }
+
+  function generateCards(posts) {
+    return Object.values(posts).map((post) => {
+      if (true) {
+        // TODO: change true -> post.public
+        return (
+          <Card
+            key={post.id}
+            postTitle={post.title}
+            postID={post.id}
+            releaseDate={post.releaseDate}
+            description={post.description}
+            user={post.anonymity ? "Anonymous" : post.user}
+            className="post"
+          />
+        );
+      }
+      return null;
+    });
+  }
 
   return (
     <Wrapper>
@@ -66,15 +97,28 @@ export default function AllProductPage() {
         <Spinner3 />
       ) : (
         <section>
+          {filtering && <div className="loadingBar"></div>}
           <div className="filter">
-            <h4>Filter</h4>
+            <h2>Filter</h2>
             <p>Search</p>
+            <p>Posts per page</p>
             <p>Lorem ipsum dolor sit amet.</p>
 
             <div className="layout">
               <div></div>
               <div></div>
             </div>
+            <Tooltip
+              title={`Sort by ${
+                sortType == "asc" ? "Newest First" : "Oldest First"
+              }`}
+              placement="top"
+              arrow
+            >
+              <div className="sort" onClick={handleSort}>
+                <span className="material-symbols-outlined">sort</span>
+              </div>
+            </Tooltip>
           </div>
           <div className="posts">
             {/* <Skeleton
@@ -85,8 +129,24 @@ export default function AllProductPage() {
               animation="wave"
             />*/}
 
+            {/* {generateCards(posts)} */}
             {generateCards(posts)}
-            {generateCards(posts)}
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              <div
+                className={`classicBtn loadMorBtn ${
+                  loadingMore && "disabledClassicBtn"
+                }`}
+                onClick={handleLoadMore}
+              >
+                {loadingMore ? "Loading More.." : "Load More.."}
+              </div>
+            </div>
           </div>
         </section>
       )}
@@ -108,27 +168,66 @@ const Wrapper = styled.main`
     /* overflow: hidden; */
   }
 
+  .loadingBar {
+    position: fixed;
+    top: 0;
+    background-color: black;
+    animation: load ease-in-out 2s;
+  }
+  @keyframes load {
+    0% {
+      width: 0vw;
+      padding: 2px 0;
+    }
+    95% {
+      padding: 0px 0;
+    }
+    100% {
+      width: 100vw;
+      padding: 0px 0;
+    }
+  }
+
   .filter {
     display: flex;
-    /* align-items: center;
-    justify-content: center; */
+    align-items: start;
+    justify-content: start;
     flex-direction: column;
-
     padding: 2rem;
     height: 50vh;
     background-color: whitesmoke;
     width: 15rem;
+    position: relative;
+
+    .sort {
+      transform: scaleX(-1);
+      padding: 10px;
+      background-color: #eee;
+      cursor: pointer;
+    }
+
+    .sort:hover {
+      background-color: #ddd;
+    }
   }
 
   .posts {
     display: grid;
     /* grid-template-columns: repeat(5, 1fr); */
+    align-items: center;
+    justify-content: center;
     grid-template-columns: repeat(1, 1fr);
     gap: 1rem;
+
     /* width: 80vw; */
   }
 
   .post {
+  }
+
+  .loadMorBtn {
+    width: 10rem;
+    text-align: center;
   }
 
   /* @media screen and (max-width: 1620px) {

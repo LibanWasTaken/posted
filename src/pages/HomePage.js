@@ -58,8 +58,13 @@ const HomePage = () => {
             endScroll={800}
             startScroll={0}
           >
-            <h1>Lorem ipsum dolor sit amet.</h1>
-            <h1>Lorem ipsum. </h1>
+            <h1>
+              Send messages to the <span className="pop"> future.</span>
+            </h1>
+            <h3>
+              Make your <span className="pop">mark.</span> Your{" "}
+              <span className="pop">Legacy.</span>{" "}
+            </h3>
           </Parallax>
         </div>
         <Parallax
@@ -70,8 +75,12 @@ const HomePage = () => {
           startScroll={0}
         >
           <img
-            src="https://www.seekpng.com/png/full/302-3021829_blank-mask-png-blank-face-mask-png.png"
+            src="https://www.washingtonpost.com/graphics/entertainment/golden-age-of-hip-hop/img/Future.png"
             alt=""
+            className="imgLoad"
+            onLoad={(e) => {
+              e.target.classList.add("imgLoaded");
+            }}
           />
         </Parallax>
       </section>
@@ -109,6 +118,13 @@ const HomePage = () => {
           <h1>SEND</h1>
         </Parallax>
       </section>
+      <section className="section6">
+        <h1>View some of the Posted</h1>
+        <h1>Exceptional customizability</h1>
+        <h1>Unparalleled adaptability.</h1>
+        <h1>Unmatched Flexibilty.</h1>
+      </section>
+
       <Footer />
     </Wrapper>
   );
@@ -174,16 +190,21 @@ const Wrapper = styled.main`
     justify-content: space-around;
     width: 100vw;
     .text {
-      color: white;
+      color: rgb(172, 172, 172);
       font-size: 2rem;
       /* font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif; */
       text-transform: uppercase;
+    }
+    .pop {
+      color: white;
     }
     background-color: black;
     height: 90vh;
     img {
       height: 60vh;
-      transform: scaleX(-1);
+      filter: saturate(0);
+
+      /* transform: scaleX(-1); */
     }
   }
 
@@ -239,6 +260,13 @@ const Wrapper = styled.main`
       color: white;
     }
     overflow: hidden;
+  }
+
+  .section6 {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
   }
 
   @media screen and (max-width: 1200px) {

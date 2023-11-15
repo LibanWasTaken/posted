@@ -70,7 +70,7 @@ export default function PostAdder({ open, handleClose, info }) {
 
   const handleError = (newError) => {
     setError(newError);
-    // console.log(newError);
+    console.log(newError);
   };
 
   const handleInputChange = (event) => {
@@ -147,6 +147,7 @@ export default function PostAdder({ open, handleClose, info }) {
           user: info.uid,
           title: titleSet,
           releaseDate: dateSet,
+          dateCreated: dayjs().valueOf(),
         };
         console.log("Adding To Collection", newPostObj);
         const newDocID = await addPostToCollection(newPostObj);
@@ -169,7 +170,8 @@ export default function PostAdder({ open, handleClose, info }) {
       setDisabled(true);
       // add to db
       console.log("adding to db...");
-      addNewPostFS(title, String(selectedDate));
+      console.log(selectedDate.valueOf());
+      addNewPostFS(title, selectedDate.valueOf());
     } else {
       console.log("🔴Title:", title, "date:", selectedDate);
       setErrorText("Title and Date needs to be set");
@@ -206,6 +208,7 @@ export default function PostAdder({ open, handleClose, info }) {
               sx={{
                 m: 1,
                 width: "30ch",
+                backgroundColor: "white",
               }}
               value={title}
               onChange={handleInputChange}
@@ -219,7 +222,7 @@ export default function PostAdder({ open, handleClose, info }) {
               value={selectedDate}
               onChange={handleDateChange}
               onError={handleError}
-              sx={{ m: 1, width: "30ch" }}
+              sx={{ m: 1, width: "30ch", backgroundColor: "white" }}
               // slotProps={{
               //   textField: {
               //     size: "medium",
@@ -231,9 +234,10 @@ export default function PostAdder({ open, handleClose, info }) {
             <MobileTimePicker
               defaultValue={dayjs("2022-04-17T00:00")}
               // orientation="landscape"
+              disabled={disabled}
               value={selectedDate}
               onChange={handleDateChange}
-              sx={{ m: 1, width: "20ch" }}
+              sx={{ m: 1, width: "20ch", backgroundColor: "white" }}
             />
             <p className={`errText ${hidden && "hidden"}`}>{errorText}</p>
             <button
@@ -294,6 +298,7 @@ const Wrapper = styled.main`
     display: flex;
     justify-content: space-around;
     flex-direction: column;
+    z-index: 1;
     h1 {
       text-transform: uppercase;
     }

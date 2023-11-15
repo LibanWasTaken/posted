@@ -2,8 +2,13 @@ import { React, useState, useEffect } from "react";
 import styled from "styled-components";
 import Sidebar from "./Sidebar";
 // import Badge from "@mui/material/Badge";
+import { useUserContext } from "../context/UserContext";
+import defaultAccPNG from "../assets/defaultAccount.png";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
+  const { user: currentUser, loading } = useUserContext();
+
   // Window width
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   useEffect(() => {
@@ -28,19 +33,39 @@ const Navbar = () => {
           <div className="links">
             <ul>
               <li>
-                <a className="navLinks" href="/me">
+                <Link
+                  to="/me"
+                  style={{
+                    textDecoration: "none",
+                  }}
+                  className="navLinks"
+                >
+                  {/* <a className="navLinks" href="/me"> */}
                   You
-                </a>
+                  {/* </a> */}
+                </Link>
               </li>
               <li>
-                <a className="navLinks" href="/me/them">
+                <Link
+                  to="/me/them"
+                  style={{
+                    textDecoration: "none",
+                  }}
+                  className="navLinks"
+                >
                   To Who
-                </a>
+                </Link>
               </li>
               <li>
-                <a className="navLinks" href="/posts">
+                <Link
+                  to="/posts"
+                  style={{
+                    textDecoration: "none",
+                  }}
+                  className="navLinks"
+                >
                   Others
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -57,10 +82,18 @@ const Navbar = () => {
               <a href="/search" className="icon">
                 <span className="material-symbols-outlined">search</span>
               </a>
-              <a href="/account" className="icon">
-                <span className="material-symbols-outlined">
-                  account_circle
-                </span>
+              <a href="/account" className={`icon ${currentUser && "logged"}`}>
+                {currentUser ? (
+                  <img
+                    src={currentUser.photoURL || defaultAccPNG}
+                    alt="pfp"
+                    className="profilePic"
+                  />
+                ) : (
+                  <span className="material-symbols-outlined">
+                    account_circle
+                  </span>
+                )}
               </a>
             </div>
           )}
@@ -115,6 +148,10 @@ const Wrapper = styled.section`
   }
   .logoPng {
     height: 50px;
+  }
+  .profilePic {
+    height: 2rem;
+    border-radius: 50%;
   }
 
   ul {

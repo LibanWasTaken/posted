@@ -137,7 +137,8 @@ function Card({
           </div>
           <div className="group group2">
             <h4 className="description">
-              {description || getRandomSentence()}
+              {/* {description || getRandomSentence()} */}
+              {description}
             </h4>
             <p className="userName">- {user || getRandomName()} </p>
           </div>
@@ -190,9 +191,9 @@ const Wrapper = styled.section`
   }
 
   .card2:hover {
-    /* background-color: whitesmoke;
-    color: black; */
-    background-color: #222;
+    background-color: whitesmoke;
+    color: black;
+    /* background-color: #222; */
 
     /* padding: 10px; */
     /* transform: scale(1.025); */

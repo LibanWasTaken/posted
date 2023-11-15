@@ -1,137 +1,147 @@
-import React, { useState, useRef } from "react";
-import styled from "styled-components";
-import TextField from "@mui/material/TextField";
-import emailjs from "@emailjs/browser";
-// import { SERVICE_ID, TEMPLATE_ID, USER_PUBLIC_ID } from "../services/constants";
+import React, { useState, useEffect } from "react";
 
-const CssTextField = styled(TextField)({
-  "& label.Mui-focused": {
-    color: "#000000",
+import styled from "styled-components";
+import { TextField, Button } from "@mui/material";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+
+import { db } from "../services/firebase-config";
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { Spinner1 } from "../components/Spinner";
+
+const theme = createTheme({
+  typography: {
+    fontFamily: [
+      "Raleway",
+      "-apple-system",
+      "BlinkMacSystemFont",
+      '"Segoe UI"',
+      "Roboto",
+      '"Helvetica Neue"',
+      "Arial",
+      "sans-serif",
+      '"Apple Color Emoji"',
+      '"Segoe UI Emoji"',
+      '"Segoe UI Symbol"',
+    ].join(","),
   },
-  "& .MuiInput-underline:after": {
-    borderBottomColor: "#B2BAC2",
-  },
-  "& .MuiOutlinedInput-root": {
-    "& fieldset": {
-      borderColor: "#E0E3E7",
+  palette: {
+    primary: {
+      main: "#000",
     },
-    "&:hover fieldset": {
-      borderColor: "#B2BAC2",
-    },
-    "&.Mui-focused fieldset": {
-      borderColor: "#000000",
+    secondary: {
+      main: "#fff",
     },
   },
 });
 
 const Search = () => {
-  const name = "Liban";
-  const [end, setEnd] = useState("");
-  const form = useRef();
+  const [loading, setLoading] = useState(false);
+  const [userToFind, setUserToFind] = useState();
+  const [searchResults, setSearchResults] = useState([]);
 
-  // const sendEmailForm = (e) => {
-  //   e.preventDefault();
+  const handleInputChange = (event) => {
+    const { value } = event.target;
+    setUserToFind(value);
+  };
 
-  //   emailjs
-  //     .sendForm(SERVICE_ID, TEMPLATE_ID, form.current, USER_PUBLIC_ID)
-  //     .then(
-  //       (result) => {
-  //         console.log(result.text);
-  //       },
-  //       (error) => {
-  //         console.log(error.text);
-  //       }
-  //     );
-  // };
+  async function handleSearch() {
+    setLoading(true);
+    const usersRef = collection(db, "users");
+    const q = query(usersRef, where("displayName", "==", userToFind));
 
-  function sendEmail(
-    to_mail_value = "UNDEFINED",
-    from_name_value = "UNDEFINED",
-    message_value = "UNDEFINED"
-  ) {
-    const currentUrl = window.location.href;
-    console.log(currentUrl);
-    const templateParams = {
-      to_mail: to_mail_value,
-      from_name: from_name_value,
-      message: message_value,
-      sender_url: currentUrl,
-    };
+    // const q = query(
+    //   usersRef,
+    //   where("displayName", ">=", userToFind).where(
+    //     "displayName",
+    //     "<=",
+    //     userToFind + "\uf8ff"
+    //   )
+    // );
 
-    // emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams, USER_PUBLIC_ID)
-    // .then(function(response) {
-    //    console.log('SUCCESS!', response.status, response.text);
-    // }, function(error) {
-    //    console.log('FAILED...', error);
-    // });
+    // const q = query(
+    //   usersRef,
+    //   where("displayName", "==", userToFind + "\uf8ff")
+    // );
 
-    console.log(
-      "sending:",
-      to_mail_value,
-      from_name_value,
-      message_value,
-      currentUrl
-    );
+    try {
+      const querySnapshot = await getDocs(q);
+      console.log(querySnapshot);
+      const results = [];
+      querySnapshot.forEach((doc) => {
+        results.push({ id: doc.id, ...doc.data() });
+      });
+      if (results.length > 0) {
+        setSearchResults(results);
+        setLoading(false);
+      } else {
+        setSearchResults(null);
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error(error);
+    }
   }
 
-  // sendEmail();
-
-  function ending(e) {
-    e.preventDefault();
-
-    setEnd(true);
-    setTimeout(() => {
-      window.location.replace("/");
-    }, 3000);
+  function displayResults() {
+    if (searchResults === null) {
+      return <p>No results found.</p>;
+    } else {
+      console.log(searchResults);
+      return searchResults.map((user) => (
+        <a
+          href={`user/${user.id}`}
+          key={user.id}
+          target="_blank"
+          style={{ textDecoration: "none", color: "black" }}
+        >
+          <div className="user">
+            <div className="group">
+              {user.photoURL && (
+                <img src={user.photoURL} alt="pfp" className="profilePic" />
+              )}
+              <h3>{user.displayName}</h3>
+            </div>
+            {/* <div className="group"> */}
+            <p>{user.id}</p>
+            <p>{user.email}</p>
+            {/* </div> */}
+          </div>
+        </a>
+      ));
+    }
   }
 
   return (
-    <Wrapper>
-      {/* <h4>https://extensions.dev/extensions/firebase/firestore-send-email</h4>
-      <form
-        ref={form}
-        className="form"
-        onSubmit={console.log("enable it dummy")}
-      >
-        <CssTextField
-          id="outlined-basic"
-          className="input"
-          label="E-mail"
-          variant="outlined"
-          type="email"
-          required
-          name="to_mail"
-        />
-        <CssTextField
-          id="outlined-basic"
-          className="input"
-          label="Name"
-          required
-          name="from_name"
-          variant="outlined"
-        />
-        <CssTextField
-          id="outlined-basic"
-          className="input"
-          label="Message"
-          required
-          name="message"
-          variant="outlined"
-        />
-        <CssTextField
-          id="outlined-basic"
-          className="input"
-          label="sender_url"
-          required
-          name="sender_url"
-          variant="outlined"
-        />
-        <button type="submit" className="classicBtn">
-          Submit
-        </button>
-      </form> */}
-      <h1>hmm</h1>
-    </Wrapper>
+    <ThemeProvider theme={theme}>
+      <Wrapper>
+        <h1>Search</h1>
+        <div className="form">
+          <TextField
+            sx={{ m: 1, marginBottom: 2 }}
+            id="userToFind"
+            label="Name"
+            type="text"
+            variant="standard"
+            // value={userToFind}
+            onChange={handleInputChange}
+          />
+
+          <Button
+            sx={{
+              letterSpacing: 1,
+              fontWeight: 600,
+              p: 2,
+              background: "#e8e8e8",
+            }}
+            onClick={handleSearch}
+            disabled={!userToFind}
+          >
+            Search
+          </Button>
+        </div>
+        <div className="users">{loading ? <Spinner1 /> : displayResults()}</div>
+      </Wrapper>
+    </ThemeProvider>
   );
 };
 
@@ -141,39 +151,44 @@ const Wrapper = styled.main`
   align-items: center;
   justify-content: center;
   margin-top: 2rem;
+
   .form {
-    margin: 2rem;
     display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 5px solid whitesmoke;
+    padding: 5rem;
+    gap: 2rem;
+  }
+
+  .users {
+    border: 1px solid black;
+    padding: 5rem;
+    width: 75vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 1rem;
+  }
+
+  .user {
+    background: whitesmoke;
+    margin: 1rem;
+    padding: 1rem 2rem;
+    display: flex;
+    /* align-items: center; */
+    justify-content: center;
     flex-direction: column;
-    .input {
-      margin: 1rem;
+    .profilePic {
+      height: 2rem;
+      border-radius: 50%;
     }
-  }
-
-  .field {
-    margin-bottom: 10px;
-  }
-
-  .field label {
-    display: block;
-    font-size: 12px;
-    color: #777;
-  }
-
-  .field input {
-    display: block;
-    min-width: 250px;
-    line-height: 1.5;
-    font-size: 14px;
-  }
-
-  input[type="submit"] {
-    display: block;
-    padding: 6px 30px;
-    font-size: 14px;
-    background-color: #4460aa;
-    color: #fff;
-    border: none;
+    .group {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+    }
   }
 `;
 

@@ -37,7 +37,7 @@ const theme = createTheme({
 });
 
 export function AccPage() {
-  const { user, loading } = useUserContext();
+  const { user, loading } = useUserContext(); // TODO: this gets values from firebaseAuth
   const [value, setValue] = useState(0);
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
@@ -220,9 +220,10 @@ export function AccPage() {
                 className="profilePic"
               />
               <h2>Welcome, {user.displayName}</h2>
+              <Settings userID={user.uid} />
 
               <button
-                style={{ marginBottom: "5rem" }}
+                style={{ margin: "5rem" }}
                 onClick={logout}
                 className={`classicBtn ${
                   btnLoading && "loadingClassicBtn disabledClassicBtn"
@@ -230,7 +231,6 @@ export function AccPage() {
               >
                 Sign Out
               </button>
-              <Settings userID={user.uid} />
             </section>
           ) : (
             <section className="section ">

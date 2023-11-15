@@ -232,6 +232,7 @@ const Wrapper = styled.main`
     display: flex;
     /* grid-template-columns: 1fr 1fr 1fr; */
     gap: 2rem;
+    min-width: 50rem;
     max-width: 90vw;
     overflow-x: scroll;
     padding-bottom: 2rem;

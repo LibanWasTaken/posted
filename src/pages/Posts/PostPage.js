@@ -18,7 +18,6 @@ import { DATE_OPTIONS } from "../../context/UserOptions";
 // mui
 import PropTypes from "prop-types";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
 import {
   Tabs,
   Tab,
@@ -34,8 +33,8 @@ import {
   FormControl,
   FormLabel,
   Tooltip,
-  Snackbar,
   Switch,
+  Select,
   Button,
 } from "@mui/material";
 
@@ -151,7 +150,18 @@ const OwnPostPage = () => {
     }
   }, [currentUser, loading]);
 
-  function updateUserDB() {}
+  async function updateUserDB() {
+    try {
+      const postRef = doc(db, "users", currentUser.uid, "posts", id);
+      await updateDoc(postRef, updatedObj);
+      console.log("Document successfully updated");
+      setEditDisabled(false);
+      setSaving(false);
+      window.location.reload();
+    } catch (error) {
+      console.error("Error updating document: ", error);
+    }
+  }
 
   async function updateUserData() {
     setSaving(true);
@@ -188,7 +198,7 @@ const OwnPostPage = () => {
         // TODO: also if oublic/private change, update it to updateUserData()
       }
 
-      // updateUserData();
+      updateUserData();
       setSaveDisabled(true);
     }
   }
@@ -246,6 +256,7 @@ const OwnPostPage = () => {
       ...prevObj,
       releaseDate: String(date),
     }));
+    // console.log(date.valueOf());
     saveDisabled && setSaveDisabled(false);
   }
 
@@ -334,6 +345,8 @@ const OwnPostPage = () => {
               info={{
                 releaseDate: postData.releaseDate,
                 disabled: postData.disabled,
+                preset: postData.preset,
+                warnDuration: postData.warnDuration,
               }}
             />
             <div className="sidebar">
@@ -700,52 +713,51 @@ const OwnPostPage = () => {
                           />
                         </RadioGroup>
                       </FormControl>
-                      <Box></Box>
-                      <FormControl
-                        sx={{ marginBottom: 5 }}
-                        disabled={!editDisabled}
-                      >
-                        {/* <FormLabel helperText="12:01 am (UTC)"> */}
-                        <FormLabel>Warn before</FormLabel>
-                        <RadioGroup
-                          defaultValue={postData.warnDuration || 3}
-                          row
-                          aria-labelledby="demo-controlled-radio-buttons-group"
-                          name="row-radio-buttons-group"
-                          onChange={(event) => {
-                            updateValueOf("warnDuration")(event);
-                          }}
-                        >
-                          <FormControlLabel
-                            value={1}
-                            control={<Radio />}
-                            label="A Day"
-                          />
-                          <FormControlLabel
-                            value={3}
-                            control={<Radio />}
-                            label="3 Days"
-                          />
-                          <FormControlLabel
-                            value={7}
-                            control={<Radio />}
-                            label="A Week"
-                          />
-                          <FormControlLabel
-                            value={30}
-                            control={<Radio />}
-                            label="A Month"
-                          />
-                          <FormControlLabel
-                            value={364}
-                            control={<Radio />}
-                            label="A Year"
-                            disabled
-                          />
-                        </RadioGroup>
-                      </FormControl>
                     </Box>
                   )}
+                  <FormControl
+                    sx={{ marginBottom: 5 }}
+                    disabled={!editDisabled}
+                  >
+                    {/* <FormLabel helperText="12:01 am (UTC)"> */}
+                    <FormLabel>Warn before</FormLabel>
+                    <RadioGroup
+                      defaultValue={postData.warnDuration || 3}
+                      row
+                      aria-labelledby="demo-controlled-radio-buttons-group"
+                      name="row-radio-buttons-group"
+                      onChange={(event) => {
+                        updateValueOf("warnDuration")(event);
+                      }}
+                    >
+                      <FormControlLabel
+                        value={1}
+                        control={<Radio />}
+                        label="A Day"
+                      />
+                      <FormControlLabel
+                        value={3}
+                        control={<Radio />}
+                        label="3 Days"
+                      />
+                      <FormControlLabel
+                        value={7}
+                        control={<Radio />}
+                        label="A Week"
+                      />
+                      <FormControlLabel
+                        value={30}
+                        control={<Radio />}
+                        label="A Month"
+                      />
+                      <FormControlLabel
+                        value={364}
+                        control={<Radio />}
+                        label="A Year"
+                        disabled
+                      />
+                    </RadioGroup>
+                  </FormControl>
 
                   <FinalButtons />
                 </Box>
