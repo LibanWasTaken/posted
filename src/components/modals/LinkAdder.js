@@ -190,15 +190,15 @@ export default function LinkAdder({ open, handleClose, info }) {
           pointerEvents: "none",
         }}
       /> */}
-        <DialogTitle>Links</DialogTitle>
+        <DialogTitle>Links {loading && "Loading"}</DialogTitle>
         <DialogContent>
           <DialogContentText sx={{ marginBottom: 1 }}>
             Add sites like Drive, Dropbox, Mega, iCloud, OneDrive, Docs, etc:
             <br />
-            {`${links && links.length}/100`}
+            {`${(links && links.length) || 0}/100`}
           </DialogContentText>
 
-          {loading && <p>Loading ...</p>}
+          {/* {loading && <p>Loading ...</p>} */}
           <List>{links && <ListItemComponents items={links} />}</List>
 
           <div>
@@ -211,6 +211,7 @@ export default function LinkAdder({ open, handleClose, info }) {
               variant="standard"
               value={titleValue}
               onChange={(e) => setTitleValue(e.target.value)}
+              disabled={loading}
               autoFocus
             />
             <TextField
@@ -222,6 +223,7 @@ export default function LinkAdder({ open, handleClose, info }) {
               variant="standard"
               value={urlValue}
               onChange={(e) => setUrlValue(e.target.value)}
+              disabled={loading}
             />
           </div>
         </DialogContent>
@@ -235,7 +237,7 @@ export default function LinkAdder({ open, handleClose, info }) {
           <Button
             sx={{ letterSpacing: 1, fontWeight: 400 }}
             onClick={handleAddLink}
-            disabled={links && links && links.length > 99}
+            disabled={(links && links.length > 99) || !titleValue || !urlValue}
           >
             Add
           </Button>

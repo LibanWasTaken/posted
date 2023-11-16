@@ -107,6 +107,12 @@ const HomePage = () => {
           <h1>SET</h1>
         </Parallax>
       </section>
+      <section className="section6">
+        <h1>View some of the Posted</h1>
+        <h1>Exceptional customizability</h1>
+        <h1>Unparalleled adaptability.</h1>
+        <h1>Unmatched Flexibilty.</h1>
+      </section>
       <section className="section5">
         <Parallax
           opacity={[0, 1]}
@@ -117,12 +123,6 @@ const HomePage = () => {
         >
           <h1>SEND</h1>
         </Parallax>
-      </section>
-      <section className="section6">
-        <h1>View some of the Posted</h1>
-        <h1>Exceptional customizability</h1>
-        <h1>Unparalleled adaptability.</h1>
-        <h1>Unmatched Flexibilty.</h1>
       </section>
 
       <Footer />
@@ -273,6 +273,39 @@ const Wrapper = styled.main`
     .hero {
       img {
         margin: 0;
+      }
+    }
+
+    .section2 {
+      /* background-color: red; */
+      font-size: smaller;
+      /* width: 90vw; */
+      /* padding: 20rem; */
+      flex-direction: column;
+
+      img {
+        width: 20vw;
+        height: auto;
+      }
+    }
+    .section3 {
+      h1 {
+        font-size: 10rem;
+      }
+    }
+    .section4 {
+      h1 {
+        font-size: 10rem;
+      }
+    }
+    .section5 {
+      h1 {
+        font-size: 10rem;
+      }
+    }
+    .section6 {
+      h1 {
+        font-size: 1rem;
       }
     }
   }

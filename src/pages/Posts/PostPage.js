@@ -343,6 +343,7 @@ const OwnPostPage = () => {
           <ThemeProvider theme={theme}>
             <CountDown
               info={{
+                postID: id,
                 releaseDate: postData.releaseDate,
                 disabled: postData.disabled,
                 preset: postData.preset,
@@ -620,7 +621,7 @@ const OwnPostPage = () => {
                               labelId="demo-simple-select-label"
                               id="time-select"
                               disabled={!editDisabled}
-                              // label="Age"
+                              label="Age"
                               onChange={(event) => {
                                 console.log(event.target.value);
                                 setPreset((prevState) => ({
@@ -645,8 +646,9 @@ const OwnPostPage = () => {
                             disabled={!editDisabled}
                             options={datesOptions}
                             defaultValue={
-                              datesOptions[postData.preset.day - 1] ||
-                              datesOptions[0]
+                              postData.preset
+                                ? datesOptions[postData.preset.day - 1]
+                                : datesOptions[0]
                             }
                             disableClearable
                             getOptionLabel={(option) => option.label}
@@ -915,7 +917,6 @@ const Wrapper = styled.main`
     .add {
       outline: none;
       border: none;
-      background-color: black;
       border-radius: 5px;
       background-color: rgba(255, 255, 255, 0.15);
 
@@ -948,9 +949,28 @@ const Wrapper = styled.main`
 
   @media screen and (max-width: 1000px) {
     padding-left: 0;
+    padding-top: 7rem;
 
     .sidebar {
-      visibility: hidden;
+      /* visibility: hidden; */
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      flex-direction: row;
+      width: 100vw;
+      min-height: 0;
+      height: 5rem;
+      padding-top: 0;
+
+      .components {
+        flex-direction: row;
+        .add {
+          background-color: black;
+        }
+        p {
+          display: none;
+        }
+      }
     }
   }
 

@@ -1,10 +1,11 @@
 import { React, useState, useEffect } from "react";
-
 import styled from "styled-components";
 
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import duration from "dayjs/plugin/duration";
+import { db } from "../services/firebase-config";
+import { updateDoc, doc } from "firebase/firestore";
 
 import Tooltip from "@mui/material/Tooltip";
 
@@ -15,6 +16,7 @@ const CountDown = (props) => {
   const [open, setOpen] = useState(false);
   const [delaying, setDelaying] = useState(false);
   const [warn, setWarn] = useState(false);
+  const postID = props.info.postID;
   const releaseDate = props.info.releaseDate;
   const disabled = props.info.disabled;
   const preset = props.info.preset;
@@ -22,15 +24,22 @@ const CountDown = (props) => {
 
   // const targetDate = dayjs.utc("2023-09-30T00:01:00Z");
   const targetDate = dayjs(releaseDate);
+  const newDate = dayjs(releaseDate).add(1, "month");
 
-  function handleDelay() {
-    setDelaying(true);
-    console.log(dayjs(releaseDate).format());
-    const newDate = dayjs(releaseDate).add(1, "day");
-    console.log(dayjs(newDate).format());
-    // now that its in numbered format, i can subtract and get the value == uhh the warning thing. and if its true, delay enabled
+  // TODO: now that its in numbered format, i can subtract and get the value == uhh the warning thing. and if its true, delay enabled
+  async function handleDelay() {
+    try {
+      const postRef = doc(db, "posts", postID);
+      await updateDoc(postRef, { releaseDate: newDate.valueOf() });
+      console.log("Document successfully updated");
 
-    setDelaying(false);
+      setDelaying(false);
+      window.location.reload();
+    } catch (error) {
+      error("Error Delaying");
+      console.error("Error updating document:", error);
+      setDelaying(false);
+    }
   }
 
   function handleClose() {
@@ -143,7 +152,7 @@ const CountDown = (props) => {
             >
               Delay To
             </button>
-            <p>{targetDate.format("DD/MM/YYYY")}</p>
+            <p>{newDate.format("DD/MM/YYYY")}</p>
           </div>
         </section>
       ) : (

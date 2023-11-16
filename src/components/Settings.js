@@ -110,34 +110,36 @@ function Settings({ userID }) {
   return (
     <Wrapper>
       <ThemeProvider theme={theme}>
+        {/* {user ? ( */}
+        {/* FIXME: */}
         {user ? (
           <div className="userPage">
-            {/* FIXME: */}
-            <img
-              src={
-                user.photoURL ||
-                userAuthFB.photoURL ||
-                "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Windows_10_Default_Profile_Picture.svg/2048px-Windows_10_Default_Profile_Picture.svg.png"
-              }
-              alt="pfp"
-              className="profilePic"
-            />
-            <h2>Welcome, {user.displayName}</h2>
-
-            <div className="accordion">
-              <Accordion
-                sx={{ m: 3, boxShadow: "rgba(0, 0, 0, 0.18) 0px 2px 4px" }}
-              >
-                <AccordionSummary
-                  sx={{ backgroundColor: "whitesmoke" }}
-                  expandIcon={<ExpandMoreIcon />}
-                  aria-controls="panel1a-content"
-                  id="User-Info"
+            <div className="display">
+              <img
+                src={
+                  user.photoURL ||
+                  "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Windows_10_Default_Profile_Picture.svg/2048px-Windows_10_Default_Profile_Picture.svg.png"
+                }
+                alt="pfp"
+                className="profilePic"
+              />
+              <h1>{user.displayName}</h1>
+              <p>{user.email}</p>
+            </div>
+            <div className="else">
+              <div className="accordion">
+                <Accordion
+                  sx={{ m: 3, boxShadow: "rgba(0, 0, 0, 0.18) 0px 2px 4px" }}
                 >
-                  <Typography>User Info</Typography>
-                </AccordionSummary>
-                <AccordionDetails sx={{ p: 2 }}>
-                  <div className="howdy">
+                  <AccordionSummary
+                    sx={{ backgroundColor: "whitesmoke" }}
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel1a-content"
+                    id="User-Info"
+                  >
+                    <Typography>User Info</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails sx={{ p: 2 }}>
                     <TextField
                       sx={{ m: 1, width: "35ch" }}
                       label="Display Name"
@@ -269,14 +271,13 @@ function Settings({ userID }) {
                       defaultValue={user.email || ""}
                     />
                     {/* <p>More..</p> */}
-                    <div>
-                      <TextField
-                        sx={{ m: 1, width: "40ch" }}
-                        label="Home Address"
-                        inputProps={{ maxLength: 100 }}
-                        variant="standard"
-                      />
-                      {/* <TextField
+                    <TextField
+                      sx={{ m: 1, width: "40ch" }}
+                      label="Home Address"
+                      inputProps={{ maxLength: 100 }}
+                      variant="standard"
+                    />
+                    {/* <TextField
                         
                         sx={{ m: 1, width: "40ch", marginBottom: 3 }}
                         label="Mailing Address"
@@ -284,116 +285,133 @@ function Settings({ userID }) {
                         variant="standard"
                       /> */}
 
-                      {/* <p>Spouse-s</p> */}
-                      {/* <p>Children-s</p> */}
-                      <Autocomplete
-                        id="blood-type-select"
-                        sx={{ width: 150, m: 1 }}
-                        options={[
-                          { label: "A+", value: "A+" },
-                          { label: "A-", value: "A-" },
-                          { label: "B+", value: "B+" },
-                          { label: "B-", value: "B-" },
-                          { label: "AB+", value: "AB+" },
-                          { label: "AB-", value: "AB-" },
-                          { label: "O+", value: "O+" },
-                          { label: "O-", value: "O-" },
-                        ]}
-                        autoHighlight
-                        getOptionLabel={(option) => option.label}
-                        renderOption={(props, option) => (
-                          <li {...props}>{option.label}</li>
-                        )}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            label="Blood Type"
-                            inputProps={{
-                              ...params.inputProps,
-                              autoComplete: "new-password",
-                            }}
-                          />
-                        )}
-                      />
-                      <TextField
-                        sx={{ m: 1, width: "35ch" }}
-                        label="Profile Picture URL"
-                        variant="outlined"
-                        type="url"
-                        defaultValue={user.photoURL || ""}
-                        onChange={updateValueOf("photoURL")}
-                      />
-                      {/* <TextField
+                    {/* <p>Spouse-s</p> */}
+                    {/* <p>Children-s</p> */}
+                    <Autocomplete
+                      id="blood-type-select"
+                      sx={{ width: 150, m: 1 }}
+                      options={[
+                        { label: "A+", value: "A+" },
+                        { label: "A-", value: "A-" },
+                        { label: "B+", value: "B+" },
+                        { label: "B-", value: "B-" },
+                        { label: "AB+", value: "AB+" },
+                        { label: "AB-", value: "AB-" },
+                        { label: "O+", value: "O+" },
+                        { label: "O-", value: "O-" },
+                      ]}
+                      autoHighlight
+                      getOptionLabel={(option) => option.label}
+                      renderOption={(props, option) => (
+                        <li {...props}>{option.label}</li>
+                      )}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Blood Type"
+                          inputProps={{
+                            ...params.inputProps,
+                            autoComplete: "new-password",
+                          }}
+                        />
+                      )}
+                    />
+                    <TextField
+                      sx={{ m: 1, marginTop: 2, width: "35ch" }}
+                      label="Profile Picture URL"
+                      variant="outlined"
+                      type="url"
+                      defaultValue={user.photoURL || ""}
+                      onChange={updateValueOf("photoURL")}
+                    />
+                    {/* <TextField
                         
                         sx={{ m: 1, width: "20ch" }}
                         label="Occupation"
                         inputProps={{ maxLength: 20 }}
                         variant="outlined"
                       /> */}
-                      {/* 
+                    {/* 
                       <p>MORE..</p>
 
                       <p>Medical Conditions</p>
                       <p>Medications</p>
                       <p>Social Media Profiles</p>
                       <p>Online Usernames</p> */}
-                    </div>
-                  </div>
-                  <Box sx={{ width: "100%", textAlign: "center" }}>
-                    <button
-                      className={`classicBtn ${
-                        saveDisabled && "disabledClassicBtn"
-                      } ${saveDisabled == "saving" && "loadingClassicBtn"}`}
-                      onClick={handleSave}
-                    >
-                      save
-                    </button>
-                  </Box>
-                </AccordionDetails>
-              </Accordion>
-              <Accordion
-                sx={{
-                  m: 3,
-                  boxShadow: "rgba(0, 0, 0, 0.18) 0px 2px 4px",
-                }}
-              >
-                <AccordionSummary
-                  sx={{ backgroundColor: "whitesmoke" }}
-                  expandIcon={<ExpandMoreIcon />}
-                  aria-controls="panel1a-content"
-                  id="User-Settings"
+                    <Box sx={{ width: "100%", textAlign: "center" }}>
+                      <button
+                        className={`classicBtn ${
+                          saveDisabled && "disabledClassicBtn"
+                        } ${saveDisabled == "saving" && "loadingClassicBtn"}`}
+                        onClick={handleSave}
+                      >
+                        save
+                      </button>
+                    </Box>
+                  </AccordionDetails>
+                </Accordion>
+                <Accordion
+                  sx={{
+                    m: 3,
+                    boxShadow: "rgba(0, 0, 0, 0.18) 0px 2px 4px",
+                  }}
                 >
-                  <Typography>Preferences</Typography>
-                </AccordionSummary>
-                <AccordionDetails sx={{ p: 2 }}>
-                  <Typography sx={{ width: "50rem" }}>
-                    Timezone <br /> date format dd/mm/yyyy <br /> language{" "}
-                    <br /> Dark mode <br /> hide navbar?
-                  </Typography>
+                  <AccordionSummary
+                    sx={{ backgroundColor: "whitesmoke" }}
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel1a-content"
+                    id="User-Settings"
+                  >
+                    <Typography>Preferences</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails sx={{ p: 2 }}>
+                    <Typography sx={{ width: "50rem" }}>
+                      Timezone <br /> date format dd/mm/yyyy <br /> language{" "}
+                      <br /> Dark mode <br /> hide navbar?
+                    </Typography>
 
-                  <Box sx={{ width: "100%", textAlign: "center" }}>
-                    <button className="classicBtn">save</button>
-                  </Box>
-                </AccordionDetails>
-              </Accordion>
+                    <Box sx={{ width: "100%", textAlign: "center" }}>
+                      <button className="classicBtn">save</button>
+                    </Box>
+                  </AccordionDetails>
+                </Accordion>
+              </div>
+              <div className="details">
+                <p>Created on: bla bla bla</p>
+                <p>Prem or not prem: bla bla bla</p>
+                <p>Freinds, Following, Always mail these guys: close firends</p>
+              </div>
             </div>
           </div>
         ) : (
-          <div className="skeleton">
-            <Skeleton
-              variant="rectangular"
-              width={830}
-              height={50}
-              sx={{ m: 3 }}
-              animation="wave"
-            />
-            <Skeleton
-              variant="rectangular"
-              width={830}
-              height={50}
-              sx={{ m: 3 }}
-              animation="wave"
-            />
+          <div className="userPage">
+            <div className="display">
+              <Skeleton
+                variant="circular"
+                width={"15rem"}
+                height={"15rem"}
+                className="profilePic"
+              />
+              <h1>Uhh..</h1>
+              <p></p>
+            </div>
+
+            <div className="skeleton">
+              <Skeleton
+                variant="rectangular"
+                width={830}
+                height={50}
+                sx={{ m: 3 }}
+                animation="wave"
+              />
+              <Skeleton
+                variant="rectangular"
+                width={830}
+                height={50}
+                sx={{ m: 3 }}
+                animation="wave"
+              />
+            </div>
           </div>
         )}
       </ThemeProvider>
@@ -402,13 +420,33 @@ function Settings({ userID }) {
 }
 const Wrapper = styled.section`
   .profilePic {
-    border-radius: 50%;
-    width: 5rem;
+    /* border-radius: 50%; */
+    min-width: 15rem;
+    width: 15rem;
   }
-  .howdy {
-    /* height: 100rem;
-    width: 10rem; */
-    /* border: 1px solid red; */
+
+  .display {
+    background-color: whitesmoke;
+    padding: 2rem;
+    height: 25rem;
+    width: 20rem;
+    display: flex;
+    /* align-items: center;  */
+    justify-content: center;
+    flex-direction: column;
+  }
+  .userPage {
+    display: flex;
+    /* align-items: center; */
+    justify-content: center;
+    gap: 5rem;
+    h1 {
+      /* padding-top: 2rem; */
+      margin: 2rem 0 0 0;
+
+      font-size: 2rem;
+      /* border-top: 1px solid red; */
+    }
   }
   .accordion {
     margin-bottom: 5rem;

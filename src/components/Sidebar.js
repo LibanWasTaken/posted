@@ -11,6 +11,8 @@ import ListItemText from "@mui/material/ListItemText";
 import styled from "styled-components";
 import { NAV_OPTIONS } from "../context/UserOptions";
 
+import { Link } from "react-router-dom";
+
 import { useUserContext } from "../context/UserContext";
 
 export default function Sidebar({ show }) {
@@ -40,18 +42,23 @@ export default function Sidebar({ show }) {
 
   function generateLinks(navOptions) {
     return navOptions.map((option) => (
-      <a key={option.value} href={option.value}>
+      <Link to={option.value} key={option.value}>
+        {/* <a key={option.value} href={option.value}> */}
         <ListItem disablePadding>
           <ListItemButton>{option.label}</ListItemButton>
         </ListItem>
-      </a>
+        {/* </a> */}
+      </Link>
     ));
   }
 
   const list = (anchor) => (
     <Wrapper>
       <Box
-        sx={{ width: anchor === "top" || anchor === "bottom" ? "auto" : 250 }}
+        sx={{
+          width: anchor === "top" || anchor === "bottom" ? "auto" : 250,
+          fontSize: "1.25rem",
+        }}
         role="presentation"
         onClick={toggleDrawer(anchor, false)}
         onKeyDown={toggleDrawer(anchor, false)}

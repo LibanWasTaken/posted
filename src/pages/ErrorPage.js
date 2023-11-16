@@ -8,8 +8,8 @@ const ErrorPage = () => {
           <section>
             <h1>404</h1>
             <h3>Sorry, no reason to be here</h3>
-            <a href="/" className="btn">
-              go back home
+            <a href="/" style={{ textDecoration: "none" }}>
+              <div className="classicBtn">go back home</div>
             </a>
           </section>
         </Wrapper>
@@ -31,12 +31,10 @@ const Wrapper = styled.main`
     text-transform: none;
     margin: 2rem 0;
   }
-  .btn {
+  .classicBtn {
+    margin-top: 3rem;
     font-size: larger;
     text-decoration: none;
-    background-color: black;
-    color: white;
-    padding: 15px 20px;
   }
 `;
 

@@ -147,6 +147,9 @@ views and like viewer
 more configuration in posts
 edit diaries?
 extra password lock posts
+warn everyday in warning-time period (switch)
+autosave
+history
 
 
 https://www.npmjs.com/package/react-responsive
