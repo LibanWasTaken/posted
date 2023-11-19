@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 
-const SettingsPage = () => {
+const ToasterFixer = () => {
   const [hidden, setHidden] = useState(true);
   const [count, setcount] = useState(0);
   const [hitting, sethitting] = useState(false);
@@ -49,7 +49,7 @@ const SettingsPage = () => {
             console.log(count);
           }}
         >
-          hit that bitch {count > 0 && "AGAIn"}
+          hit that prick {count > 0 && "AGAIn"}
         </button>
       ) : (
         <button
@@ -95,4 +95,4 @@ const Wrapper = styled.main`
   flex-direction: column;
 `;
 
-export default SettingsPage;
+export default ToasterFixer;

@@ -24,9 +24,15 @@ const Navbar = () => {
   return (
     <Wrapper>
       <nav>
-        <a href="/" className="logo">
+        <Link
+          to="/"
+          style={{
+            textDecoration: "none",
+          }}
+          className="logo"
+        >
           POSTED
-        </a>
+        </Link>
         {windowWidth < 930 ? (
           <div className="links"></div>
         ) : (
@@ -82,11 +88,19 @@ const Navbar = () => {
               <a href="/search" className="icon">
                 <span className="material-symbols-outlined">search</span>
               </a>
-              <a href="/account" className={`icon ${currentUser && "logged"}`}>
+              {/* <a href="/account" className={`icon ${currentUser && "logged"}`}> */}
+              <Link
+                to="/account"
+                style={{
+                  textDecoration: "none",
+                }}
+                // className="navLinks"
+                className="icon"
+              >
                 {currentUser ? (
                   <img
                     src={currentUser.photoURL || defaultAccPNG}
-                    alt="pfp"
+                    alt=""
                     className="profilePic"
                   />
                 ) : (
@@ -94,7 +108,9 @@ const Navbar = () => {
                     account_circle
                   </span>
                 )}
-              </a>
+              </Link>
+
+              {/* </a> */}
             </div>
           )}
         </div>
@@ -152,6 +168,7 @@ const Wrapper = styled.section`
   .profilePic {
     height: 2rem;
     border-radius: 50%;
+    /* background-color: red; */
   }
 
   ul {

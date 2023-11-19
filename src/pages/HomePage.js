@@ -1,15 +1,20 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
+
 import Footer from "./../components/Footer";
-import Divergence from "react-divergence-meter";
+import { useUserContext } from "../context/UserContext";
 
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 
+import Divergence from "react-divergence-meter";
 import { Parallax } from "react-scroll-parallax";
 
 dayjs.extend(utc);
 const HomePage = () => {
+  const { user: currentUser, loading } = useUserContext();
+
   const currentDate = dayjs.utc();
   const formattedDate = currentDate.format("DD.MM.YY");
   const [value, setValue] = useState(formattedDate);
@@ -45,9 +50,9 @@ const HomePage = () => {
             <Divergence value={value} />
           </div>
         </Parallax>
-        <a href="/me/them">
-          <button>fix ur toaster &#12297;</button>
-        </a>
+        <Link to={currentUser ? "/me" : "/account"}>
+          <button>Get Started ➔</button>
+        </Link>
       </div>
       <section className="section2">
         <div className="text">
@@ -110,8 +115,9 @@ const HomePage = () => {
       <section className="section6">
         <h1>View some of the Posted</h1>
         <h1>Exceptional customizability</h1>
-        <h1>Unparalleled adaptability.</h1>
-        <h1>Unmatched Flexibilty.</h1>
+        {/* <h1>something else</h1> */}
+        <h1>Unparalleled adaptability</h1>
+        <h1>Unmatched Flexibilty</h1>
       </section>
       <section className="section5">
         <Parallax
@@ -137,8 +143,11 @@ const Wrapper = styled.main`
   align-items: center;
   justify-content: center;
   overflow-x: hidden;
+
   .hero {
     display: flex;
+    /* animation: swipe 1s ease-in-out infinite; */
+
     align-items: center;
     justify-content: center;
     /* filter: saturate(0) invert(1); */
@@ -173,12 +182,24 @@ const Wrapper = styled.main`
       border: 3px solid gray;
       outline: none;
       letter-spacing: 1px;
+      transition: 0.3s;
     }
     button:hover {
       cursor: pointer;
-      letter-spacing: 1.5px;
-      transition: 0.3s;
+      /* letter-spacing: 1.5px; */
       border: 3px solid white;
+    }
+  }
+
+  @keyframes swipe {
+    0% {
+      transform: translateX(0%); /* Start off screen to the right */
+    }
+    5% {
+      transform: translateX(5%); /* Start off screen to the right */
+    }
+    100% {
+      transform: translateX(-100%); /* Move off screen to the left */
     }
   }
 
@@ -190,13 +211,16 @@ const Wrapper = styled.main`
     justify-content: space-around;
     width: 100vw;
     .text {
-      color: rgb(172, 172, 172);
+      /* color: rgb(172, 172, 172); */
+      color: white;
+
       font-size: 2rem;
       /* font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif; */
       text-transform: uppercase;
     }
     .pop {
       color: white;
+      font-size: larger;
     }
     background-color: black;
     height: 90vh;
@@ -263,10 +287,33 @@ const Wrapper = styled.main`
   }
 
   .section6 {
+    /* filter: invert(1); */
+    h1 {
+      margin: 0;
+      padding: 0.5rem;
+      text-transform: uppercase;
+      background-color: black;
+      color: white;
+      letter-spacing: 2px;
+    }
+    background-color: black;
+
     display: flex;
     align-items: center;
     justify-content: space-around;
     width: 100%;
+    overflow: hidden;
+    /* animation: scrollText 10s linear infinite;  */
+    z-index: -1;
+  }
+
+  @keyframes scrollText {
+    0% {
+      transform: translateX(100%); /* Start off screen to the right */
+    }
+    100% {
+      transform: translateX(-100%); /* Move off screen to the left */
+    }
   }
 
   @media screen and (max-width: 1200px) {

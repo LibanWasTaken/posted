@@ -8,7 +8,15 @@ const ErrorPage = () => {
           <section>
             <h1>404</h1>
             <h3>Sorry, no reason to be here</h3>
-            <a href="/" style={{ textDecoration: "none" }}>
+            <a
+              href="/"
+              style={{
+                textDecoration: "none",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
               <div className="classicBtn">go back home</div>
             </a>
           </section>
@@ -21,11 +29,16 @@ const ErrorPage = () => {
 const Wrapper = styled.main`
   display: flex;
   justify-content: center;
-  /* align-items: center; */
+  align-items: center;
   text-align: center;
+
   h1 {
-    font-size: 12rem;
-    margin: 5rem 0 2rem;
+    font-size: 20rem;
+    letter-spacing: -20px;
+    margin: 2rem 0;
+    padding: 0;
+    /* position: absolute; */
+    z-index: -1;
   }
   h3 {
     text-transform: none;
@@ -33,8 +46,9 @@ const Wrapper = styled.main`
   }
   .classicBtn {
     margin-top: 3rem;
-    font-size: larger;
+    /* font-size: larger; */
     text-decoration: none;
+    width: fit-content;
   }
 `;
 

@@ -50,6 +50,7 @@ const theme = createTheme({
       main: "#fff",
     },
   },
+  // zIndex: 1,
   // shadows: 0,
 });
 
@@ -83,6 +84,7 @@ function Settings({ userID }) {
       await updateDoc(postRef, updatedObj);
       console.log("Document successfully updated");
       setSaveDisabled(true);
+      window.location.reload();
     } catch (error) {
       console.error("Error updating document: ", error);
       setSaveDisabled(false);
@@ -102,8 +104,9 @@ function Settings({ userID }) {
     if (!saveDisabled) {
       console.log(updatedObj);
 
-      updateUserData();
       setSaveDisabled("saving");
+      updateUserData();
+      // setSaveDisabled(false);
     }
   }
 
@@ -115,6 +118,10 @@ function Settings({ userID }) {
         {user ? (
           <div className="userPage">
             <div className="display">
+              <div
+                className="background"
+                style={{ backgroundColor: "black" }}
+              ></div>
               <img
                 src={
                   user.photoURL ||
@@ -123,8 +130,10 @@ function Settings({ userID }) {
                 alt="pfp"
                 className="profilePic"
               />
-              <h1>{user.displayName}</h1>
-              <p>{user.email}</p>
+              <div className="info">
+                <h1>{user.displayName}</h1>
+                <p>{user.email}</p>
+              </div>
             </div>
             <div className="else">
               <div className="accordion">
@@ -141,7 +150,7 @@ function Settings({ userID }) {
                   </AccordionSummary>
                   <AccordionDetails sx={{ p: 2 }}>
                     <TextField
-                      sx={{ m: 1, width: "35ch" }}
+                      sx={{ m: 1, marginBottom: 2, width: "35ch" }}
                       label="Display Name"
                       variant="outlined"
                       defaultValue={user.displayName || ""}
@@ -173,7 +182,7 @@ function Settings({ userID }) {
                         onChange={updateValueOf("lastName")}
                       />
                     </div>
-                    <TextField
+                    {/* <TextField
                       sx={{ m: 1, width: "5ch" }}
                       label="Prefix"
                       inputProps={{ maxLength: 5 }}
@@ -184,8 +193,11 @@ function Settings({ userID }) {
                       label="Suffix"
                       inputProps={{ maxLength: 5 }}
                       variant="standard"
-                    />
-                    <div className="datePicker" style={{ marginTop: "2rem" }}>
+                    /> */}
+                    <div
+                      className="datePicker"
+                      style={{ marginTop: "2rem", display: "flex" }}
+                    >
                       <DatePicker
                         label="Date of Birth"
                         sx={{ m: 1 }}
@@ -197,12 +209,15 @@ function Settings({ userID }) {
                             updateValueOf("dob")({ target: { value: dob } });
                         }}
                       />
-                    </div>
-                    <div>
                       <Autocomplete
                         id="gender-select"
                         sx={{ width: 350, m: 1 }}
                         options={countries}
+                        onChange={(event, newValue) => {
+                          updateValueOf("birthCountry")({
+                            target: { value: newValue.label },
+                          });
+                        }}
                         autoHighlight
                         getOptionLabel={(option) => option.label}
                         renderOption={(props, option) => (
@@ -219,17 +234,22 @@ function Settings({ userID }) {
                           />
                         )}
                       />
+                    </div>
+
+                    <div>
                       <TextField
                         label="Birth State"
                         variant="outlined"
                         type="text"
                         sx={{ m: 1, width: "25ch" }}
+                        onChange={updateValueOf("birthState")}
                       />
                       <TextField
                         label="Birth City"
                         variant="outlined"
                         type="text"
                         sx={{ m: 1, width: "25ch" }}
+                        onChange={updateValueOf("birthCity")}
                       />
                     </div>
                     <TextField
@@ -237,6 +257,7 @@ function Settings({ userID }) {
                       variant="standard"
                       type="number"
                       sx={{ m: 1, width: "25ch", marginBottom: 3 }}
+                      onChange={updateValueOf("phoneNumber")}
                     />
 
                     <Autocomplete
@@ -246,6 +267,11 @@ function Settings({ userID }) {
                         { label: "Male", value: "male" },
                         { label: "Female", value: "female" },
                       ]}
+                      onChange={(event, newValue) => {
+                        updateValueOf("gender")({
+                          target: { value: newValue.label },
+                        });
+                      }}
                       autoHighlight
                       getOptionLabel={(option) => option.label}
                       renderOption={(props, option) => (
@@ -323,6 +349,9 @@ function Settings({ userID }) {
                       type="url"
                       defaultValue={user.photoURL || ""}
                       onChange={updateValueOf("photoURL")}
+                      inputProps={{
+                        pattern: "https?://.*", // Simple pattern for http/https URLs
+                      }}
                     />
                     {/* <TextField
                         
@@ -386,14 +415,22 @@ function Settings({ userID }) {
         ) : (
           <div className="userPage">
             <div className="display">
-              <Skeleton
+              <div
+                className="background"
+                style={{ backgroundColor: "black" }}
+              ></div>
+              <div className="dummy"></div>
+              {/* <Skeleton
                 variant="circular"
+                sx={{ zIndex: "5" }}
                 width={"15rem"}
                 height={"15rem"}
-                className="profilePic"
-              />
-              <h1>Uhh..</h1>
-              <p></p>
+              /<div className="info">
+              </div>> */}
+              <div className="info">
+                <h1>Uhh..</h1>
+                <p>{""}</p>
+              </div>
             </div>
 
             <div className="skeleton">
@@ -419,41 +456,123 @@ function Settings({ userID }) {
   );
 }
 const Wrapper = styled.section`
-  .profilePic {
-    /* border-radius: 50%; */
-    min-width: 15rem;
-    width: 15rem;
-  }
-
-  .display {
-    background-color: whitesmoke;
-    padding: 2rem;
-    height: 25rem;
-    width: 20rem;
-    display: flex;
-    /* align-items: center;  */
-    justify-content: center;
-    flex-direction: column;
-  }
+  /* margin: 1rem;
+  padding: 4rem;
+  border: 2px solid black;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px; */
   .userPage {
     display: flex;
     /* align-items: center; */
     justify-content: center;
     gap: 5rem;
     h1 {
-      /* padding-top: 2rem; */
       margin: 2rem 0 0 0;
-
       font-size: 2rem;
-      /* border-top: 1px solid red; */
     }
   }
+
+  .profilePic {
+    border-radius: 50%;
+    /* overflow: hidden; */
+    min-width: 15rem;
+    object-fit: cover;
+    width: 15rem;
+    min-height: 15rem;
+    height: 15rem;
+    z-index: 1;
+  }
+  .display:hover {
+    .profilePic {
+      border-radius: 0%;
+      transition: 0.5s;
+    }
+  }
+
+  .dummy {
+    min-width: 15rem;
+    width: 15rem;
+    min-height: 15rem;
+    height: 15rem;
+    z-index: 1;
+    background-color: #eee;
+    border-radius: 50%;
+  }
+
+  .display {
+    background-color: whitesmoke;
+    padding: 2rem;
+    height: 30rem;
+    width: 25rem;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    position: relative;
+    /* overflow: scroll; */
+    word-wrap: break-word;
+
+    .background {
+      height: 40%;
+      width: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+  }
+
+  .display::-webkit-scrollbar {
+    display: none;
+  }
+
   .accordion {
     margin-bottom: 5rem;
     /* display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column; */
+  }
+
+  .details {
+    padding: 0 2rem;
+  }
+
+  @media screen and (max-width: 1460px) {
+    .userPage {
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .display {
+      flex-direction: row;
+      height: 10rem;
+      width: 50vw;
+      align-items: center;
+      justify-content: space-around;
+
+      .info {
+        width: 50%;
+      }
+
+      .background {
+        height: 100%;
+        width: 25%;
+      }
+
+      .profilePic {
+        min-width: 10rem;
+        width: 10rem;
+        min-height: 10rem;
+        height: 10rem;
+      }
+
+      .dummy {
+        min-width: 10rem;
+        width: 10rem;
+        min-height: 10rem;
+        height: 10rem;
+      }
+    }
   }
 `;
 

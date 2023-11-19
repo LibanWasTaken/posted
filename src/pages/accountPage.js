@@ -14,8 +14,8 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   sendEmailVerification,
-  // signInWithRedirect,
-  // getRedirectResult,
+  signInWithRedirect,
+  getRedirectResult,
   getAuth,
 } from "firebase/auth";
 import { auth, provider, db } from "../services/firebase-config";
@@ -24,6 +24,7 @@ import { collection, addDoc, getDoc, setDoc, doc } from "firebase/firestore";
 
 import { useUserContext } from "../context/UserContext";
 import Settings from "../components/Settings";
+import PasswordReset from "../components/modals/PasswordReset";
 
 const theme = createTheme({
   palette: {
@@ -37,7 +38,7 @@ const theme = createTheme({
 });
 
 export function AccPage() {
-  const { user, loading } = useUserContext(); // TODO: this gets values from firebaseAuth
+  const { user, loading } = useUserContext();
   const [value, setValue] = useState(0);
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
@@ -47,6 +48,10 @@ export function AccPage() {
   const [errMsg, setErrMsg] = useState("");
   const [btnLoading, setBtnLoading] = useState(false);
   const navigate = useNavigate();
+
+  const [passwordResetOpen, setPasswordResetOpen] = useState(false);
+  const handlePasswordResetOpen = () => setPasswordResetOpen(true);
+  const handlePasswordResetClose = () => setPasswordResetOpen(false);
 
   const formatErr = (str) => {
     const words = str.split(" ");
@@ -132,25 +137,24 @@ export function AccPage() {
 
   const loginGmail = () => {
     const auth = getAuth();
-    // Start the redirect flow
+
     // signInWithRedirect(auth, provider)
     //   .then(() => {
-    //     // After the page redirects back, get the result
-    //     getRedirectResult(auth)
-    //       .then((result) => {
-    //         const credential = GoogleAuthProvider.credentialFromResult(result);
-    //         const token = credential.accessToken;
-    //         const user = result.user;
-    //         console.log("User authenticated: ", user);
-    //         addAccToFireStore(user);
-    //       })
-    //       .catch((error) => {
-    //         console.error("Error getting redirect result: ", error);
-    //       });
+    //     // This code will not run since the user is redirected to the Google sign-in page
     //   })
     //   .catch((error) => {
-    //     console.error("Error initiating redirect: ", error);
+    //     console.error("Error initiating redirect sign-in: ", error);
     //   });
+    // getRedirectResult(auth)
+    //   .then((result) => {
+    //     const user = result.user;
+    //     console.log("User authenticated: ", user);
+    //     addAccToFireStore(user);
+    //   })
+    //   .catch((error) => {
+    //     console.error("Error getting redirect result: ", error);
+    //   });
+
     signInWithPopup(auth, provider)
       .then((result) => {
         const credential = GoogleAuthProvider.credentialFromResult(result);
@@ -163,21 +167,6 @@ export function AccPage() {
         console.error("Error getting pop-up result: ", error);
       });
   };
-
-  // useEffect(() => {
-  //   const auth = getAuth();
-  //   getRedirectResult(auth)
-  //     .then((result) => {
-  //       const credential = GoogleAuthProvider.credentialFromResult(result);
-  //       const token = credential.accessToken;
-  //       const user = result.user;
-  //       console.log("Gmail User authenticated: ", user);
-  //       addAccToFireStore(user);
-  //     })
-  //     .catch((error) => {
-  //       console.warn("Error getting redirect result: ", error);
-  //     });
-  // }, []);
 
   const logout = async () => {
     try {
@@ -193,16 +182,6 @@ export function AccPage() {
     }
   };
 
-  // Check if admin
-
-  // let isAdmin = false;
-  // if (user) {
-  //   if (user.uid === adminID) {
-  //     isAdmin = true;
-  //   }
-  // }
-
-  // console.log(user, loading);
   return (
     <Wrapper>
       {loading ? (
@@ -211,15 +190,25 @@ export function AccPage() {
         <ThemeProvider theme={theme}>
           {user ? (
             <section className="section2 ">
-              <img
-                src={
-                  user.photoURL ||
-                  "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Windows_10_Default_Profile_Picture.svg/2048px-Windows_10_Default_Profile_Picture.svg.png"
-                }
-                alt="pfp"
-                className="profilePic"
-              />
-              <h2>Welcome, {user.displayName}</h2>
+              <div
+                style={{
+                  display: "flex",
+                  gap: "2rem",
+                  margin: "2rem",
+                  alignItems: "center",
+                }}
+              >
+                <img
+                  src={
+                    user.photoURL ||
+                    "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Windows_10_Default_Profile_Picture.svg/2048px-Windows_10_Default_Profile_Picture.svg.png"
+                  }
+                  alt="pfp"
+                  className="profilePic"
+                />
+                <h2>Welcome, {user.displayName}</h2>
+              </div>
+
               <Settings userID={user.uid} />
 
               <button
@@ -273,7 +262,12 @@ export function AccPage() {
                       onChange={(event) => setLoginPassword(event.target.value)}
                     />
                   </div>
-                  <a href="/">Forgot your password?</a>
+                  <p
+                    style={{ textDecoration: "underline", cursor: "pointer" }}
+                    onClick={handlePasswordResetOpen}
+                  >
+                    Forgot your password?
+                  </p>
                   <button
                     className={`classicBtn ${
                       btnLoading && "loadingClassicBtn disabledClassicBtn"
@@ -283,6 +277,13 @@ export function AccPage() {
                   >
                     SIGN IN
                   </button>
+                  <div className="errMsg">{errMsg !== "" && errMsg}</div>
+                  <PasswordReset
+                    open={passwordResetOpen}
+                    handleClose={handlePasswordResetClose}
+                    userMail={loginEmail} // TODO: check if mail
+                    // userID={currentUser.uid}
+                  />
                 </div>
               ) : (
                 // Register tab
@@ -323,9 +324,10 @@ export function AccPage() {
                   >
                     SIGN UP
                   </button>
+                  <div className="errMsg">{errMsg !== "" && errMsg}</div>
                 </div>
               )}
-              <div className="errMsg">{errMsg !== "" && errMsg}</div>
+              {/* <div className="errMsg">{errMsg !== "" && errMsg}</div> */}
             </section>
           )}
         </ThemeProvider>
@@ -337,7 +339,7 @@ export function AccPage() {
 const Wrapper = styled.main`
   /* font-family: "Poppins", sans-serif; */
 
-  margin-top: 3rem;
+  margin-top: 1rem;
   display: flex;
   align-items: center;
   justify-content: center;

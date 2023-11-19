@@ -1,5 +1,6 @@
 import { React, useState, useEffect } from "react";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -21,6 +22,12 @@ const CountDown = (props) => {
   const disabled = props.info.disabled;
   const preset = props.info.preset;
   const warnDuration = props.info.warnDuration;
+  const navigate = useNavigate();
+
+  function redirect() {
+    // Use the history.push method to navigate to the desired URL
+    navigate(`/me`);
+  }
 
   // const targetDate = dayjs.utc("2023-09-30T00:01:00Z");
   const targetDate = dayjs(releaseDate);
@@ -74,9 +81,12 @@ const CountDown = (props) => {
     if (!warn) {
       if (timeRemaining.days <= warnDuration) setWarn(true);
     }
+    // TODO: enable
+    // if (timeRemaining && timeRemaining.seconds < 0) {
+    //   redirect();
+    // }
     const interval = setInterval(() => {
       setTimeRemaining(calculateTimeRemaining());
-      // TODO: if second < -1, refresh page?
     }, 1000);
 
     return () => clearInterval(interval);

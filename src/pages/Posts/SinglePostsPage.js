@@ -104,7 +104,7 @@ export default function SinglePostPage() {
       const docRef = doc(db, "users", uid);
       const docSnap = await getDoc(docRef);
       const userDataReceived = docSnap.data();
-      // console.log(userDataReceived);
+      console.log(userDataReceived);
       if (userDataReceived == undefined) {
         setInValidPost(true);
         setLoading(false);
@@ -135,10 +135,6 @@ export default function SinglePostPage() {
     }
   }, [currentUser, postData]);
 
-  // TODO: change releaseDate to .valueOf() integer values
-  // .collection("posts")
-  // .orderBy("releaseDate", "desc")
-
   async function handleHeart() {
     try {
       setHearting(true);
@@ -147,6 +143,7 @@ export default function SinglePostPage() {
       const postDataReceived = docSnap.data();
       let postDataLikes = postDataReceived.likes || [];
       const uid = currentUser.uid;
+      console.log(uid);
 
       if (hearted) {
         postDataLikes = postDataLikes.filter((userId) => userId !== uid);
@@ -263,7 +260,6 @@ export default function SinglePostPage() {
                 >
                   book_5
                 </span>
-                {/* TODO: +/- length when liking */}
                 {/* {currentUser && postData && ( */}
                 <Tooltip
                   title={currentUser ? likesCount : "Log in"}
@@ -300,7 +296,7 @@ export default function SinglePostPage() {
             <Comments postID={id} />
 
             {true && (
-              // TODO: {postData.diary && }
+              // FIXME: {postData.diary && }
               <Diary
                 open={diaryOpenMUI}
                 handleClose={handleDiaryCloseMUI}

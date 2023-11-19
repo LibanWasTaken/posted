@@ -1,19 +1,25 @@
-import * as React from "react";
+import React, { useState, useEffect, forwardRef, Fragment } from "react";
+import { useParams } from "react-router-dom";
 
-import Dialog from "@mui/material/Dialog";
-import ListItemText from "@mui/material/ListItemText";
-import ListItem from "@mui/material/ListItem";
-import List from "@mui/material/List";
-import Divider from "@mui/material/Divider";
-import Paper from "@mui/material/Paper";
+import {
+  Box,
+  Dialog,
+  ListItemText,
+  ListItem,
+  List,
+  Divider,
+} from "@mui/material";
 
 import Slide from "@mui/material/Slide";
 import styled from "styled-components";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
-import ExamsSVG from "./../../assets/undraw_exams_re_4ios.svg";
 import DiaryPNG from "./../../assets/DiaryPNG.png";
 import DiaryPage from "./DiaryPage";
+
+import dayjs from "dayjs";
+import { db } from "../../services/firebase-config";
+import { collection, query, getDocs, orderBy } from "firebase/firestore";
 
 const theme = createTheme({
   typography: {
@@ -39,20 +45,26 @@ const theme = createTheme({
       main: "#fff",
     },
   },
-  shadows: 0,
+  // shadows: 0,
+  // shadows: Array(25).fill('none')
 });
-const Transition = React.forwardRef(function Transition(props, ref) {
+const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
 function renderListItems(data) {
   return data.map((item, index) => (
-    <React.Fragment key={index}>
+    <Fragment key={index}>
       <ListItem button>
-        <ListItemText primary={item.primary} secondary={item.secondary} />
+        <ListItemText
+          primary={
+            item.primary || dayjs(item.timestamp).format("ddd, DD MMM, YYYY")
+          }
+          secondary={item.secondary || item.title}
+        />
       </ListItem>
       <Divider />
-    </React.Fragment>
+    </Fragment>
   ));
 }
 
@@ -190,14 +202,44 @@ export default function Diary({ open, handleClose, info, editable = true }) {
       value: "chicken",
     },
   ];
+  const [pageAdderOpen, setPageAdderOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [diaryPages, setDiaryPages] = useState(false);
+  const { id } = useParams();
 
-  const [pageAdderOpen, setPageAdderOpen] = React.useState(false);
   const handlePageAdderOpen = () => {
     setPageAdderOpen(true);
   };
   const handlePageAdderClose = () => {
     setPageAdderOpen(false);
   };
+
+  async function getFSData() {
+    setLoading(true);
+    // TODO: Limit
+    const queryReceived = query(
+      collection(db, `/posts/${id}/diary/`),
+      orderBy("timestamp", "desc")
+    );
+    // const queryReceived = query(
+    //   collection(db, `/posts`),
+    //   orderBy("releaseDate", sortType),
+    //   limit(countPosts)
+    // );
+    const querySnapshot = await getDocs(queryReceived);
+    const diaryDocs = querySnapshot.docs.map((doc) => ({
+      ...doc.data(),
+      id: doc.id,
+    }));
+    console.log(diaryDocs);
+    setDiaryPages(diaryDocs);
+    // setLastPost(querySnapshot.docs[querySnapshot.docs.length - 1]);\
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    getFSData();
+  }, []);
 
   return (
     <ThemeProvider theme={theme}>
@@ -228,9 +270,10 @@ export default function Diary({ open, handleClose, info, editable = true }) {
             )}
           </div>
           <section className="list">
-            <Paper style={{ maxHeight: "80vh", overflow: "auto" }}>
+            <Box style={{ maxHeight: "80vh", overflow: "auto" }}>
+              {diaryPages && <List>{renderListItems(diaryPages)}</List>}
               <List>{renderListItems(arrExample)}</List>
-            </Paper>
+            </Box>
           </section>
           {/* <img src={ExamsSVG} alt="ExamsSVG" className="ExamsSVG" /> */}
           <img

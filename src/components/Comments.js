@@ -9,6 +9,7 @@ import {
   getDocs,
   doc,
   getDoc,
+  orderBy,
 } from "firebase/firestore";
 import { Spinner1 } from "./Spinner";
 import { useUserContext } from "../context/UserContext";
@@ -50,13 +51,22 @@ const Comments = ({ postID }) => {
 
   const [commentValue, setCommentValue] = useState();
   const [loading, setLoading] = useState(true);
+  const [disableComment, setDisableComment] = useState(false);
   const [comments, setComments] = useState();
   const [userData, setUserData] = useState();
 
   async function getFSData() {
     setLoading(true);
     // TODO: Limit
-    const queryRecieved = query(collection(db, `/posts/${postID}/comments/`));
+    const queryRecieved = query(
+      collection(db, `/posts/${postID}/comments/`),
+      orderBy("timestamp", "desc")
+    );
+    // const queryReceived = query(
+    //   collection(db, `/posts`),
+    //   orderBy("releaseDate", sortType),
+    //   limit(countPosts)
+    // );
     const querySnapshot = await getDocs(queryRecieved);
     const commentsDocs = querySnapshot.docs.map((doc) => ({
       ...doc.data(),
@@ -67,6 +77,12 @@ const Comments = ({ postID }) => {
     // setLastPost(querySnapshot.docs[querySnapshot.docs.length - 1]);\
     setLoading(false);
   }
+
+  const handleEnterPress = (event) => {
+    if (event.key === "Enter") {
+      handleSubmit();
+    }
+  };
 
   const handleInputChange = (event) => {
     const { id, value } = event.target;
@@ -94,6 +110,7 @@ const Comments = ({ postID }) => {
 
   const handleSubmit = async () => {
     if (commentValue) {
+      setDisableComment(true);
       try {
         // Add a new document with a generated ID
         const docRef = await addDoc(
@@ -107,10 +124,13 @@ const Comments = ({ postID }) => {
         );
 
         console.log("Document written with ID:", docRef.id);
+        setDisableComment(false);
+
         setCommentValue();
         getFSData();
       } catch (e) {
         console.error("Error adding document:", e);
+        setDisableComment(false);
       }
     }
   };
@@ -128,13 +148,26 @@ const Comments = ({ postID }) => {
           <span className="img material-symbols-outlined">person</span>
           <div>
             <p className="text">{comment.comment}</p>
-            <a
-              href={`/user/${comment.uid}`}
-              target="_blank"
-              style={{ textDecoration: "none", color: "black" }}
-            >
-              <p className="user">{comment.userName || "John Smith"}</p>
-            </a>
+            <div style={{ display: "flex", gap: "2rem", alignItems: "center" }}>
+              <a
+                href={`/user/${comment.uid}`}
+                target="_blank"
+                style={{ textDecoration: "none", color: "black" }}
+              >
+                <p className="user">{comment.userName || "John Smith"}</p>
+              </a>
+              <Button
+                className="show"
+                sx={{ height: "2rem" }}
+                onClick={() => {
+                  setCommentValue(
+                    `"${comment.comment}.." @${comment.userName} `
+                  );
+                }}
+              >
+                <p>Reply</p>
+              </Button>
+            </div>
           </div>
         </div>
         <div className="content">
@@ -180,15 +213,18 @@ const Comments = ({ postID }) => {
                   border: "none",
                 }}
                 id="title"
-                label={!userData && "Log in to comment"}
+                label={!userData ? "Log in to comment" : "Comment"}
                 placeholder="Join the discussion"
                 type="text"
                 variant="standard"
                 value={commentValue}
+                // defaultValue={commentValue}
                 inputProps={{ maxLength: 1234 }}
                 fullWidth
                 onChange={handleInputChange}
-                disabled={!userData}
+                onKeyDown={handleEnterPress}
+                disabled={!userData || disableComment}
+                focused={commentValue}
               />
               <Button
                 sx={{
@@ -293,12 +329,23 @@ const Wrapper = styled.main`
         display: flex;
         align-items: center;
         gap: 1rem;
+        max-width: 80%;
       }
       .vote {
         cursor: pointer;
         fill: black;
       }
       .vote:active {
+        color: gray;
+      }
+      .show {
+        opacity: 0;
+      }
+    }
+
+    .comment:hover {
+      .show {
+        opacity: 1;
       }
     }
   }

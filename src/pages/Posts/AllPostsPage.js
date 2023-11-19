@@ -2,10 +2,9 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Spinner3 } from "../../components/Spinner";
 import Card from "../../components/PostCard";
-import { Skeleton } from "@mui/material";
+import { Skeleton, TextField, Tooltip } from "@mui/material";
 import dayjs from "dayjs";
 
-import { Tooltip } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 import { getDocs, collection, query, orderBy, limit } from "firebase/firestore";
@@ -13,7 +12,7 @@ import { db } from "../../services/firebase-config";
 
 export default function AllProductPage() {
   const [posts, setPosts] = useState();
-  const [countPosts, setCountPosts] = useState(2);
+  const [countPosts, setCountPosts] = useState(4);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [sortType, setSortType] = useState("desc");
@@ -63,7 +62,7 @@ export default function AllProductPage() {
   function handleSort() {
     runLoadingBar();
 
-    console.log("swithching");
+    console.log("switching");
     if (sortType == "asc") {
       setSortType("desc");
     } else {
@@ -101,7 +100,29 @@ export default function AllProductPage() {
           <div className="filter">
             <h2>Filter</h2>
             <p>Search</p>
-            <p>Posts per page</p>
+            <TextField
+              label="Posts Count"
+              variant="standard"
+              type="number"
+              sx={{
+                m: 1,
+                width: "10ch",
+                marginBottom: 3,
+                filter: "saturate(0)",
+              }}
+              defaultValue={countPosts}
+              inputProps={{
+                min: 4,
+                max: 500,
+              }}
+              onChange={(e) => {
+                const count = e.target.value;
+                if (count && count > 3 && count < 501) {
+                  setCountPosts(Math.round(count));
+                }
+              }}
+            />
+
             <p>Lorem ipsum dolor sit amet.</p>
 
             <div className="layout">
@@ -171,20 +192,32 @@ const Wrapper = styled.main`
   .loadingBar {
     position: fixed;
     top: 0;
+    /* left: 0; */
     background-color: black;
     animation: load ease-in-out 2s;
+    width: 100vw;
+    overflow: hidden;
+    padding: 2px 0;
+    opacity: 0;
+    box-shadow: 0 0 5px white;
+    z-index: 1;
   }
   @keyframes load {
     0% {
       width: 0vw;
-      padding: 2px 0;
+      /* padding: 2px 0; */
+      opacity: 1;
     }
-    95% {
+    50% {
+      opacity: 1;
+    }
+    /* 95% {
       padding: 0px 0;
-    }
+    } */
     100% {
       width: 100vw;
-      padding: 0px 0;
+      /* padding: 0px 0; */
+      opacity: 0;
     }
   }
 
@@ -239,6 +272,11 @@ const Wrapper = styled.main`
     section {
       flex-direction: column;
       gap: 2rem;
+    }
+
+    .loadingBar {
+      /* background-color: red; */
+      left: 0;
     }
 
     .filter {
