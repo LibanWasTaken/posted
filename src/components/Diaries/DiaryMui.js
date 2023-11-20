@@ -52,22 +52,6 @@ const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-function renderListItems(data) {
-  return data.map((item, index) => (
-    <Fragment key={index}>
-      <ListItem button>
-        <ListItemText
-          primary={
-            item.primary || dayjs(item.timestamp).format("ddd, DD MMM, YYYY")
-          }
-          secondary={item.secondary || item.title}
-        />
-      </ListItem>
-      <Divider />
-    </Fragment>
-  ));
-}
-
 export default function Diary({ open, handleClose, info, editable = true }) {
   const arrExample = [
     {
@@ -205,11 +189,27 @@ export default function Diary({ open, handleClose, info, editable = true }) {
   const [pageAdderOpen, setPageAdderOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [diaryPages, setDiaryPages] = useState(false);
+  const [pageInfo, setPageInfo] = useState(null);
   const { id } = useParams();
 
   const handlePageAdderOpen = () => {
-    setPageAdderOpen(true);
+    if (!loading) {
+      const todayDate = dayjs().valueOf();
+
+      const todayPage = diaryPages.find((page) =>
+        dayjs(page.timestamp).isSame(todayDate, "day")
+      );
+
+      if (todayPage) {
+        setPageInfo(todayPage);
+      } else {
+        setPageInfo(null);
+      }
+
+      setPageAdderOpen(true);
+    }
   };
+
   const handlePageAdderClose = () => {
     setPageAdderOpen(false);
   };
@@ -240,6 +240,28 @@ export default function Diary({ open, handleClose, info, editable = true }) {
   useEffect(() => {
     getFSData();
   }, []);
+
+  function renderListItems(data) {
+    return data.map((item, index) => (
+      <Fragment key={index}>
+        <ListItem
+          button
+          onClick={() => {
+            setPageInfo(item);
+            setPageAdderOpen(true);
+          }}
+        >
+          <ListItemText
+            primary={
+              item.primary || dayjs(item.timestamp).format("ddd, DD MMM, YYYY")
+            }
+            secondary={item.secondary || item.title}
+          />
+        </ListItem>
+        <Divider />
+      </Fragment>
+    ));
+  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -272,7 +294,7 @@ export default function Diary({ open, handleClose, info, editable = true }) {
           <section className="list">
             <Box style={{ maxHeight: "80vh", overflow: "auto" }}>
               {diaryPages && <List>{renderListItems(diaryPages)}</List>}
-              <List>{renderListItems(arrExample)}</List>
+              {/* <List>{renderListItems(arrExample)}</List> */}
             </Box>
           </section>
           {/* <img src={ExamsSVG} alt="ExamsSVG" className="ExamsSVG" /> */}
@@ -286,7 +308,12 @@ export default function Diary({ open, handleClose, info, editable = true }) {
           ></img>
         </Wrapper>
       </Dialog>
-      <DiaryPage open={pageAdderOpen} handleClose={handlePageAdderClose} />
+      <DiaryPage
+        open={pageAdderOpen}
+        handleClose={handlePageAdderClose}
+        getFSData={getFSData}
+        pageInfo={pageInfo}
+      />
     </ThemeProvider>
   );
 }

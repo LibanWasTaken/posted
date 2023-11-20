@@ -43,7 +43,7 @@ const CountDown = (props) => {
       setDelaying(false);
       window.location.reload();
     } catch (error) {
-      error("Error Delaying");
+      alert("Error Delaying");
       console.error("Error updating document:", error);
       setDelaying(false);
     }

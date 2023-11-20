@@ -1,19 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
+import {
+  Tooltip,
+  Box,
+  Button,
+  TextField,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from "@mui/material";
 
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 // import Editor from "../../components/Editor/Editor";
 import { db } from "../../services/firebase-config";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, doc, deleteDoc } from "firebase/firestore";
 import dayjs from "dayjs";
 
 const theme = createTheme({
@@ -45,23 +49,43 @@ const theme = createTheme({
   },
 });
 
-export default function DiaryPage({ open, handleClose, info }) {
-  const currentDate = new Date(); // Get the current date
-  const { id: postID } = useParams(); // TODO: tip, rename
-
-  const options = {
-    weekday: "long",
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  };
-
-  const formattedDate = currentDate.toLocaleDateString(undefined, options);
-
+export default function DiaryPage({ open, handleClose, pageInfo, getFSData }) {
+  const { id: postID } = useParams();
+  const formattedDate = dayjs().format("DD MMM, YYYY");
   const [formData, setFormData] = useState({
     title: "",
     text: "",
   });
+  const [addingPage, setAddingPage] = useState(false);
+
+  useEffect(() => {
+    if (pageInfo) {
+      setFormData({
+        title: pageInfo.title,
+        text: pageInfo.text,
+      });
+    }
+  }, [pageInfo]);
+
+  async function handleDelete() {
+    setAddingPage(true);
+    const diaryPostDocRef = doc(db, `posts/${postID}/diary`, pageInfo.id);
+    try {
+      await deleteDoc(diaryPostDocRef);
+      console.log("Page successfully deleted");
+      getFSData();
+      setFormData({
+        title: "",
+        text: "",
+      });
+      handleClose();
+      setAddingPage(false);
+    } catch (error) {
+      console.error("Error deleting Page: ", error);
+      alert("Error deleting Page");
+      setAddingPage(false);
+    }
+  }
 
   const handleInputChange = (event) => {
     const { id, value } = event.target;
@@ -72,35 +96,47 @@ export default function DiaryPage({ open, handleClose, info }) {
   };
 
   const handleSubmit = async () => {
+    setAddingPage(true);
+
     try {
-      // Add a new document with a generated ID
-      const docRef = await addDoc(collection(db, "posts", postID, "diary"), {
-        title: formData.title,
-        text: formData.text,
-        timestamp: String(dayjs().valueOf()), // TODO: Change all to this .valueOf()
-      });
+      if (pageInfo) {
+        // TODO: update instead of add
+        console.log("Page updated with ID:");
+      } else {
+        const docRef = await addDoc(collection(db, "posts", postID, "diary"), {
+          title: formData.title,
+          text: formData.text,
+          timestamp: Number(dayjs().valueOf()),
+        });
+        console.log("Page added with ID:", docRef.id);
+      }
 
-      console.log("Document written with ID:", docRef.id);
-    } catch (e) {
-      console.error("Error adding document:", e);
+      getFSData();
+      handleClose();
+      setAddingPage(false);
+    } catch (error) {
+      setAddingPage(true);
+      console.error("Error adding document:", error);
+      alert("Error adding document:");
     }
-
-    // Add any additional logic if needed
-    handleClose();
   };
 
   return (
     <ThemeProvider theme={theme}>
-      <Dialog open={open} onClose={handleClose} fullWidth={true} maxWidth="md">
+      {/* TODO: make this the default */}
+
+      {/* <Dialog open={open} onClose={handleClose} fullScreen> */}
+      <Dialog open={open} onClose={handleClose} fullWidth maxWidth="lg">
         <DialogTitle>Page</DialogTitle>
         <DialogContent>
           <DialogContentText sx={{ marginBottom: 1 }}>
-            Share the reflection of your {formattedDate}
+            Share your reflection of <strong> {formattedDate}</strong>
           </DialogContentText>
-          {/* <Editor /> // TODO: make this the default*/}
-
+          {/* TODO: make this the default */}
+          {/* <Editor /> */}
           <TextField
             sx={{ m: 1, marginBottom: 2 }}
+            disabled={addingPage}
             id="title"
             label="Title"
             type="text"
@@ -109,7 +145,8 @@ export default function DiaryPage({ open, handleClose, info }) {
             onChange={handleInputChange}
           />
           <TextField
-            sx={{ m: 1, marginBottom: 2 }}
+            sx={{ m: 1, marginBottom: 50, width: "100ch" }}
+            disabled={addingPage}
             id="text"
             label="Text"
             type="text"
@@ -119,14 +156,32 @@ export default function DiaryPage({ open, handleClose, info }) {
           />
         </DialogContent>
         <DialogActions>
+          <Tooltip
+            title="Clear either the title or text"
+            placement="left"
+            arrow
+          >
+            <Box>
+              <Button
+                sx={{ letterSpacing: 1, p: 2, fontWeight: 500 }}
+                disabled={formData.title && formData.text}
+                onClick={handleDelete}
+              >
+                Delete
+              </Button>
+            </Box>
+          </Tooltip>
+
           <Button
-            sx={{ letterSpacing: 1, fontWeight: 400 }}
+            sx={{ letterSpacing: 1, p: 2, fontWeight: 500 }}
+            disabled={addingPage}
             onClick={handleClose}
           >
             Cancel
           </Button>
           <Button
-            sx={{ letterSpacing: 1, fontWeight: 400 }}
+            sx={{ letterSpacing: 1, p: 2, fontWeight: 500 }}
+            disabled={addingPage || !formData.title || !formData.text}
             onClick={handleSubmit}
           >
             Add

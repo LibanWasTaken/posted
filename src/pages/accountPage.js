@@ -87,7 +87,8 @@ export function AccPage() {
     try {
       await sendEmailVerification(user);
       console.log("Verification email sent");
-      navigate("/verify-email");
+      const customH1Message = "Password reset email sent";
+      navigate(`/message`, { state: { customH1Message } });
     } catch (error) {
       console.error("Email verification error:", error);
     }

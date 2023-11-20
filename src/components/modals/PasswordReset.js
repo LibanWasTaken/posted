@@ -50,27 +50,28 @@ export default function PasswordReset({
   userID = "",
 }) {
   const [postIDValue, setPostIDValue] = useState("");
-  const [deleting, setDeleting] = useState(false);
+  const [sending, setSending] = useState(false);
 
   const navigate = useNavigate();
-  function redirect() {
-    // Use the history.push method to navigate to the desired URL
-    navigate(`/me`);
+  function redirect(customH1Message) {
+    navigate(`/message`, { state: { customH1Message } });
   }
 
   function handleSendMail() {
+    setSending(true);
     const auth = getAuth();
     sendPasswordResetEmail(auth, userMail)
       .then(() => {
         // Password reset email sent!
         // ..
         console.log("Password reset email sent!");
-        // TODO: redirect to success page
+        redirect("Password reset email sent");
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
         console.error(errorCode, errorMessage);
+        alert("Error sending password reset email");
         // ..
       });
   }
@@ -88,12 +89,14 @@ export default function PasswordReset({
           <Button
             sx={{ letterSpacing: 1, fontWeight: 400 }}
             onClick={handleClose}
+            disabled={sending}
           >
             Cancel
           </Button>
           <Button
             sx={{ letterSpacing: 1, fontWeight: 400 }}
             onClick={handleSendMail}
+            disabled={sending}
           >
             SEND
           </Button>

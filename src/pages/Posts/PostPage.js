@@ -1,6 +1,6 @@
 import { React, useState, useEffect } from "react";
 import styled from "styled-components";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useUserContext } from "../../context/UserContext";
 
 import DiaryMui from "../../components/Diaries/DiaryMui";
@@ -42,7 +42,13 @@ import {
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { MobileTimePicker } from "@mui/x-date-pickers/MobileTimePicker";
 
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  updateDoc,
+  getDocs,
+  collection,
+} from "firebase/firestore";
 import { db } from "../../services/firebase-config";
 
 const theme = createTheme({
@@ -95,6 +101,7 @@ const OwnPostPage = () => {
   const { user: currentUser, loading } = useUserContext();
   const { id } = useParams();
   const [postData, setPostData] = useState();
+  const [otherPostData, setOtherPostData] = useState();
   const [validUser, setValidUser] = useState(false);
   const [inValidPost, setInValidPost] = useState(false);
   const [loading2, setLoading2] = useState(true);
@@ -117,6 +124,33 @@ const OwnPostPage = () => {
     setTabValue(newValue);
   };
 
+  async function getOtherPostsData() {
+    const userID = currentUser.uid;
+    // TODO: also get from users/posted
+    await getDocs(collection(db, `/users/${userID}/posts`)).then(
+      (querySnapshot) => {
+        const postsData = querySnapshot.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+        }));
+        setOtherPostData(postsData);
+      }
+    );
+  }
+
+  function generateOtherPostLinks(posts) {
+    return posts.map((post) => (
+      <button
+        className="add postTitles"
+        onClick={() => {
+          window.open(`/me/post/${post.id}`, "_blank");
+        }}
+      >
+        <p>{post.title}</p>
+      </button>
+    ));
+  }
+
   const verifyUserAndGetPost = async (uid, postID) => {
     try {
       const docRef = doc(db, "posts", postID);
@@ -131,6 +165,7 @@ const OwnPostPage = () => {
         setValidUser(true);
         setPostData(postDataReceived);
         setLoading2(false);
+        getOtherPostsData();
       } else {
         setValidUser(false);
         setLoading2(false);
@@ -149,19 +184,6 @@ const OwnPostPage = () => {
       setLoading2(false);
     }
   }, [currentUser, loading]);
-
-  async function updateUserDB() {
-    try {
-      const postRef = doc(db, "users", currentUser.uid, "posts", id);
-      await updateDoc(postRef, updatedObj);
-      console.log("Document successfully updated");
-      setEditDisabled(false);
-      setSaving(false);
-      window.location.reload();
-    } catch (error) {
-      console.error("Error updating document: ", error);
-    }
-  }
 
   async function updateUserData() {
     setSaving(true);
@@ -196,6 +218,7 @@ const OwnPostPage = () => {
         console.log("yeah");
         // TODO: wont it be better if release date had releaseDate: {timestamp: , preset:..}
         // TODO: also if oublic/private change, update it to updateUserData()
+        // TODO: check if title / release date changed, and if so, update it in user.posts. also check if same title exists or not (ig just yoink the code from postAdder?)
       }
 
       updateUserData();
@@ -353,32 +376,44 @@ const OwnPostPage = () => {
             <div className="sidebar">
               <span className="box1"></span>
               <span className="box2"></span>
-              <p className="title">Post Addons</p>
-              <div className="components">
-                <button className="add diary" onClick={handleDiaryOpenMUI}>
-                  <p>Diary</p>
-                  <span className="icon material-symbols-outlined">
-                    add_notes
-                  </span>
-                </button>
-                <button className="add link" onClick={handleLinkAdderOpen}>
-                  <p>Links</p>
-                  <span className="icon material-symbols-outlined">
-                    add_link
-                  </span>
-                </button>
-                <button
-                  className="add etc"
-                  onClick={() => {
-                    setTabValue(3);
-                  }}
-                >
-                  <p>Settings</p>
-                  <span className="icon material-symbols-outlined">
-                    settings
-                  </span>
-                </button>
-              </div>
+              <section>
+                <p className="title">Post Addons</p>
+                <div className="components">
+                  <button className="add diary" onClick={handleDiaryOpenMUI}>
+                    <p>Diary</p>
+                    <span className="icon material-symbols-outlined">
+                      add_notes
+                    </span>
+                  </button>
+                  <button className="add link" onClick={handleLinkAdderOpen}>
+                    <p>Links</p>
+                    <span className="icon material-symbols-outlined">
+                      add_link
+                    </span>
+                  </button>
+                  <button
+                    className="add etc"
+                    onClick={() => {
+                      setTabValue(3);
+                    }}
+                  >
+                    <p>Settings</p>
+                    <span className="icon material-symbols-outlined">
+                      settings
+                    </span>
+                  </button>
+                </div>
+              </section>
+              <section>
+                {otherPostData && (
+                  <>
+                    <p className="title">Other Posts</p>
+                    <div className="components">
+                      {generateOtherPostLinks(otherPostData)}
+                    </div>
+                  </>
+                )}
+              </section>
             </div>
 
             <div className="tabs">
@@ -871,8 +906,11 @@ const Wrapper = styled.main`
   }
 
   .sidebar {
-    position: absolute;
+    display: flex;
+    gap: 4rem;
+    flex-direction: column;
 
+    position: absolute;
     top: 0;
     left: 0;
     background-color: black;
@@ -884,19 +922,25 @@ const Wrapper = styled.main`
     color: white;
     padding-top: 4rem;
 
+    section {
+      z-index: 1;
+    }
+
     .title {
       letter-spacing: 1px;
       text-align: left;
       padding-left: 10%;
     }
+
     .box1 {
       padding: 20rem;
       background: rgb(15, 15, 15);
       position: absolute;
       top: 450px;
-
       left: 0;
       transform: rotate(45deg);
+      z-index: 0;
+      pointer-events: none;
     }
     .box2 {
       padding: 30rem;
@@ -905,6 +949,8 @@ const Wrapper = styled.main`
       top: 550px;
       left: -500px;
       transform: rotate(45deg);
+      z-index: 0;
+      pointer-events: none;
     }
   }
 
@@ -945,6 +991,10 @@ const Wrapper = styled.main`
       /* color: black; */
       background-color: rgba(255, 255, 255, 0.25);
     }
+
+    .postTitles {
+      min-width: 90%;
+    }
   }
 
   @media screen and (max-width: 1000px) {
@@ -952,24 +1002,49 @@ const Wrapper = styled.main`
     padding-top: 7rem;
 
     .sidebar {
-      /* visibility: hidden; */
-      display: flex;
       align-items: center;
       justify-content: space-around;
-      flex-direction: row;
+      flex-direction: row-reverse;
       width: 100vw;
       min-height: 0;
-      height: 5rem;
+      height: 4rem;
       padding-top: 0;
+      gap: 0;
 
       .components {
         flex-direction: row;
+
         .add {
           background-color: black;
         }
         p {
           display: none;
         }
+      }
+
+      .title {
+        display: none;
+      }
+      .box1 {
+        display: none;
+      }
+      .box2 {
+        display: none;
+      }
+
+      .postTitles {
+        p {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 6rem;
+          overflow: hidden;
+          /* white-space: nowrap; */
+          text-overflow: ellipsis;
+        }
+      }
+      .postTitles:hover {
+        background-color: rgba(238, 238, 238, 0.25);
       }
     }
   }

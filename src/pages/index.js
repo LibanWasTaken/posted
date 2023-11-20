@@ -9,7 +9,7 @@ import SinglePostsPage from "./Posts/SinglePostsPage";
 import AllPostsPage from "./Posts/AllPostsPage";
 import UserPage from "./UserPage";
 import { AccPage } from "./AccountPage";
-import EmailVerification from "./EmailVerification";
+import MessagePage from "./MessagePage";
 
 export {
   Home,
@@ -23,5 +23,5 @@ export {
   ToasterFixer,
   SinglePostsPage,
   AllPostsPage,
-  EmailVerification,
+  MessagePage,
 };
