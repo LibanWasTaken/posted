@@ -37,32 +37,9 @@ import { useUserContext } from "../../context/UserContext";
 import { getDoc, doc, updateDoc } from "firebase/firestore";
 import { db as FSdb } from "../../services/firebase-config";
 
-import { Box, TextField, Button, Skeleton } from "@mui/material";
+import { Box, TextField, Button } from "@mui/material";
 
 // import FloatingTextFormatToolbarPlugin from "./playground/plugins/FloatingTextFormatToolbarPlugin/SpeechToTextPlugin";
-
-const editorConfig = {
-  theme: ExampleTheme,
-  // Handling of errors during update
-  onError(error) {
-    throw error;
-  },
-  // Any custom nodes go here
-  nodes: [
-    HeadingNode,
-    ListNode,
-    ListItemNode,
-    QuoteNode,
-    CodeNode,
-    CodeHighlightNode,
-    TableNode,
-    TableCellNode,
-    TableRowNode,
-    AutoLinkNode,
-    LinkNode,
-  ],
-  // editable: false,
-};
 
 export default function Editor() {
   const emptyState = {
@@ -101,6 +78,29 @@ export default function Editor() {
       getFSData();
     }
   }, [currentUser]);
+
+  const editorConfig = {
+    theme: ExampleTheme,
+    // Handling of errors during update
+    onError(error) {
+      throw error;
+    },
+    // Any custom nodes go here
+    nodes: [
+      HeadingNode,
+      ListNode,
+      ListItemNode,
+      QuoteNode,
+      CodeNode,
+      CodeHighlightNode,
+      TableNode,
+      TableCellNode,
+      TableRowNode,
+      AutoLinkNode,
+      LinkNode,
+    ],
+    // editable: !incoming,
+  };
 
   async function getFSData() {
     const docRef = doc(FSdb, "posts", id);
@@ -192,6 +192,7 @@ export default function Editor() {
           placeholder="Keep it short"
           value={description || ""}
           inputProps={{ maxLength: 100 }}
+          disabled={incoming || saving}
           onChange={(e) => {
             !changed && setChanged(true);
             setDescription(e.target.value);
@@ -202,7 +203,7 @@ export default function Editor() {
             bgcolor: "white",
             borderColor: "whitesmoke",
           }}
-          disabled={!changed}
+          disabled={!changed || incoming || saving}
           className={`${saving && "loadingClassicBtn"}`}
           onClick={updateUserData}
           variant="text"
@@ -215,7 +216,12 @@ export default function Editor() {
           <ToolbarPlugin />
           <div className="editor-inner">
             <RichTextPlugin
-              contentEditable={<ContentEditable className="editor-input" />}
+              contentEditable={
+                <ContentEditable
+                  contentEditable={false}
+                  className="editor-input"
+                />
+              }
               placeholder={<Placeholder />}
               ErrorBoundary={LexicalErrorBoundary}
             />

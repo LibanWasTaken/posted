@@ -153,6 +153,7 @@ const Wrapper = styled.section`
     color: white;
     width: 15rem;
     height: 20rem;
+
     /* max-height: 20rem; */
     background-color: black;
     padding: 20px;

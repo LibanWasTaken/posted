@@ -17,7 +17,13 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 // import Editor from "../../components/Editor/Editor";
 import { db } from "../../services/firebase-config";
-import { addDoc, collection, doc, deleteDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  deleteDoc,
+  updateDoc,
+} from "firebase/firestore";
 import dayjs from "dayjs";
 
 const theme = createTheme({
@@ -100,8 +106,13 @@ export default function DiaryPage({ open, handleClose, pageInfo, getFSData }) {
 
     try {
       if (pageInfo) {
-        // TODO: update instead of add
-        console.log("Page updated with ID:");
+        const pageDocRef = doc(db, "posts", postID, "diary", pageInfo.id);
+        await updateDoc(pageDocRef, {
+          title: formData.title,
+          text: formData.text,
+        });
+
+        console.log("Page updated with ID:", pageInfo.id);
       } else {
         const docRef = await addDoc(collection(db, "posts", postID, "diary"), {
           title: formData.title,
@@ -155,7 +166,7 @@ export default function DiaryPage({ open, handleClose, pageInfo, getFSData }) {
             onChange={handleInputChange}
           />
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={{ p: 2 }}>
           <Tooltip
             title="Clear either the title or text"
             placement="left"
@@ -164,7 +175,7 @@ export default function DiaryPage({ open, handleClose, pageInfo, getFSData }) {
             <Box>
               <Button
                 sx={{ letterSpacing: 1, p: 2, fontWeight: 500 }}
-                disabled={formData.title && formData.text}
+                disabled={(formData.title && formData.text) || !pageInfo}
                 onClick={handleDelete}
               >
                 Delete
@@ -184,7 +195,7 @@ export default function DiaryPage({ open, handleClose, pageInfo, getFSData }) {
             disabled={addingPage || !formData.title || !formData.text}
             onClick={handleSubmit}
           >
-            Add
+            {pageInfo ? "Update" : "Add"}
           </Button>
         </DialogActions>
       </Dialog>

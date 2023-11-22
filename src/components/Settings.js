@@ -2,12 +2,12 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { countries } from "../context/UserOptions";
 
+import { getAuth, updateProfile } from "firebase/auth";
+
 import { getDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "../services/firebase-config";
 
-import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { Skeleton } from "@mui/material";
 import dayjs from "dayjs";
 
 import {
@@ -18,6 +18,11 @@ import {
   AccordionSummary,
   AccordionDetails,
   Typography,
+  Skeleton,
+  createTheme,
+  ThemeProvider,
+  Button,
+  Avatar,
 } from "@mui/material";
 
 const theme = createTheme({
@@ -78,6 +83,44 @@ function Settings({ userID }) {
     fetchUserDoc();
   }, []);
 
+  async function checkData() {
+    const exceptions = ["displayName", "photoURL", "userName"];
+    let tempObj = {};
+
+    // Check if any of the properties in exceptions exist in updatedObj
+    const filteredProperties = Object.keys(updatedObj).filter((prop) =>
+      exceptions.includes(prop)
+    );
+
+    if (filteredProperties.length > 0) {
+      // If there are matching properties, create a new object with those properties
+      tempObj = filteredProperties.reduce((obj, prop) => {
+        obj[prop] = updatedObj[prop];
+        return obj;
+      }, {});
+
+      console.log("Matching properties found:", tempObj);
+    }
+
+    try {
+      const auth = getAuth();
+      const user = auth.currentUser;
+
+      if (tempObj) {
+        console.log(tempObj);
+        // TODO: TODO: TODO: TODO: TODO: TODO: TODO: TODO: TODO: TODO:
+      }
+      // await updateProfile(user, tempObj);
+      console.log(
+        "User profile successfully updated with matching properties",
+        updateObject
+      );
+    } catch (error) {
+      console.error("Error updating user profile:", error.message || error);
+      throw error;
+    }
+  }
+
   async function updateUserData() {
     try {
       const postRef = doc(db, "users", userID);
@@ -122,14 +165,25 @@ function Settings({ userID }) {
                 className="background"
                 style={{ backgroundColor: "black" }}
               ></div>
-              <img
+              {/* <div className="pfpContainer">
+                <img
+                  src={
+                    user.photoURL ||
+                    "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Windows_10_Default_Profile_Picture.svg/2048px-Windows_10_Default_Profile_Picture.svg.png"
+                  }
+                  alt="pfp"
+                  className="profilePic"
+                />
+              </div> */}
+              <Avatar
+                alt="Remy Sharp"
                 src={
                   user.photoURL ||
                   "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Windows_10_Default_Profile_Picture.svg/2048px-Windows_10_Default_Profile_Picture.svg.png"
                 }
-                alt="pfp"
-                className="profilePic"
+                sx={{ width: "15rem", height: "15rem" }}
               />
+
               <div className="info">
                 <h1>{user.displayName}</h1>
                 <p>{user.email}</p>
@@ -367,7 +421,12 @@ function Settings({ userID }) {
                       <p>Medications</p>
                       <p>Social Media Profiles</p>
                       <p>Online Usernames</p> */}
-                    <Box sx={{ width: "100%", textAlign: "center" }}>
+                    <Box
+                      sx={{
+                        width: "100%",
+                        textAlign: "end",
+                      }}
+                    >
                       <button
                         className={`classicBtn ${
                           saveDisabled && "disabledClassicBtn"
@@ -425,8 +484,7 @@ function Settings({ userID }) {
                 sx={{ zIndex: "5" }}
                 width={"15rem"}
                 height={"15rem"}
-              /<div className="info">
-              </div>> */}
+              /> */}
               <div className="info">
                 <h1>Uhh..</h1>
                 <p>{""}</p>
@@ -436,15 +494,15 @@ function Settings({ userID }) {
             <div className="skeleton">
               <Skeleton
                 variant="rectangular"
-                width={830}
-                height={50}
+                width={832}
+                height={49.7}
                 sx={{ m: 3 }}
                 animation="wave"
               />
               <Skeleton
                 variant="rectangular"
-                width={830}
-                height={50}
+                width={832}
+                height={49.7}
                 sx={{ m: 3 }}
                 animation="wave"
               />
@@ -471,6 +529,14 @@ const Wrapper = styled.section`
     }
   }
 
+  .pfpContainer {
+    border-radius: 50%;
+    overflow: hidden;
+    width: 15rem;
+    height: 15rem;
+    z-index: 1;
+  }
+
   .profilePic {
     border-radius: 50%;
     /* overflow: hidden; */
@@ -479,14 +545,12 @@ const Wrapper = styled.section`
     width: 15rem;
     min-height: 15rem;
     height: 15rem;
-    z-index: 1;
+    /* z-index: 1; */
   }
-  .display:hover {
-    .profilePic {
-      border-radius: 0%;
-      transition: 0.5s;
-    }
-  }
+  /* .profilePic:hover {
+    border-radius: 0%;
+    transition: 0.3s;
+  } */
 
   .dummy {
     min-width: 15rem;
@@ -572,6 +636,10 @@ const Wrapper = styled.section`
         min-height: 10rem;
         height: 10rem;
       }
+    }
+
+    .accordion {
+      max-width: 90vw;
     }
   }
 `;

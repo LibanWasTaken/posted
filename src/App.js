@@ -153,6 +153,9 @@ extra password lock posts
 warn everyday in warning-time period (switch)
 autosave
 history
+edit diary pages (prev days, but it'll say edited)
+post rn instead of tomorrow
+displayName (infinte changes, user name can only be changed in 2 weeks)
 
 
 https://www.npmjs.com/package/react-responsive

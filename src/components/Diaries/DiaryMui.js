@@ -200,6 +200,8 @@ export default function Diary({ open, handleClose, info, editable = true }) {
         dayjs(page.timestamp).isSame(todayDate, "day")
       );
 
+      console.log(todayPage);
+
       if (todayPage) {
         setPageInfo(todayPage);
       } else {
@@ -216,22 +218,15 @@ export default function Diary({ open, handleClose, info, editable = true }) {
 
   async function getFSData() {
     setLoading(true);
-    // TODO: Limit
     const queryReceived = query(
       collection(db, `/posts/${id}/diary/`),
       orderBy("timestamp", "desc")
     );
-    // const queryReceived = query(
-    //   collection(db, `/posts`),
-    //   orderBy("releaseDate", sortType),
-    //   limit(countPosts)
-    // );
     const querySnapshot = await getDocs(queryReceived);
     const diaryDocs = querySnapshot.docs.map((doc) => ({
       ...doc.data(),
       id: doc.id,
     }));
-    console.log(diaryDocs);
     setDiaryPages(diaryDocs);
     // setLastPost(querySnapshot.docs[querySnapshot.docs.length - 1]);\
     setLoading(false);

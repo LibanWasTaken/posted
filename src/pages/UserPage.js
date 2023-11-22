@@ -54,6 +54,7 @@ const UserPage = () => {
   const [userPosts, setUserPosts] = useState();
   const [userExists, setUserExists] = useState();
   const [openPrivateModal, setOpenPrivateModal] = useState(false);
+  const [privateID, setPrivateID] = useState();
   const handleOpenPrivateModal = () => {
     setOpenPrivateModal(true);
   };
@@ -104,10 +105,19 @@ const UserPage = () => {
   }, []);
 
   function generatePostLinks(posts) {
+    console.log(posts);
     return posts.map((post) => (
       <Link
         key={post.id}
-        to={`/posts/${post.id}`}
+        to={post.public && `/posts/${post.id}`}
+        onClick={
+          post.public
+            ? undefined
+            : () => {
+                setPrivateID(post.id);
+                handleOpenPrivateModal();
+              }
+        }
         style={{ textDecoration: "none" }}
       >
         <div className="post">
@@ -120,13 +130,13 @@ const UserPage = () => {
     ));
   }
 
-  function PrivatePostModal({ open, handleClose, postID = "xxx" }) {
+  function PrivatePostModal({ open, handleClose }) {
     const [postIDValue, setPostIDValue] = useState("");
     const navigate = useNavigate();
 
     function handleCheck() {
-      if (postIDValue === postID) {
-        navigate(`/posts/${postID}`);
+      if (privateID) {
+        navigate(`/posts/${privateID}`);
       }
     }
 
@@ -160,7 +170,7 @@ const UserPage = () => {
             <Button
               sx={{ letterSpacing: 1, fontWeight: 400 }}
               onClick={handleCheck}
-              disabled={postIDValue !== postID}
+              disabled={postIDValue !== privateID}
             >
               Enter
             </Button>
@@ -208,7 +218,7 @@ const UserPage = () => {
           </div>
         </div>
       ) : (
-        <h1>no user</h1>
+        <h1>Cannot Find User</h1>
       )}
       <PrivatePostModal
         open={openPrivateModal}

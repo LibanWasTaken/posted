@@ -140,14 +140,9 @@ const OwnPostPage = () => {
 
   function generateOtherPostLinks(posts) {
     return posts.map((post) => (
-      <button
-        className="add postTitles"
-        onClick={() => {
-          window.open(`/me/post/${post.id}`, "_blank");
-        }}
-      >
+      <a className="add postTitles" key={post.id} href={`/me/post/${post.id}`}>
         <p>{post.title}</p>
-      </button>
+      </a>
     ));
   }
 
@@ -178,6 +173,9 @@ const OwnPostPage = () => {
   useEffect(() => {
     if (currentUser) {
       verifyUserAndGetPost(currentUser.uid, id);
+      console.log(currentUser);
+      console.log(currentUser.displayName);
+      console.log(currentUser.photoUrl);
     }
     if (!loading && !currentUser) {
       setValidUser(false);
@@ -185,12 +183,50 @@ const OwnPostPage = () => {
     }
   }, [currentUser, loading]);
 
+  async function checkData() {
+    const exceptions = ["public", "releaseDate", "title"];
+    let tempObj = {};
+
+    // Check if any of the properties in exceptions exist in updatedObj
+    const filteredProperties = Object.keys(updatedObj).filter((prop) =>
+      exceptions.includes(prop)
+    );
+
+    if (filteredProperties.length > 0) {
+      // If there are matching properties, create a new object with those properties
+      tempObj = filteredProperties.reduce((obj, prop) => {
+        obj[prop] = updatedObj[prop];
+        return obj;
+      }, {});
+
+      console.log("Matching properties found:", tempObj);
+    }
+
+    try {
+      const postRef = doc(db, "users", currentUser.uid, "posts", id);
+
+      if (Object.keys(tempObj).length > 0) {
+        await updateDoc(postRef, tempObj);
+        console.log(
+          "User document successfully updated with matching properties",
+          tempObj
+        );
+      } else {
+        console.log("No matching properties found, skipping update");
+      }
+    } catch (error) {
+      console.error("Error updating document:", error.message || error);
+      throw error;
+    }
+  }
+
   async function updateUserData() {
     setSaving(true);
     try {
       const postRef = doc(db, "posts", id);
       await updateDoc(postRef, updatedObj);
       console.log("Document successfully updated");
+      checkData();
       setEditDisabled(false);
       setSaving(false);
       window.location.reload();
@@ -200,6 +236,8 @@ const OwnPostPage = () => {
     }
   }
 
+  // TODO: wont it be better if release date had releaseDate: {timestamp: , preset:..}
+
   const updateValueOf = (fieldName) => (event) => {
     const value = event.target.value;
     setUpdatedObj((prevObj) => ({
@@ -207,19 +245,13 @@ const OwnPostPage = () => {
       [fieldName]: value,
     }));
     saveDisabled && setSaveDisabled(false);
+    // TODO: instead do if newObj = postData or something
   };
 
   function handleSave() {
     if (!saveDisabled) {
       console.log(updatedObj);
       console.log(releaseDate);
-      // checking
-      if (updatedObj.releaseDate) {
-        console.log("yeah");
-        // TODO: wont it be better if release date had releaseDate: {timestamp: , preset:..}
-        // TODO: also if oublic/private change, update it to updateUserData()
-        // TODO: check if title / release date changed, and if so, update it in user.posts. also check if same title exists or not (ig just yoink the code from postAdder?)
-      }
 
       updateUserData();
       setSaveDisabled(true);
@@ -234,11 +266,9 @@ const OwnPostPage = () => {
       setEditDisabled(false);
     }
   }
+
   function handleEdit() {
-    if (editDisabled) {
-      console.log("disabled");
-    } else {
-      console.log("nothing yet");
+    if (!editDisabled) {
       setEditDisabled(true);
     }
   }
@@ -306,6 +336,7 @@ const OwnPostPage = () => {
       </Box>
     );
   }
+
   function FinalButtons() {
     return (
       <div className="buttons">
@@ -408,7 +439,7 @@ const OwnPostPage = () => {
                 {otherPostData && (
                   <>
                     <p className="title">Other Posts</p>
-                    <div className="components">
+                    <div className="components otherPosts">
                       {generateOtherPostLinks(otherPostData)}
                     </div>
                   </>
@@ -926,6 +957,46 @@ const Wrapper = styled.main`
       z-index: 1;
     }
 
+    .components {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      gap: 0.75rem;
+      .add {
+        outline: none;
+        border: none;
+        border-radius: 5px;
+        background-color: rgba(255, 255, 255, 0.15);
+        text-decoration: none;
+        padding: 0px 15px;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        width: 90%;
+        p {
+          font-size: 1rem;
+          font-family: "Raleway";
+        }
+
+        .icon {
+          font-size: 1.5rem;
+          opacity: 0.8;
+          padding-right: 10px;
+        }
+      }
+      .add:hover {
+        cursor: pointer;
+        transition: 0.3s;
+        background-color: rgba(255, 255, 255, 0.25);
+      }
+      .postTitles {
+        border-radius: 0;
+      }
+    }
+
     .title {
       letter-spacing: 1px;
       text-align: left;
@@ -954,49 +1025,6 @@ const Wrapper = styled.main`
     }
   }
 
-  .components {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    gap: 0.75rem;
-    .add {
-      outline: none;
-      border: none;
-      border-radius: 5px;
-      background-color: rgba(255, 255, 255, 0.15);
-
-      padding: 0px 15px;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-
-      width: 90%;
-      p {
-        font-size: 1rem;
-        font-family: "Raleway";
-      }
-
-      .icon {
-        font-size: 1.5rem;
-        opacity: 0.8;
-        padding-right: 10px;
-      }
-    }
-    .add:hover {
-      cursor: pointer;
-      transition: 0.3s;
-      /* padding: 1.5rem 2.7rem; */
-      /* color: black; */
-      background-color: rgba(255, 255, 255, 0.25);
-    }
-
-    .postTitles {
-      min-width: 90%;
-    }
-  }
-
   @media screen and (max-width: 1000px) {
     padding-left: 0;
     padding-top: 7rem;
@@ -1020,6 +1048,23 @@ const Wrapper = styled.main`
         p {
           display: none;
         }
+        .icon {
+          padding: 0.5rem;
+        }
+      }
+
+      .otherPosts {
+        max-width: 50vw;
+        overflow-x: scroll;
+      }
+
+      .otherPosts::-webkit-scrollbar {
+        display: none;
+      }
+
+      .otherPosts {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
       }
 
       .title {
@@ -1043,9 +1088,9 @@ const Wrapper = styled.main`
           text-overflow: ellipsis;
         }
       }
-      .postTitles:hover {
+      /* .postTitles:hover {
         background-color: rgba(238, 238, 238, 0.25);
-      }
+      } */
     }
   }
 
@@ -1093,7 +1138,6 @@ const Wrapper = styled.main`
       margin: 0 1rem;
       padding: 1rem;
       outline: none;
-      border: none;
       cursor: pointer;
       background: none;
       text-transform: uppercase;
@@ -1103,6 +1147,7 @@ const Wrapper = styled.main`
     .delete {
       background-color: tomato;
       color: white;
+      border: none;
     }
     .delete:hover {
       background-color: #dd573f;

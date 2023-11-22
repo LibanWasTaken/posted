@@ -44,7 +44,7 @@ export default function Sidebar({ show }) {
     return navOptions.map((option) => (
       <Link to={option.value} key={option.value}>
         {/* <a key={option.value} href={option.value}> */}
-        <ListItem disablePadding>
+        <ListItem disablePadding sx={{ marginBottom: 2 }}>
           <ListItemButton>{option.label}</ListItemButton>
         </ListItem>
         {/* </a> */}
@@ -58,6 +58,7 @@ export default function Sidebar({ show }) {
         sx={{
           width: anchor === "top" || anchor === "bottom" ? "auto" : 250,
           fontSize: "1.25rem",
+          paddingTop: 5,
         }}
         role="presentation"
         onClick={toggleDrawer(anchor, false)}
@@ -65,11 +66,11 @@ export default function Sidebar({ show }) {
       >
         <List>
           {generateLinks(NAV_OPTIONS)}
-          <a href="#">
+          {/* <a href="#">
             <ListItem key={"Search"} disablePadding>
               <ListItemButton>Search</ListItemButton>
             </ListItem>
-          </a>
+          </a> */}
         </List>
         <Divider />
 

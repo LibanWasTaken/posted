@@ -2,30 +2,84 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Spinner3 } from "../../components/Spinner";
 import Card from "../../components/PostCard";
-import { Skeleton, TextField, Tooltip } from "@mui/material";
+import { db } from "../../services/firebase-config";
+
+import {
+  getDocs,
+  collection,
+  query,
+  orderBy,
+  limit,
+  where,
+} from "firebase/firestore";
 import dayjs from "dayjs";
 
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { Skeleton, TextField, Tooltip, Button, Box } from "@mui/material";
 
-import { getDocs, collection, query, orderBy, limit } from "firebase/firestore";
-import { db } from "../../services/firebase-config";
+//TODO: bui this thing..: import { DateRangePicker } from "@mui/x-date-pickers-pro/DateRangePicker";
+import { DatePicker } from "@mui/x-date-pickers";
+
+const theme = createTheme({
+  typography: {
+    fontFamily: [
+      "Raleway",
+      "-apple-system",
+      "BlinkMacSystemFont",
+      '"Segoe UI"',
+      "Roboto",
+      '"Helvetica Neue"',
+      "Arial",
+      "sans-serif",
+      '"Apple Color Emoji"',
+      '"Segoe UI Emoji"',
+      '"Segoe UI Symbol"',
+    ].join(","),
+  },
+  palette: {
+    primary: {
+      main: "#000",
+    },
+    secondary: {
+      main: "#fff",
+    },
+  },
+});
 
 export default function AllProductPage() {
   const [posts, setPosts] = useState();
-  const [countPosts, setCountPosts] = useState(4);
+  const [countPosts, setCountPosts] = useState(10);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [sortType, setSortType] = useState("desc");
   const [filtering, setFiltering] = useState(false);
+  const [selectedDate1, setSelectedDate1] = useState();
+  const [selectedDate2, setSelectedDate2] = useState();
 
   async function getFSData() {
-    const queryReceived = query(
-      collection(db, `/posts`),
+    let dateRangeQuery = query(
+      collection(db, "/posts"),
       orderBy("releaseDate", sortType),
       limit(countPosts)
     );
+
+    if (selectedDate1) {
+      console.log(dayjs(selectedDate1).format("DD, MMM, YYYY"));
+      dateRangeQuery = query(
+        dateRangeQuery,
+        where("releaseDate", ">=", selectedDate1)
+      );
+    }
+
+    if (selectedDate2) {
+      console.log(dayjs(selectedDate2).format("DD, MMM, YYYY"));
+      dateRangeQuery = query(
+        dateRangeQuery,
+        where("releaseDate", "<=", selectedDate2)
+      );
+    }
     // const queryReceived = query(collection(db, `/posts`), limit(countPosts));
-    const querySnapshot = await getDocs(queryReceived);
+    const querySnapshot = await getDocs(dateRangeQuery);
     const postsData = querySnapshot.docs.map((doc) => ({
       ...doc.data(),
       id: doc.id,
@@ -43,25 +97,17 @@ export default function AllProductPage() {
   }
 
   useEffect(() => {
+    posts && runLoadingBar();
     getFSData();
-  }, [sortType, countPosts]);
-
-  // if (posts) {
-  //   setPosts((prevPosts) => [...prevPosts, ...postsData]);
-  // } else {
-  //   setPosts(postsData);
-  // }
+  }, [sortType, countPosts, selectedDate1, selectedDate2]);
 
   function handleLoadMore() {
-    runLoadingBar();
     setLoadingMore(true);
     setCountPosts((prevCount) => prevCount + 2);
     getFSData();
   }
 
   function handleSort() {
-    runLoadingBar();
-
     console.log("switching");
     if (sortType == "asc") {
       setSortType("desc");
@@ -90,59 +136,118 @@ export default function AllProductPage() {
     });
   }
 
+  const handleDateChange1 = (date) => {
+    const dateSet = date.valueOf();
+    console.log(dateSet, dateSet && dateSet !== "invalidDate");
+    if (dateSet && dateSet !== "invalidDate") {
+      setSelectedDate1(dateSet);
+    } else {
+      setSelectedDate1();
+    }
+  };
+  const handleDateChange2 = (date) => {
+    const dateSet = date.valueOf();
+    console.log(dateSet, dateSet && dateSet !== "invalidDate");
+    if (dateSet && dateSet !== "invalidDate") {
+      setSelectedDate2(dateSet);
+    } else {
+      setSelectedDate2();
+    }
+  };
+  const handleError = (newError) => {
+    console.log(newError);
+  };
+
+  const handleRangeToday = () => {
+    const today = dayjs().valueOf();
+    setSelectedDate1(today);
+    setSelectedDate2(today);
+  };
+  const handleResetRange = () => {
+    setSelectedDate1();
+    setSelectedDate2();
+  };
+
   return (
-    <Wrapper>
-      {loading ? (
-        <Spinner3 />
-      ) : (
-        <section>
-          {filtering && <div className="loadingBar"></div>}
-          <div className="filter">
-            <h2>Filter</h2>
-            <p>Search</p>
-            <TextField
-              label="Posts Count"
-              variant="standard"
-              type="number"
-              sx={{
-                m: 1,
-                width: "10ch",
-                marginBottom: 3,
-                filter: "saturate(0)",
-              }}
-              defaultValue={countPosts}
-              inputProps={{
-                min: 4,
-                max: 500,
-              }}
-              onChange={(e) => {
-                const count = e.target.value;
-                if (count && count > 3 && count < 501) {
-                  setCountPosts(Math.round(count));
-                }
-              }}
-            />
+    <ThemeProvider theme={theme}>
+      <Wrapper>
+        {loading ? (
+          <Spinner3 />
+        ) : (
+          <section>
+            {filtering && <div className="loadingBar"></div>}
 
-            <p>Lorem ipsum dolor sit amet.</p>
+            <div className="filter">
+              <h2>Filter</h2>
+              <p>Search</p>
+              <TextField
+                label="Posts Count"
+                variant="standard"
+                type="number"
+                sx={{
+                  m: 1,
+                  width: "10ch",
+                  marginBottom: 3,
+                }}
+                defaultValue={countPosts}
+                inputProps={{
+                  min: 4,
+                  max: 500,
+                }}
+                onChange={(e) => {
+                  const count = e.target.value;
+                  if (count && count > 3 && count < 501) {
+                    setCountPosts(Math.round(count));
+                  }
+                }}
+              />
+              <DatePicker
+                label="From"
+                // minDate={tomorrow}
+                value={selectedDate1 ? dayjs(selectedDate1) : null}
+                onChange={handleDateChange1}
+                onError={handleError}
+                sx={{ margin: "0.5rem 0", width: "20ch" }}
+                views={["year", "month", "day"]}
+              />
+              <DatePicker
+                label="To"
+                // minDate={tomorrow}
+                value={selectedDate2 ? dayjs(selectedDate2) : null}
+                onChange={handleDateChange2}
+                onError={handleError}
+                sx={{ margin: "0.5rem 0", width: "20ch" }}
+                views={["year", "month", "day"]}
+              />
+              <Box>
+                <Button onClick={handleRangeToday}>Today</Button>
+                <Button onClick={handleResetRange}>Reset</Button>
+              </Box>
+              {/* 
+            <DateRangePicker
+              value={value}
+              onChange={(newValue) => setValue(newValue)}
+            /> */}
+              {/* https://codesandbox.io/s/competent-wescoff-759vfm?file=/src/App.tsx */}
 
-            <div className="layout">
-              <div></div>
-              <div></div>
-            </div>
-            <Tooltip
-              title={`Sort by ${
-                sortType == "asc" ? "Newest First" : "Oldest First"
-              }`}
-              placement="top"
-              arrow
-            >
-              <div className="sort" onClick={handleSort}>
-                <span className="material-symbols-outlined">sort</span>
+              <div className="layout">
+                <div></div>
+                <div></div>
               </div>
-            </Tooltip>
-          </div>
-          <div className="posts">
-            {/* <Skeleton
+              <Tooltip
+                title={`Sort by ${
+                  sortType == "asc" ? "Newest First" : "Oldest First"
+                }`}
+                placement="top"
+                arrow
+              >
+                <div className="sort" onClick={handleSort}>
+                  <span className="material-symbols-outlined">sort</span>
+                </div>
+              </Tooltip>
+            </div>
+            <div className="posts">
+              {/* <Skeleton
               // sx={{ bgcolor: "black" }}
               variant="rectangular"
               width={280}
@@ -150,28 +255,31 @@ export default function AllProductPage() {
               animation="wave"
             />*/}
 
-            {/* {generateCards(posts)} */}
-            {generateCards(posts)}
-            <div
-              style={{
-                width: "100%",
-                display: "flex",
-                justifyContent: "center",
-              }}
-            >
-              <div
-                className={`classicBtn loadMorBtn ${
-                  loadingMore && "disabledClassicBtn"
-                }`}
-                onClick={handleLoadMore}
-              >
-                {loadingMore ? "Loading More.." : "Load More.."}
-              </div>
+              {/* {generateCards(posts)} */}
+              {generateCards(posts)}
+              {posts && (
+                <div
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                  }}
+                >
+                  <div
+                    className={`classicBtn loadMorBtn ${
+                      loadingMore && "disabledClassicBtn"
+                    }`}
+                    onClick={handleLoadMore}
+                  >
+                    {loadingMore ? "Loading More.." : "Load More.."}
+                  </div>
+                </div>
+              )}
             </div>
-          </div>
-        </section>
-      )}
-    </Wrapper>
+          </section>
+        )}
+      </Wrapper>
+    </ThemeProvider>
   );
 }
 
@@ -280,29 +388,41 @@ const Wrapper = styled.main`
     }
 
     .filter {
+      h2 {
+        display: none;
+      }
       flex-direction: row;
       gap: 1rem;
       align-items: center;
-      height: 4rem;
+      height: min-content;
+      padding: 1rem;
       width: 100%;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
     }
   }
   @media screen and (max-width: 1420px) {
     /* flex-direction: column; */
 
     .posts {
-      grid-template-columns: repeat(3, 1fr);
-      gap: 2rem;
+      display: flex;
+      flex-wrap: wrap;
+
+      gap: 1rem;
     }
   }
-  @media screen and (max-width: 1120px) {
+  /* @media screen and (max-width: 1120px) {
     .posts {
-      grid-template-columns: repeat(2, 1fr);
+      display: flex;
+      flex-wrap: wrap;
+
+      gap: 1rem;
     }
-  }
-  @media screen and (max-width: 820px) {
+  } */
+  @media screen and (max-width: 930px) {
     .posts {
-      grid-template-columns: repeat(1, 1fr);
+      /* flex-direction: column; */
     }
   }
 `;
