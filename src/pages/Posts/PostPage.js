@@ -184,27 +184,21 @@ const OwnPostPage = () => {
   }, [currentUser, loading]);
 
   async function checkData() {
+    // Update users/posts db
     const exceptions = ["public", "releaseDate", "title"];
     let tempObj = {};
-
-    // Check if any of the properties in exceptions exist in updatedObj
     const filteredProperties = Object.keys(updatedObj).filter((prop) =>
       exceptions.includes(prop)
     );
-
     if (filteredProperties.length > 0) {
-      // If there are matching properties, create a new object with those properties
       tempObj = filteredProperties.reduce((obj, prop) => {
         obj[prop] = updatedObj[prop];
         return obj;
       }, {});
-
       console.log("Matching properties found:", tempObj);
     }
-
     try {
       const postRef = doc(db, "users", currentUser.uid, "posts", id);
-
       if (Object.keys(tempObj).length > 0) {
         await updateDoc(postRef, tempObj);
         console.log(
@@ -249,6 +243,11 @@ const OwnPostPage = () => {
   };
 
   function handleSave() {
+    // Update displayName
+    if (postData.displayName !== currentUser.displayName) {
+      updatedObj.displayName = currentUser.displayName;
+    }
+
     if (!saveDisabled) {
       console.log(updatedObj);
       console.log(releaseDate);

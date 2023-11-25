@@ -191,8 +191,13 @@ export function AccPage() {
       ) : (
         <ThemeProvider theme={theme}>
           {user ? (
-            <section className="section2 ">
-              <div
+            <section
+              className="section2"
+              style={{
+                paddingTop: "2rem",
+              }}
+            >
+              {/* <div
                 style={{
                   display: "flex",
                   gap: "2rem",
@@ -209,7 +214,7 @@ export function AccPage() {
                   className="profilePic"
                 />
                 <h2>Welcome, {user.displayName}</h2>
-              </div>
+              </div> */}
 
               <Settings userID={user.uid} />
 

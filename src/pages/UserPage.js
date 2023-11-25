@@ -7,14 +7,18 @@ import { db } from "../services/firebase-config";
 import { Link } from "react-router-dom";
 import dayjs from "dayjs";
 
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import {
+  createTheme,
+  ThemeProvider,
+  Button,
+  TextField,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Avatar,
+} from "@mui/material/";
 import { useNavigate } from "react-router-dom";
 
 const theme = createTheme({
@@ -186,7 +190,15 @@ const UserPage = () => {
         <Spinner2 />
       ) : userExists ? (
         <div className="section">
+          {user.photoURL && (
+            <Avatar
+              alt="Remy Sharp"
+              src={user.photoURL}
+              sx={{ width: "15rem", height: "15rem", marginTop: "3rem" }}
+            />
+          )}
           <h1>{user.displayName}</h1>
+          <p>userName</p>
           <div className="posts">
             {loadingPosts ? (
               <>Loading..</>
@@ -233,7 +245,7 @@ const Wrapper = styled.main`
   flex-direction: column;
   align-items: center;
   /* justify-content: center; */
-  padding-top: 3rem;
+  padding-top: 5rem;
   background-color: black;
   color: white;
   min-height: 100vh;

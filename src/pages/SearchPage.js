@@ -48,7 +48,7 @@ const Search = () => {
     setLoading(true);
     const usersRef = collection(db, "users");
     const q = query(usersRef, where("displayName", "==", userToFind));
-
+    // TODO: add other filters and add them o the search results, if they already exist, dont add them
     // const q = query(
     //   usersRef,
     //   where("displayName", ">=", userToFind).where(

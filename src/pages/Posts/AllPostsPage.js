@@ -125,9 +125,12 @@ export default function AllProductPage() {
             key={post.id}
             postTitle={post.title}
             postID={post.id}
+            displayName={post.displayName}
+            uid={post.user}
             releaseDate={post.releaseDate}
             description={post.description}
-            user={post.anonymity ? "Anonymous" : post.user}
+            anonymity={post.anonymity}
+            // user={post.anonymity ? "Anonymous" : post.displayName || post.user}
             className="post"
           />
         );
@@ -287,6 +290,7 @@ const Wrapper = styled.main`
   display: flex;
   justify-content: center;
   margin: 2rem 0;
+  overflow-x: hidden;
 
   section {
     display: flex;

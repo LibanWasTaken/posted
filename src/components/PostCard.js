@@ -6,9 +6,12 @@ import dayjs from "dayjs";
 function Card({
   postTitle,
   postID,
+  displayName,
   releaseDate = "Sun, 01 Oct 2023 18:00:00 GMT",
   description,
+  uid,
   user,
+  anonymity,
 }) {
   const formattedDate = dayjs(releaseDate, {
     format: "ddd, DD MMM YYYY HH:mm:ss [GMT]",
@@ -140,7 +143,23 @@ function Card({
               {/* {description || getRandomSentence()} */}
               {description}
             </h4>
-            <p className="userName">- {user || getRandomName()} </p>
+            {anonymity == "Anonymous" ? (
+              <p className="userName">- Anonymous </p>
+            ) : (
+              <div className="userNameContainer">
+                <Link
+                  to={`/user/${uid}`}
+                  style={{
+                    textDecoration: "none",
+                    // display: "flex",
+                    // alignItems: "center",
+                    // justifyContent: "end",
+                  }}
+                >
+                  <p className="userName"> - {displayName || uid} </p>
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </Link>
@@ -184,23 +203,26 @@ const Wrapper = styled.section`
 
   .userName {
     position: absolute;
-    bottom: 10px;
+    bottom: 20px;
     letter-spacing: 1px;
     font-size: 0.75rem;
     font-style: italic;
-    padding-top: 10.5rem;
+    margin: 0;
+    /* padding-top: 10.5rem; */
+    color: white;
   }
 
   .card2:hover {
-    background-color: whitesmoke;
-    color: black;
-    /* background-color: #222; */
+    /* background-color: whitesmoke;
+    color: black; */
+    background-color: #222;
 
-    /* padding: 10px; */
-    /* transform: scale(1.025); */
-    /* transform: rotate(-1deg); */
     cursor: pointer;
     transition: 0.3s;
+  }
+  .userName:hover {
+    /* color: #ddd; */
+    text-decoration: underline;
   }
 
   @media screen and (min-width: 1421px) {
@@ -219,19 +241,26 @@ const Wrapper = styled.section`
       overflow: hidden;
       text-overflow: ellipsis;
       /* width: 100%; */
-      max-width: 80vw;
+      /* max-width: 80vw; */
+    }
+    .userNameContainer {
+      display: flex;
+      align-items: center;
+      justify-content: end;
     }
     .userName {
-      position: relative;
+      position: static;
       letter-spacing: 1px;
       font-size: 0.75rem;
       font-style: italic;
       padding: 0;
       margin: 0;
+      width: max-content;
     }
 
     .description {
       margin: 0;
+      /* margin-bottom: ; */
       flex-direction: row;
       padding: 0;
       width: 50rem;

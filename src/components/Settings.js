@@ -23,6 +23,7 @@ import {
   ThemeProvider,
   Button,
   Avatar,
+  Tooltip,
 } from "@mui/material";
 
 const theme = createTheme({
@@ -87,45 +88,45 @@ function Settings({ userID }) {
     const exceptions = ["displayName", "photoURL", "userName"];
     let tempObj = {};
 
-    // Check if any of the properties in exceptions exist in updatedObj
     const filteredProperties = Object.keys(updatedObj).filter((prop) =>
       exceptions.includes(prop)
     );
 
     if (filteredProperties.length > 0) {
-      // If there are matching properties, create a new object with those properties
       tempObj = filteredProperties.reduce((obj, prop) => {
         obj[prop] = updatedObj[prop];
         return obj;
       }, {});
-
-      console.log("Matching properties found:", tempObj);
     }
 
     try {
       const auth = getAuth();
       const user = auth.currentUser;
 
-      if (tempObj) {
-        console.log(tempObj);
-        // TODO: TODO: TODO: TODO: TODO: TODO: TODO: TODO: TODO: TODO:
+      if (Object.keys(tempObj).length) {
+        await updateProfile(user, tempObj);
+        console.log("User profile updated", tempObj);
+      } else {
+        console.log("no exceptions");
       }
-      // await updateProfile(user, tempObj);
-      console.log(
-        "User profile successfully updated with matching properties",
-        updateObject
-      );
     } catch (error) {
-      console.error("Error updating user profile:", error.message || error);
-      throw error;
+      console.error("Error updating user profile:");
+      console.error(error);
+      console.error(error.message);
     }
   }
-
+  // TODO: better error handling, maybe trrow the error in the checkData so that it gets cathced in the handleSave before the db updates
   async function updateUserData() {
     try {
+      if (updatedObj.hasOwnProperty("displayName")) {
+        updatedObj.dnLastChange = Number(dayjs().valueOf());
+        setUpdatedObj(updatedObj);
+      }
+
       const postRef = doc(db, "users", userID);
+      checkData();
       await updateDoc(postRef, updatedObj);
-      console.log("Document successfully updated");
+      console.log("Document successfully updated", updatedObj);
       setSaveDisabled(true);
       window.location.reload();
     } catch (error) {
@@ -150,6 +151,26 @@ function Settings({ userID }) {
       setSaveDisabled("saving");
       updateUserData();
       // setSaveDisabled(false);
+    }
+  }
+
+  function hasBeenTwoWeeks(lastChangeDate) {
+    if (lastChangeDate) {
+      const currentDate = dayjs();
+      const dnLastChangeDate = dayjs(lastChangeDate);
+
+      const differenceInDays = currentDate.diff(dnLastChangeDate, "day");
+      const daysRemaining = 14 - differenceInDays;
+      console.log(daysRemaining);
+
+      if (differenceInDays < 14) {
+        return daysRemaining;
+      } else {
+        // It has been 14 days or more
+        return false;
+      }
+    } else {
+      return true;
     }
   }
 
@@ -203,16 +224,40 @@ function Settings({ userID }) {
                     <Typography>User Info</Typography>
                   </AccordionSummary>
                   <AccordionDetails sx={{ p: 2 }}>
-                    <TextField
-                      sx={{ m: 1, marginBottom: 2, width: "35ch" }}
-                      label="Display Name"
-                      variant="outlined"
-                      defaultValue={user.displayName || ""}
-                      onChange={updateValueOf("displayName")}
-                      inputProps={{
-                        maxLength: 25,
-                      }}
-                    />
+                    {/* TODO: add or something to the text fields saveDisabled == "saving" */}
+                    {!hasBeenTwoWeeks(user.dnLastChange) ? (
+                      <TextField
+                        sx={{ m: 1, marginBottom: 2, width: "35ch" }}
+                        label="Display Name"
+                        variant="outlined"
+                        defaultValue={user.displayName || ""}
+                        onChange={updateValueOf("displayName")}
+                        inputProps={{
+                          maxLength: 25,
+                        }}
+                      />
+                    ) : (
+                      <Tooltip
+                        title={`You can change it in 2 weeks. ${hasBeenTwoWeeks(
+                          user.dnLastChange
+                        )} days remaining.`}
+                        // TODO: add the current days remaining
+                        placement="right"
+                        arrow
+                      >
+                        <TextField
+                          sx={{ m: 1, marginBottom: 2, width: "35ch" }}
+                          label="Display Name"
+                          variant="outlined"
+                          disabled
+                          defaultValue={user.displayName || ""}
+                          onChange={updateValueOf("displayName")}
+                          inputProps={{
+                            maxLength: 25,
+                          }}
+                        />
+                      </Tooltip>
+                    )}
                     <div className="name">
                       <TextField
                         sx={{ m: 1 }}
