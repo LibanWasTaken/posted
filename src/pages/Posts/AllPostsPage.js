@@ -16,6 +16,8 @@ import dayjs from "dayjs";
 
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Skeleton, TextField, Tooltip, Button, Box } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+// import Collapse from "@mui/material/Collapse";
 
 //TODO: bui this thing..: import { DateRangePicker } from "@mui/x-date-pickers-pro/DateRangePicker";
 import { DatePicker } from "@mui/x-date-pickers";
@@ -55,6 +57,7 @@ export default function AllProductPage() {
   const [filtering, setFiltering] = useState(false);
   const [selectedDate1, setSelectedDate1] = useState();
   const [selectedDate2, setSelectedDate2] = useState();
+  const [collapse, setCollapse] = useState(false);
 
   async function getFSData() {
     let dateRangeQuery = query(
@@ -134,8 +137,9 @@ export default function AllProductPage() {
             className="post"
           />
         );
+      } else {
+        return null;
       }
-      return null;
     });
   }
 
@@ -180,75 +184,98 @@ export default function AllProductPage() {
           <section>
             {filtering && <div className="loadingBar"></div>}
 
-            <div className="filter">
-              <h2>Filter</h2>
-              <p>Search</p>
-              <TextField
-                label="Posts Count"
-                variant="standard"
-                type="number"
-                sx={{
-                  m: 1,
-                  width: "10ch",
-                  marginBottom: 3,
+            {collapse ? (
+              <div
+                className="unCollapseBtn"
+                onClick={() => {
+                  setCollapse(false);
                 }}
-                defaultValue={countPosts}
-                inputProps={{
-                  min: 4,
-                  max: 500,
-                }}
-                onChange={(e) => {
-                  const count = e.target.value;
-                  if (count && count > 3 && count < 501) {
-                    setCountPosts(Math.round(count));
-                  }
-                }}
-              />
-              <DatePicker
-                label="From"
-                // minDate={tomorrow}
-                value={selectedDate1 ? dayjs(selectedDate1) : null}
-                onChange={handleDateChange1}
-                onError={handleError}
-                sx={{ margin: "0.5rem 0", width: "20ch" }}
-                views={["year", "month", "day"]}
-              />
-              <DatePicker
-                label="To"
-                // minDate={tomorrow}
-                value={selectedDate2 ? dayjs(selectedDate2) : null}
-                onChange={handleDateChange2}
-                onError={handleError}
-                sx={{ margin: "0.5rem 0", width: "20ch" }}
-                views={["year", "month", "day"]}
-              />
-              <Box>
-                <Button onClick={handleRangeToday}>Today</Button>
-                <Button onClick={handleResetRange}>Reset</Button>
-              </Box>
-              {/* 
-            <DateRangePicker
-              value={value}
-              onChange={(newValue) => setValue(newValue)}
-            /> */}
-              {/* https://codesandbox.io/s/competent-wescoff-759vfm?file=/src/App.tsx */}
-
-              <div className="layout">
-                <div></div>
-                <div></div>
-              </div>
-              <Tooltip
-                title={`Sort by ${
-                  sortType == "asc" ? "Newest First" : "Oldest First"
-                }`}
-                placement="top"
-                arrow
               >
-                <div className="sort" onClick={handleSort}>
-                  <span className="material-symbols-outlined">sort</span>
+                Filter
+              </div>
+            ) : (
+              <div className={`filter`}>
+                <div className="heading">
+                  <h2>Filter</h2>
+                  <Tooltip
+                    title={`Sort by ${
+                      sortType == "asc" ? "Newest First" : "Oldest First"
+                    }`}
+                    placement="top"
+                    arrow
+                  >
+                    <div className="sort" onClick={handleSort}>
+                      <span className="material-symbols-outlined">sort</span>
+                    </div>
+                  </Tooltip>
                 </div>
-              </Tooltip>
-            </div>
+                <p>Search</p>
+                <TextField
+                  label="Posts Count"
+                  variant="standard"
+                  type="number"
+                  sx={{
+                    m: 1,
+                    width: "10ch",
+                    marginBottom: 3,
+                  }}
+                  defaultValue={countPosts}
+                  inputProps={{
+                    min: 4,
+                    max: 500,
+                  }}
+                  onChange={(e) => {
+                    const count = e.target.value;
+                    if (count && count > 3 && count < 501) {
+                      setCountPosts(Math.round(count));
+                    }
+                  }}
+                />
+                <DatePicker
+                  label="From"
+                  // minDate={tomorrow}
+                  value={selectedDate1 ? dayjs(selectedDate1) : null}
+                  onChange={handleDateChange1}
+                  onError={handleError}
+                  sx={{ margin: "0.5rem 0", width: "20ch" }}
+                  views={["year", "month", "day"]}
+                />
+                <DatePicker
+                  label="To"
+                  // minDate={tomorrow}
+                  value={selectedDate2 ? dayjs(selectedDate2) : null}
+                  onChange={handleDateChange2}
+                  onError={handleError}
+                  sx={{ margin: "0.5rem 0", width: "20ch" }}
+                  views={["year", "month", "day"]}
+                />
+                <Box>
+                  <Button onClick={handleRangeToday}>Today</Button>
+                  <Button onClick={handleResetRange}>Reset</Button>
+                </Box>
+                <Tooltip
+                  className="smallView"
+                  title={`Sort by ${
+                    sortType == "asc" ? "Newest First" : "Oldest First"
+                  }`}
+                  placement="top"
+                  arrow
+                >
+                  <div className="sort" onClick={handleSort}>
+                    <span className="material-symbols-outlined">sort</span>
+                  </div>
+                </Tooltip>
+
+                <span
+                  className="collapseBtn smallView"
+                  onClick={() => {
+                    setCollapse(true);
+                  }}
+                >
+                  <CloseIcon />
+                </span>
+              </div>
+            )}
             <div className="posts">
               {/* <Skeleton
               // sx={{ bgcolor: "black" }}
@@ -343,6 +370,13 @@ const Wrapper = styled.main`
     background-color: whitesmoke;
     width: 15rem;
     position: relative;
+    transition: 0.3s;
+    .heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
 
     .sort {
       transform: scaleX(-1);
@@ -353,6 +387,23 @@ const Wrapper = styled.main`
 
     .sort:hover {
       background-color: #ddd;
+      transition: 0.3s;
+    }
+
+    .smallView {
+      display: none;
+    }
+
+    .collapseBtn {
+      /* position: absolute;
+      right: 5rem; */
+      padding: 10px;
+      background-color: #eee;
+      cursor: pointer;
+    }
+    .collapseBtn:hover {
+      background-color: #ddd;
+      transition: 0.3s;
     }
   }
 
@@ -366,10 +417,6 @@ const Wrapper = styled.main`
 
     /* width: 80vw; */
   }
-
-  .post {
-  }
-
   .loadMorBtn {
     width: 10rem;
     text-align: center;
@@ -392,18 +439,37 @@ const Wrapper = styled.main`
     }
 
     .filter {
-      h2 {
+      .heading {
+        /* visibility: hidden; */
+        background-color: red;
         display: none;
+        margin-bottom: 1rem;
+      }
+      .smallView {
+        display: block;
       }
       flex-direction: row;
       gap: 1rem;
-      align-items: center;
       height: min-content;
       padding: 1rem;
       width: 100%;
       align-items: center;
       justify-content: center;
       flex-wrap: wrap;
+    }
+
+    .collapsed {
+      /* display: none; */
+      height: 0.5rem;
+      overflow: hidden;
+    }
+    .unCollapseBtn {
+      background-color: whitesmoke;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
     }
   }
   @media screen and (max-width: 1420px) {

@@ -35,9 +35,11 @@ const theme = createTheme({
 });
 
 const Search = () => {
-  const [loading, setLoading] = useState(false);
+  const [loadingUsers, setLoadingUsers] = useState(false);
+  const [loadingPosts, setLoadingPosts] = useState(false);
   const [userToFind, setUserToFind] = useState();
   const [searchResults, setSearchResults] = useState([]);
+  const [searchResultsPosts, setSearchResultsPosts] = useState([]);
 
   const handleInputChange = (event) => {
     const { value } = event.target;
@@ -45,9 +47,12 @@ const Search = () => {
   };
 
   async function handleSearch() {
-    setLoading(true);
+    setLoadingUsers(true);
+    setLoadingPosts(true);
     const usersRef = collection(db, "users");
-    const q = query(usersRef, where("displayName", "==", userToFind));
+    const postsRef = collection(db, "posts"); // TODO: change to posted
+    const targetUsers = query(usersRef, where("displayName", "==", userToFind));
+    const targetPosts = query(postsRef, where("title", "==", userToFind));
     // TODO: add other filters and add them o the search results, if they already exist, dont add them
     // const q = query(
     //   usersRef,
@@ -64,25 +69,36 @@ const Search = () => {
     // );
 
     try {
-      const querySnapshot = await getDocs(q);
-      console.log(querySnapshot);
+      const querySnapshotUsers = await getDocs(targetUsers);
+      const querySnapshotPosts = await getDocs(targetPosts);
       const results = [];
-      querySnapshot.forEach((doc) => {
+      const resultsPosts = [];
+      querySnapshotUsers.forEach((doc) => {
         results.push({ id: doc.id, ...doc.data() });
+      });
+      querySnapshotPosts.forEach((doc) => {
+        resultsPosts.push({ id: doc.id, ...doc.data() });
       });
       if (results.length > 0) {
         setSearchResults(results);
-        setLoading(false);
+        setLoadingUsers(false);
       } else {
         setSearchResults(null);
-        setLoading(false);
+        setLoadingUsers(false);
+      }
+      if (resultsPosts.length > 0) {
+        setSearchResultsPosts(resultsPosts);
+        setLoadingPosts(false);
+      } else {
+        setSearchResultsPosts(null);
+        setLoadingPosts(false);
       }
     } catch (error) {
       console.error(error);
     }
   }
 
-  function displayResults() {
+  function displayResultsUsers() {
     if (searchResults === null) {
       return <p>No results found.</p>;
     } else {
@@ -105,6 +121,28 @@ const Search = () => {
             <p>{user.id}</p>
             <p>{user.email}</p>
             {/* </div> */}
+          </div>
+        </a>
+      ));
+    }
+  }
+
+  function displayResultsPosts() {
+    if (searchResultsPosts === null) {
+      return <p>No results found.</p>;
+    } else {
+      console.log(searchResultsPosts);
+      return searchResultsPosts.map((post) => (
+        <a
+          href={`posts/${post.id}`}
+          key={post.id}
+          target="_blank"
+          style={{ textDecoration: "none", color: "black" }}
+        >
+          <div className="post">
+            <div className="group"></div>
+            <h3>{post.title}</h3>
+            <p>{post.id}</p>
           </div>
         </a>
       ));
@@ -139,7 +177,14 @@ const Search = () => {
             Search
           </Button>
         </div>
-        <div className="users">{loading ? <Spinner1 /> : displayResults()}</div>
+        <div className="users">
+          <h3>users</h3>
+          {loadingUsers ? <Spinner1 /> : displayResultsUsers()}
+        </div>
+        <div className="posts">
+          <h3>posts</h3>
+          {loadingPosts ? <Spinner1 /> : displayResultsPosts()}
+        </div>
       </Wrapper>
     </ThemeProvider>
   );
@@ -161,13 +206,15 @@ const Wrapper = styled.main`
     gap: 2rem;
   }
 
-  .users {
+  .users,
+  .posts {
     border: 1px solid black;
     padding: 5rem;
     width: 75vw;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
     margin: 1rem;
   }
 

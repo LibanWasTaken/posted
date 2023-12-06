@@ -10,6 +10,7 @@ import AllPostsPage from "./Posts/AllPostsPage";
 import UserPage from "./UserPage";
 import { AccPage } from "./AccountPage";
 import MessagePage from "./MessagePage";
+import Information from "./Information";
 
 export {
   Home,
@@ -24,4 +25,5 @@ export {
   SinglePostsPage,
   AllPostsPage,
   MessagePage,
+  Information,
 };

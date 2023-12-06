@@ -580,6 +580,7 @@ const OwnPostPage = () => {
                     }}
                   />
                 </Box>
+                {/* TODO: nsfw switch */}
                 <FinalButtons />
               </CustomTabPanel>
             </div>

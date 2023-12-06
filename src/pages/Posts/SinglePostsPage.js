@@ -15,6 +15,10 @@ import { db } from "../../services/firebase-config";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { Tooltip, Button } from "@mui/material";
 
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteOutlinedIcon from "@mui/icons-material/FavoriteOutlined";
+import FavoriteTwoToneIcon from "@mui/icons-material/FavoriteTwoTone";
+
 function LinkList({ links }) {
   return (
     <div className="links">
@@ -274,6 +278,9 @@ export default function SinglePostPage() {
                   >
                     {hearted ? "heart_check" : "favorite"}
                   </span>
+                  {/* <FavoriteBorderIcon fontSize="large" />
+                  <FavoriteOutlinedIcon fontSize="large" />
+                  <FavoriteTwoToneIcon fontSize="large" /> */}
                 </Tooltip>
                 {/* )} */}
                 {postAdmin && (
@@ -323,9 +330,18 @@ export default function SinglePostPage() {
                 <p>Also Change this</p>
                 <p>what about this Change this</p>
                 <p>see views = pay money</p>
-                <button className="deleteBtn" onClick={handleDeletePostOpen}>
-                  delete post
-                </button>
+                {/* With prem?: */}
+                <div className="buttons">
+                  <button className="deleteBtn" onClick={() => {}}>
+                    Remove Anonymity
+                  </button>
+                  <button className="deleteBtn" onClick={() => {}}>
+                    Change Publicity
+                  </button>
+                  <button className="deleteBtn" onClick={handleDeletePostOpen}>
+                    delete post
+                  </button>
+                </div>
               </div>
               <span className="material-symbols-outlined settingImg">
                 settings
@@ -347,7 +363,7 @@ export default function SinglePostPage() {
 }
 
 const Wrapper = styled.main`
-  margin: 1rem 2rem;
+  margin: 1rem;
   overflow-x: hidden;
 
   .postContainer {
@@ -364,6 +380,7 @@ const Wrapper = styled.main`
 
     .info {
       width: 95%;
+      max-width: 100vw;
       padding-bottom: 2rem;
       border-bottom: 1px solid whitesmoke;
       display: flex;
@@ -419,7 +436,7 @@ const Wrapper = styled.main`
       .description {
         padding: 0;
         margin: 0 0 0.5rem 0;
-        width: 50rem;
+        max-width: 50rem;
         word-wrap: break-word;
       }
 
@@ -437,7 +454,7 @@ const Wrapper = styled.main`
       flex-direction: column;
       gap: 2rem;
       margin: 2rem 0;
-      width: 90%;
+      width: 95%;
 
       .letter {
         min-width: 90%;
@@ -477,18 +494,29 @@ const Wrapper = styled.main`
   }
 
   .settingsContainer {
-    width: 95%;
+    /* width: 95%; */
     padding: 1rem;
     height: 85vh;
+    /* margin-bottom: 2rem; */
+    margin: 1rem;
     margin-top: 300vh;
-    margin-bottom: 2rem;
     border: 1px solid #ddd;
     border-radius: 10px;
     overflow: hidden;
     position: relative;
+    p {
+      font-size: 1.25rem;
+      margin: 2rem;
+    }
+
+    .buttons {
+      position: absolute;
+      bottom: 2rem;
+    }
     .settingImg {
       position: absolute;
       right: -20rem;
+      bottom: -20rem;
       font-size: 50rem;
       color: whitesmoke;
       animation: spin 30s linear infinite;

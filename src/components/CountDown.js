@@ -33,7 +33,6 @@ const CountDown = (props) => {
   const targetDate = dayjs(releaseDate);
   const newDate = dayjs(releaseDate).add(1, "month");
 
-  // TODO: now that its in numbered format, i can subtract and get the value == uhh the warning thing. and if its true, delay enabled
   async function handleDelay() {
     try {
       const postRef = doc(db, "posts", postID);
@@ -81,8 +80,9 @@ const CountDown = (props) => {
     if (!warn) {
       if (timeRemaining.days <= warnDuration) setWarn(true);
     }
-    // TODO: enable
-    // if (timeRemaining && timeRemaining.seconds < 0) {
+    console.log(disabled);
+    // TODO: enable && not disabled?
+    // if (timeRemaining && !disabled && timeRemaining.seconds < 0) {
     //   redirect();
     // }
     const interval = setInterval(() => {

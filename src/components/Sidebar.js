@@ -14,6 +14,7 @@ import { NAV_OPTIONS } from "../context/UserOptions";
 import { Link } from "react-router-dom";
 
 import { useUserContext } from "../context/UserContext";
+import MenuSharpIcon from "@mui/icons-material/MenuSharp";
 
 export default function Sidebar({ show }) {
   const { user: currentUser, loading } = useUserContext();
@@ -81,19 +82,6 @@ export default function Sidebar({ show }) {
                 <ListItemButton>Account</ListItemButton>
               </ListItem>
             </a>
-            <a href="/cart">
-              <ListItem key={"Cart"} disablePadding>
-                <ListItemButton>Cart</ListItemButton>
-              </ListItem>
-            </a>
-            <a href="/account">
-              <ListItem key={"Log Out"} disablePadding>
-                <ListItemButton>
-                  <ListItemIcon></ListItemIcon>
-                  Log Out
-                </ListItemButton>
-              </ListItem>
-            </a>
           </List>
         ) : (
           <List>
@@ -104,6 +92,28 @@ export default function Sidebar({ show }) {
             </a>
           </List>
         )}
+        <Box
+          sx={{
+            // backgroundColor: "black",
+            // color: "white",
+            color: "#ddd",
+            borderTop: "1px solid #ddd",
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            width: "100%",
+            height: "10%",
+            textAlign: "center",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "3rem",
+            fontFamily: "Poppins",
+            fontWeight: 600,
+          }}
+        >
+          POSTED
+        </Box>
       </Box>
     </Wrapper>
   );
@@ -111,12 +121,13 @@ export default function Sidebar({ show }) {
   return (
     <SidebarIcon>
       <div className="hamburger">
-        <span
+        {/* <span
           className="material-symbols-outlined"
           onClick={toggleDrawer("right", true)}
         >
           menu
-        </span>
+        </span> */}
+        <MenuSharpIcon onClick={toggleDrawer("right", true)} fontSize="large" />
         <Drawer
           anchor={"right"}
           open={state["right"]}
@@ -131,8 +142,8 @@ export default function Sidebar({ show }) {
 
 const Wrapper = styled.main`
   font-size: 1rem;
-  margin-top: 1rem;
-  padding: 0 0.5rem;
+  /* margin-top: 1rem; */
+  padding: 0 1.5rem;
 
   a {
     color: black;

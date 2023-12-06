@@ -14,6 +14,8 @@ import { getDocs, collection } from "firebase/firestore";
 import { db as FSdb } from "../services/firebase-config";
 import { useUserContext } from "../context/UserContext";
 
+import { Link as LinkAnchor } from "@mui/material";
+
 function generatePostLinks(posts, whereTo) {
   return posts.map((post) => (
     <Link
@@ -138,11 +140,12 @@ const OwnPage = () => {
           </section>
         )}
         <div className="semiHeroText">
-          <section>
-            <h2>Lorem ipsum dolor sit amet.</h2>
+          <section className="left">
+            <h2>Posts are containers for your messages.</h2>
             <h3>
-              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Hic ipsa
-              quae temporibus perferendis eos alias.
+              A post incorporates functionalities such as a live diary,
+              correspondence in the form of letters, links, and additional
+              features.
             </h3>
             {currentUser && (
               <div className="link">
@@ -158,7 +161,7 @@ const OwnPage = () => {
             )}
           </section>
           <section>
-            <h3>perferendis eos alias.</h3>
+            <h3>Future Messages, Forever.</h3>
           </section>
         </div>
       </Wrapper>
@@ -177,6 +180,7 @@ const Wrapper = styled.main`
   padding-bottom: 2rem;
   .postSection {
     text-align: left;
+    padding-top: 1rem;
     z-index: 1;
     height: 450px;
   }
@@ -311,6 +315,12 @@ const Wrapper = styled.main`
       justify-content: center;
       flex-direction: column;
       gap: 1rem;
+    }
+    .left {
+      border: 2px solid rgba(0, 0, 0, 0.1);
+
+      border-radius: 10px;
+      padding: 1rem 1rem 2rem 2rem;
     }
     section:last-of-type {
       align-items: center;

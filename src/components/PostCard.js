@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 import dayjs from "dayjs";
 
+import { Parallax } from "react-scroll-parallax";
+
 function Card({
   postTitle,
   postID,
@@ -133,6 +135,7 @@ function Card({
           transform: `rotate(${randomTilt}deg)`,
         }}
       >
+        {/* <Parallax translateX={["-10%", 0]}> */}
         <div className="card2" style={{}}>
           <div className="group group">
             <p className="title">{postTitle || "title"}</p>
@@ -162,6 +165,7 @@ function Card({
             )}
           </div>
         </div>
+        {/* </Parallax> */}
       </Link>
     </Wrapper>
   );

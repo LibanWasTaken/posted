@@ -10,7 +10,14 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
-import { doc, getDocs, deleteDoc, collection } from "firebase/firestore";
+import {
+  doc,
+  getDocs,
+  getDoc,
+  deleteDoc,
+  collection,
+  setDoc,
+} from "firebase/firestore";
 
 import { db } from "../../services/firebase-config";
 
@@ -59,49 +66,54 @@ export default function DeletePost({
     navigate(`/me`);
   }
 
-  async function recursiveDelete(docRef) {
-    try {
-      // Delete the main document
-      await deleteDoc(docRef);
-      console.log("Document successfully deleted");
-
-      // Get all subcollections
-      const subcollectionsQuerySnapshot = await getDocs(collection(docRef));
-
-      // Recursively delete each subcollection
-      await Promise.all(
-        subcollectionsQuerySnapshot.docs.map(async (subDoc) => {
-          await recursiveDelete(subDoc.ref);
-        })
-      );
-    } catch (error) {
-      console.error("Error deleting document and subcollections: ", error);
-      throw error; // Propagate the error to the calling function if needed
-    }
-  }
-
-  // FIXME: FIXME: FIXME: IT DOESNT DELETE SUB COLLECTIONS - https://stackoverflow.com/questions/49286764/delete-a-document-with-all-subcollections-and-nested-subcollections-in-firestore
+  // FIXME: IT DOESNT DELETE SUB COLLECTIONS
   async function handleDelete() {
     if (postIDValue === postID) {
-      setDeleting(true);
+      // setDeleting(true);
       console.log("Deleting post:", postID, "from user:", userID);
 
       const postDocRef = doc(db, fromDB, postID);
-      try {
-        await recursiveDelete(postDocRef);
-        console.log("Document and subcollections successfully deleted");
-      } catch (error) {
-        console.error("Error deleting document from posts: ", error);
-      }
 
-      const userPostDocRef = doc(db, `users/${userID}/posts`, postID);
-      try {
-        await deleteDoc(userPostDocRef);
-        console.log("Document successfully deleted from user!");
-        redirect();
-      } catch (error) {
-        console.error("Error deleting document from user: ", error);
-      }
+      const checkRef = collection(db, fromDB, postID, "diary");
+      const subCollectionSnapshot = await getDocs(checkRef);
+
+      const checkRef2 = collection(db, fromDB, postID, "comments");
+      const subCollectionSnapshot2 = await getDocs(checkRef2);
+      const commentsDocs = subCollectionSnapshot.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
+      const commentsDocs2 = subCollectionSnapshot2.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
+      // TODO: If its empty, it doesnt exist.. now delete the one that exists
+      console.log(commentsDocs);
+      console.log(commentsDocs2);
+      // console.log(docSnapshot);
+      // try {
+      //    const subCollectionRef = collection(postDocRef, 'subCollectionName');
+      //    const subCollectionSnapshot = await subCollectionRef.get();
+      //    subCollectionSnapshot.forEach((doc) => {
+      //      doc.ref.delete();
+      //    });
+
+      //    await deleteDoc(postDocRef);
+      //   console.log(
+      //     "Document and subcollections successfully deleted from posts"
+      //   );
+      // } catch (error) {
+      //   console.error("Error deleting document from posts: ", error);
+      // }
+
+      // const userPostDocRef = doc(db, `users/${userID}/posts`, postID);
+      // try {
+      //   await deleteDoc(userPostDocRef);
+      //   console.log("Document successfully deleted from user!");
+      //   redirect();
+      // } catch (error) {
+      //   console.error("Error deleting document from user: ", error);
+      // }
     }
   }
 

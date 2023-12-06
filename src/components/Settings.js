@@ -10,6 +10,8 @@ import { db } from "../services/firebase-config";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 
+import KeyboardArrowDownTwoToneIcon from "@mui/icons-material/KeyboardArrowDownTwoTone";
+
 import {
   TextField,
   Box,
@@ -61,7 +63,8 @@ const theme = createTheme({
 });
 
 function ExpandMoreIcon() {
-  return <span className="material-symbols-outlined">expand_more</span>;
+  // return <span className="material-symbols-outlined">expand_more</span>;
+  return <KeyboardArrowDownTwoToneIcon />;
 }
 
 function Settings({ userID }) {
@@ -161,7 +164,6 @@ function Settings({ userID }) {
 
       const differenceInDays = currentDate.diff(dnLastChangeDate, "day");
       const daysRemaining = 14 - differenceInDays;
-      console.log(daysRemaining);
 
       if (differenceInDays < 14) {
         return daysRemaining;
@@ -173,6 +175,16 @@ function Settings({ userID }) {
       return true;
     }
   }
+
+  // useEffect(() => {
+  //   setInterval(() => {
+  //     if (CHANGE) {
+  //       setCHANGE(false);
+  //     } else if (!CHANGE) {
+  //       setCHANGE(true);
+  //     }
+  //   }, 1000);
+  // }, []);
 
   return (
     <Wrapper>
@@ -186,7 +198,7 @@ function Settings({ userID }) {
                 className="background"
                 style={{ backgroundColor: "black" }}
               ></div>
-              {/* <div className="pfpContainer">
+              <div style={{ overflow: "hidden", zIndex: 1 }}>
                 <img
                   src={
                     user.photoURL ||
@@ -195,15 +207,16 @@ function Settings({ userID }) {
                   alt="pfp"
                   className="profilePic"
                 />
-              </div> */}
-              <Avatar
+              </div>
+
+              {/* <Avatar
                 alt="Remy Sharp"
                 src={
                   user.photoURL ||
                   "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Windows_10_Default_Profile_Picture.svg/2048px-Windows_10_Default_Profile_Picture.svg.png"
                 }
                 sx={{ width: "15rem", height: "15rem" }}
-              />
+              /> */}
 
               <div className="info">
                 <h1>{user.displayName}</h1>
@@ -241,7 +254,6 @@ function Settings({ userID }) {
                         title={`You can change it in 2 weeks. ${hasBeenTwoWeeks(
                           user.dnLastChange
                         )} days remaining.`}
-                        // TODO: add the current days remaining
                         placement="right"
                         arrow
                       >
@@ -531,8 +543,11 @@ function Settings({ userID }) {
                 height={"15rem"}
               /> */}
               <div className="info">
-                <h1>Uhh..</h1>
-                <p>{""}</p>
+                <h1>
+                  Uhh..
+                  <br />
+                </h1>
+                <p>{" "}</p>
               </div>
             </div>
 
@@ -590,7 +605,7 @@ const Wrapper = styled.section`
     width: 15rem;
     min-height: 15rem;
     height: 15rem;
-    /* z-index: 1; */
+    z-index: 1;
   }
   /* .profilePic:hover {
     border-radius: 0%;

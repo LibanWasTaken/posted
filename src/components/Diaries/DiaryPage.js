@@ -55,7 +55,13 @@ const theme = createTheme({
   },
 });
 
-export default function DiaryPage({ open, handleClose, pageInfo, getFSData }) {
+export default function DiaryPage({
+  open,
+  handleClose,
+  pageInfo,
+  getFSData,
+  editable = true,
+}) {
   const { id: postID } = useParams();
   const formattedDate = dayjs().format("DD MMM, YYYY");
   const [formData, setFormData] = useState({
@@ -65,10 +71,18 @@ export default function DiaryPage({ open, handleClose, pageInfo, getFSData }) {
   const [addingPage, setAddingPage] = useState(false);
 
   useEffect(() => {
+    console.log(pageInfo);
     if (pageInfo) {
       setFormData({
         title: pageInfo.title,
         text: pageInfo.text,
+        date: dayjs(pageInfo.timestamp).format("dddd, DD MMM, YYYY"),
+      });
+    } else {
+      setFormData({
+        title: "",
+        text: "",
+        date: "",
       });
     }
   }, [pageInfo]);
@@ -135,19 +149,19 @@ export default function DiaryPage({ open, handleClose, pageInfo, getFSData }) {
   return (
     <ThemeProvider theme={theme}>
       {/* TODO: make this the default */}
-
       {/* <Dialog open={open} onClose={handleClose} fullScreen> */}
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth="lg">
-        <DialogTitle>Page</DialogTitle>
-        <DialogContent>
-          <DialogContentText sx={{ marginBottom: 1 }}>
-            Share your reflection of <strong> {formattedDate}</strong>
-          </DialogContentText>
+        <DialogTitle>{formData.date || formattedDate}</DialogTitle>
+        <DialogContent sx={{ marginTop: 2 }}>
+          {/* <DialogContentText sx={{ marginBottom: 1 }}>
+            Share your reflection of{" "}
+            <strong> {formData ? formData.date : formattedDate}</strong>
+          </DialogContentText> */}
           {/* TODO: make this the default */}
           {/* <Editor /> */}
           <TextField
             sx={{ m: 1, marginBottom: 2 }}
-            disabled={addingPage}
+            disabled={addingPage || !editable}
             id="title"
             label="Title"
             type="text"
@@ -157,7 +171,7 @@ export default function DiaryPage({ open, handleClose, pageInfo, getFSData }) {
           />
           <TextField
             sx={{ m: 1, marginBottom: 50, width: "100ch" }}
-            disabled={addingPage}
+            disabled={addingPage || !editable}
             id="text"
             label="Text"
             type="text"
@@ -166,38 +180,41 @@ export default function DiaryPage({ open, handleClose, pageInfo, getFSData }) {
             onChange={handleInputChange}
           />
         </DialogContent>
-        <DialogActions sx={{ p: 2 }}>
-          <Tooltip
-            title="Clear either the title or text"
-            placement="left"
-            arrow
-          >
-            <Box>
-              <Button
-                sx={{ letterSpacing: 1, p: 2, fontWeight: 500 }}
-                disabled={(formData.title && formData.text) || !pageInfo}
-                onClick={handleDelete}
-              >
-                Delete
-              </Button>
-            </Box>
-          </Tooltip>
 
-          <Button
-            sx={{ letterSpacing: 1, p: 2, fontWeight: 500 }}
-            disabled={addingPage}
-            onClick={handleClose}
-          >
-            Cancel
-          </Button>
-          <Button
-            sx={{ letterSpacing: 1, p: 2, fontWeight: 500 }}
-            disabled={addingPage || !formData.title || !formData.text}
-            onClick={handleSubmit}
-          >
-            {pageInfo ? "Update" : "Add"}
-          </Button>
-        </DialogActions>
+        {editable && (
+          <DialogActions sx={{ p: 2 }}>
+            <Tooltip
+              title="Clear either the title or text"
+              placement="left"
+              arrow
+            >
+              <Box>
+                <Button
+                  sx={{ letterSpacing: 1, p: 2, fontWeight: 500 }}
+                  disabled={(formData.title && formData.text) || !pageInfo}
+                  onClick={handleDelete}
+                >
+                  Delete
+                </Button>
+              </Box>
+            </Tooltip>
+
+            <Button
+              sx={{ letterSpacing: 1, p: 2, fontWeight: 500 }}
+              disabled={addingPage}
+              onClick={handleClose}
+            >
+              Cancel
+            </Button>
+            <Button
+              sx={{ letterSpacing: 1, p: 2, fontWeight: 500 }}
+              disabled={addingPage || !formData.title || !formData.text}
+              onClick={handleSubmit}
+            >
+              {pageInfo ? "Update" : "Add"}
+            </Button>
+          </DialogActions>
+        )}
       </Dialog>
     </ThemeProvider>
   );

@@ -7,6 +7,8 @@ import { db } from "../services/firebase-config";
 import { Link } from "react-router-dom";
 import dayjs from "dayjs";
 
+import Pendulum from "../assets/pendulum.svg";
+
 import {
   createTheme,
   ThemeProvider,
@@ -19,6 +21,11 @@ import {
   DialogTitle,
   Avatar,
 } from "@mui/material/";
+
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import MessageIcon from "@mui/icons-material/Message";
+import FlagIcon from "@mui/icons-material/Flag";
+
 import { useNavigate } from "react-router-dom";
 
 const theme = createTheme({
@@ -50,6 +57,35 @@ const theme = createTheme({
   },
 });
 
+const themeInverse = createTheme({
+  typography: {
+    fontFamily: [
+      "Raleway",
+      "-apple-system",
+      "BlinkMacSystemFont",
+      '"Segoe UI"',
+      "Roboto",
+      '"Helvetica Neue"',
+      "Arial",
+      "sans-serif",
+      '"Apple Color Emoji"',
+      '"Segoe UI Emoji"',
+      '"Segoe UI Symbol"',
+    ].join(","),
+  },
+  //   palette: {
+  //     mode: "dark",
+  //   },
+  palette: {
+    primary: {
+      main: "#fff",
+    },
+    secondary: {
+      main: "#000",
+    },
+  },
+});
+
 const UserPage = () => {
   const { uid } = useParams();
   const [loading, setLoading] = useState(true);
@@ -59,6 +95,8 @@ const UserPage = () => {
   const [userExists, setUserExists] = useState();
   const [openPrivateModal, setOpenPrivateModal] = useState(false);
   const [privateID, setPrivateID] = useState();
+  const navigate = useNavigate();
+
   const handleOpenPrivateModal = () => {
     setOpenPrivateModal(true);
   };
@@ -82,7 +120,9 @@ const UserPage = () => {
         console.log("No such document!");
       }
     } catch (error) {
-      console.log("Error getting user docs:", error);
+      console.log("Error getting user docs:", error); //TODO: remove these
+      alert("Error getting user docs");
+      // navigate("/error-getting-info"); TODO: do these?
     }
   };
 
@@ -100,6 +140,7 @@ const UserPage = () => {
       setLoadingPosts(false);
     } catch (error) {
       console.log("Error getting posts data:", error);
+      alert("Error getting posts data");
     }
   }
 
@@ -109,7 +150,7 @@ const UserPage = () => {
   }, []);
 
   function generatePostLinks(posts) {
-    console.log(posts);
+    // console.log(posts);
     return posts.map((post) => (
       <Link
         key={post.id}
@@ -136,7 +177,6 @@ const UserPage = () => {
 
   function PrivatePostModal({ open, handleClose }) {
     const [postIDValue, setPostIDValue] = useState("");
-    const navigate = useNavigate();
 
     function handleCheck() {
       if (privateID) {
@@ -190,6 +230,7 @@ const UserPage = () => {
         <Spinner2 />
       ) : userExists ? (
         <div className="section">
+          <img src={Pendulum} alt="" className="pendulum" />
           {user.photoURL && (
             <Avatar
               alt="Remy Sharp"
@@ -211,22 +252,65 @@ const UserPage = () => {
           </div>
 
           <div className="pageBreak"></div>
+          <ThemeProvider theme={themeInverse}>
+            <div className="buttons">
+              <Button
+                sx={{
+                  p: 2,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 2,
+                }}
+                variant="outlined"
+              >
+                Follow <PersonAddIcon />
+              </Button>
+              <Button
+                sx={{
+                  p: 2,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 2,
+                }}
+                variant="outlined"
+              >
+                Message <MessageIcon />
+              </Button>
+              <Button
+                sx={{
+                  p: 2,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 2,
+                }}
+                variant="outlined"
+              >
+                Report <FlagIcon />
+              </Button>
+            </div>
+          </ThemeProvider>
           <div className="info">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quae hic
-            quibusdam, repudiandae culpa facere repellat aut laboriosam sit
-            consectetur perspiciatis corporis illo. Quod quas saepe tenetur,
-            placeat quae facere perferendis unde adipisci quam! Voluptas,
-            commodi dolores expedita doloremque iste culpa exercitationem rerum
-            est esse illum veniam deleniti consequatur quod at.
+            Welcome to your personal haven within "Posted," where your messages
+            become a digital legacy. Here, every post reflects your unique
+            voice, and you hold the reins of access. Your messages are securely
+            guarded, accessible only with your permission. Embrace the freedom
+            to share thoughts, memories, and moments with trusted recipients,
+            ensuring that your digital presence remains as private or as shared
+            as you desire. Your space, your posts, your legacy—guarded by the
+            assurance of utmost privacy.
             <br />
             <br />
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Excepturi
-            delectus repudiandae minima, facilis ut tempora.
+            Your "Posted" page, a vault for cherished words. Personal posts,
+            shared selectively. Secure, private, and timeless—your digital
+            legacy begins here.
             <br />
             <br />
-            corporis illo. Quod quas saepe tenetur, placeat quae facere
-            perferendis unde adipisci quam! Voluptas, commodi dolores expedita
-            dolorem
+            In your "Posted" sanctuary, messages echo your essence. Safeguarded
+            and selectively shared, each post carries the weight of your digital
+            legacy.
           </div>
         </div>
       ) : (
@@ -245,18 +329,40 @@ const Wrapper = styled.main`
   flex-direction: column;
   align-items: center;
   /* justify-content: center; */
-  padding-top: 5rem;
+  padding-top: 1rem;
   background-color: black;
   color: white;
   min-height: 100vh;
   text-align: center;
   overflow-x: hidden;
+  position: relative;
 
   .section {
     display: flex;
     align-items: center;
-    justify-content: center;
+    /* justify-content: center; */
     flex-direction: column;
+  }
+
+  .pendulum {
+    height: 10rem;
+    position: absolute;
+    top: -5px;
+    right: 10rem;
+    transform-origin: top center; /* Set the transformation origin to the top center of the element */
+    animation: swing 1s infinite ease-in-out alternate; /* Adjust the duration and timing function as needed */
+  }
+
+  @keyframes swing {
+    0% {
+      transform: rotate(15deg);
+    }
+    100% {
+      transform: rotate(-15deg); /* Adjust the angle of swing as needed */
+    }
+    /* 100% {
+      transform: rotate(10deg);
+    } */
   }
 
   .posts {
@@ -304,10 +410,19 @@ const Wrapper = styled.main`
   }
 
   .pageBreak {
-    margin: 5rem 0;
+    margin: 5rem 0 2rem 0;
     background-color: rgba(255, 255, 255, 0.15);
     width: 90vw;
     height: 1px;
+  }
+
+  .buttons {
+    /* background-color: gray; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5rem;
+    margin: 2rem;
   }
 `;
 

@@ -1,0 +1,24 @@
+.blob-cursor {
+  position: fixed;
+  width: 50px;
+  height: 50px;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  /* transition: 0.3s ease-out; */
+}
+
+.inner-blob {
+  width: 10px;
+  height: 10px;
+  background-color: white;
+  border-radius: 50%;
+}
+
+.invert-color {
+  background-color: white;
+  .inner-blob {
+    background-color: black;
+  }
+}

@@ -13,6 +13,7 @@ import {
 import Slide from "@mui/material/Slide";
 import styled from "styled-components";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import DiaryPNG from "./../../assets/DiaryPNG.png";
 import DiaryPage from "./DiaryPage";
@@ -190,6 +191,7 @@ export default function Diary({ open, handleClose, info, editable = true }) {
   const [loading, setLoading] = useState(false);
   const [diaryPages, setDiaryPages] = useState(false);
   const [pageInfo, setPageInfo] = useState(null);
+  const [sortDesc, setSortDesc] = useState(false);
   const { id } = useParams();
 
   const handlePageAdderOpen = () => {
@@ -208,6 +210,7 @@ export default function Diary({ open, handleClose, info, editable = true }) {
         setPageInfo(null);
       }
 
+      console.log(pageInfo);
       setPageAdderOpen(true);
     }
   };
@@ -220,7 +223,7 @@ export default function Diary({ open, handleClose, info, editable = true }) {
     setLoading(true);
     const queryReceived = query(
       collection(db, `/posts/${id}/diary/`),
-      orderBy("timestamp", "desc")
+      orderBy("timestamp", sortDesc ? "desc" : "asc")
     );
     const querySnapshot = await getDocs(queryReceived);
     const diaryDocs = querySnapshot.docs.map((doc) => ({
@@ -234,7 +237,7 @@ export default function Diary({ open, handleClose, info, editable = true }) {
 
   useEffect(() => {
     getFSData();
-  }, []);
+  }, [sortDesc]);
 
   function renderListItems(data) {
     return data.map((item, index) => (
@@ -277,21 +280,45 @@ export default function Diary({ open, handleClose, info, editable = true }) {
               </span>
               <p>Diary</p>
             </div>
-            {editable && (
+            <div style={{ gap: "2rem" }}>
               <span
-                className="btnIcon material-symbols-outlined"
-                onClick={handlePageAdderOpen}
+                className=" material-symbols-outlined"
+                onClick={() => {
+                  setSortDesc(!sortDesc);
+                }}
+                style={{ cursor: "pointer" }}
               >
-                add
+                sort
               </span>
-            )}
+              {editable && (
+                <span
+                  className="btnIcon material-symbols-outlined"
+                  onClick={handlePageAdderOpen}
+                >
+                  add
+                </span>
+              )}
+            </div>
           </div>
-          <section className="list">
-            <Box style={{ maxHeight: "80vh", overflow: "auto" }}>
-              {diaryPages && <List>{renderListItems(diaryPages)}</List>}
-              {/* <List>{renderListItems(arrExample)}</List> */}
-            </Box>
-          </section>
+          {loading ? (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                margin: "5rem",
+              }}
+            >
+              <CircularProgress />
+            </div>
+          ) : (
+            <section className="list">
+              <Box style={{ maxHeight: "80vh", overflow: "auto" }}>
+                {diaryPages && <List>{renderListItems(diaryPages)}</List>}
+                {/* <List>{renderListItems(arrExample)}</List> */}
+              </Box>
+            </section>
+          )}
           {/* <img src={ExamsSVG} alt="ExamsSVG" className="ExamsSVG" /> */}
           <img
             src={DiaryPNG}
@@ -308,6 +335,7 @@ export default function Diary({ open, handleClose, info, editable = true }) {
         handleClose={handlePageAdderClose}
         getFSData={getFSData}
         pageInfo={pageInfo}
+        editable={editable}
       />
     </ThemeProvider>
   );

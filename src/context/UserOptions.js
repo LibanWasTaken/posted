@@ -556,8 +556,8 @@ export const NAV_OPTIONS = [
     value: "/me",
   },
   {
-    label: "To Who",
-    value: "/me/them",
+    label: "Huh?",
+    value: "/what-is-this",
   },
   {
     label: "Others",
