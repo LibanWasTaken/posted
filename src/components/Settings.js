@@ -1,10 +1,19 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { countries } from "../context/UserOptions";
-
+import { Link } from "react-router-dom";
 import { getAuth, updateProfile } from "firebase/auth";
+import { useLocation } from "react-router-dom";
 
-import { getDoc, doc, updateDoc } from "firebase/firestore";
+import {
+  getDoc,
+  doc,
+  updateDoc,
+  query,
+  collection,
+  getDocs,
+  orderBy,
+} from "firebase/firestore";
 import { db } from "../services/firebase-config";
 
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -26,7 +35,10 @@ import {
   Button,
   Avatar,
   Tooltip,
+  Menu,
+  MenuItem,
 } from "@mui/material";
+import { Spinner3 } from "./Spinner";
 
 const theme = createTheme({
   typography: {
@@ -71,6 +83,20 @@ function Settings({ userID }) {
   const [user, setUser] = useState();
   const [saveDisabled, setSaveDisabled] = useState(true);
   const [updatedObj, setUpdatedObj] = useState({});
+  const [notifications, setNotifications] = useState([]);
+  const [notificationsLoading, setNotificationsLoading] = useState(true);
+  const [changeState, setChangeState] = useState(false);
+  const location = useLocation();
+
+  // TODO: fix this + nav bar wrap the whole "show all notif" in the Link tag
+  useEffect(() => {
+    // Check if state exists in the location object
+    if (location.state && location.state.changeStateValue) {
+      setChangeState(location.state.changeStateValue);
+      console.log(location.state.changeStateValue);
+      console.log("hello");
+    }
+  }, [location]);
 
   const userDocRef = doc(db, "users", userID);
   const fetchUserDoc = async () => {
@@ -78,8 +104,60 @@ function Settings({ userID }) {
       const docSnapshot = await getDoc(userDocRef);
       console.log(docSnapshot.data());
       setUser(docSnapshot.data());
+      getNotifications();
     } catch (error) {
       console.log("Error getting document:", error);
+      alert("Error getting document"); // TODO: replace all these with mui alerts?
+    }
+  };
+
+  async function getNotifications() {
+    setNotificationsLoading(true);
+
+    try {
+      const notificationsQuery = query(
+        collection(db, `/users/${userID}/notifs`),
+        orderBy("ts", "desc")
+      );
+
+      const querySnapshot = await getDocs(notificationsQuery);
+
+      const notificationData = querySnapshot.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
+
+      setNotifications(notificationData);
+      setNotificationsLoading(false);
+      console.log(notificationData);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+      setNotificationsLoading(false);
+    }
+  }
+
+  const handleClearNotifications = async () => {
+    setNotificationsLoading(true);
+    try {
+      // Specify the name of the collection you want to delete
+      const collectionName = "yourCollectionName";
+      const collectionRef = collection(db, `/users/${userID}/notifs`);
+
+      // Get all documents in the collection
+      const querySnapshot = await getDocs(query(collectionRef));
+
+      // Delete each document in the collection
+      querySnapshot.forEach(async (doc) => {
+        await deleteDoc(doc.ref);
+      });
+
+      // Optional: Delete the collection itself (if needed)
+      // await deleteDoc(collectionRef);
+
+      console.log(`Collection "${collectionName}" deleted successfully.`);
+    } catch (error) {
+      console.error("Error deleting collection:", error);
+      alert("Error clearing notifications");
     }
   };
 
@@ -176,15 +254,59 @@ function Settings({ userID }) {
     }
   }
 
-  // useEffect(() => {
-  //   setInterval(() => {
-  //     if (CHANGE) {
-  //       setCHANGE(false);
-  //     } else if (!CHANGE) {
-  //       setCHANGE(true);
-  //     }
-  //   }, 1000);
-  // }, []);
+  const goToNotificationLink = (link) => {
+    window.location.href = link;
+  };
+
+  function generateNotifications(notifs) {
+    return notifs.map((notif) => (
+      <MenuItem
+        onClick={() => notif.link && goToNotificationLink(notif.link)}
+        key={notif.id}
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 2,
+          marginBottom: 0.5,
+          p: 2,
+          borderBottom: "1px solid whitesmoke",
+          // fontSize: "1.25rem",
+        }}
+      >
+        {/* <div
+          to={notif.link ? notif.link : notif.msg}
+          style={{
+            textDecoration: "none",
+            color: "black",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 2,
+            width: "100%",
+            fontSize: "1rem",
+          }}
+        > */}
+        <span
+          style={{
+            maxWidth: "70%",
+            // overflow: "hidden",
+            whiteSpace: "normal",
+            textAlign: "left",
+            // textOverflow: "ellipsis",
+          }}
+        >
+          {notif.msg}
+        </span>
+        <span
+          style={{ opacity: 0.5, fontFamily: "Poppins", fontSize: "0.75rem" }}
+        >
+          {dayjs(notif.ts).format("h:m:s a DD-MM-YY")}
+        </span>
+        {/* </div> */}
+      </MenuItem>
+    ));
+  }
 
   return (
     <Wrapper>
@@ -209,15 +331,6 @@ function Settings({ userID }) {
                 />
               </div>
 
-              {/* <Avatar
-                alt="Remy Sharp"
-                src={
-                  user.photoURL ||
-                  "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Windows_10_Default_Profile_Picture.svg/2048px-Windows_10_Default_Profile_Picture.svg.png"
-                }
-                sx={{ width: "15rem", height: "15rem" }}
-              /> */}
-
               <div className="info">
                 <h1>{user.displayName}</h1>
                 <p>{user.email}</p>
@@ -225,6 +338,54 @@ function Settings({ userID }) {
             </div>
             <div className="else">
               <div className="accordion">
+                <Accordion
+                  sx={{
+                    m: 3,
+                    boxShadow: "rgba(0, 0, 0, 0.18) 0px 2px 4px",
+                  }}
+                >
+                  <AccordionSummary
+                    sx={{ backgroundColor: "whitesmoke" }}
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel1a-content"
+                    id="User-Settings"
+                  >
+                    <Typography>
+                      Notifications{" "}
+                      {!notificationsLoading && `- ${notifications.length}`}
+                    </Typography>
+                  </AccordionSummary>
+                  {notificationsLoading ? (
+                    <AccordionDetails sx={{ p: 1 }}>
+                      <Spinner3 />
+                    </AccordionDetails>
+                  ) : (
+                    <AccordionDetails sx={{ p: 1 }}>
+                      {notifications ? (
+                        <Box
+                          sx={{
+                            width: "100%",
+                            paddingBottom: 2,
+                            textAlign: "center",
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              marginBottom: 5,
+                              maxHeight: "50rem",
+                              overflow: "scroll",
+                            }}
+                          >
+                            {generateNotifications(notifications)}
+                          </Box>
+                          <button className="classicBtn">clear all</button>
+                        </Box>
+                      ) : (
+                        <Typography>Nothing to show here</Typography>
+                      )}
+                    </AccordionDetails>
+                  )}
+                </Accordion>
                 <Accordion
                   sx={{ m: 3, boxShadow: "rgba(0, 0, 0, 0.18) 0px 2px 4px" }}
                 >
@@ -552,6 +713,13 @@ function Settings({ userID }) {
             </div>
 
             <div className="skeleton">
+              <Skeleton
+                variant="rectangular"
+                width={832}
+                height={49.7}
+                sx={{ m: 3 }}
+                animation="wave"
+              />
               <Skeleton
                 variant="rectangular"
                 width={832}

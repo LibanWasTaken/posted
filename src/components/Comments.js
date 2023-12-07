@@ -13,6 +13,7 @@ import {
 } from "firebase/firestore";
 import { Spinner1 } from "./Spinner";
 import { useUserContext } from "../context/UserContext";
+import { sendNotification } from "../functions/functions";
 
 import { Button, TextField } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -46,7 +47,7 @@ const theme = createTheme({
   },
 });
 
-const Comments = ({ postID }) => {
+const Comments = ({ postID, postAdminUID }) => {
   const { user: currentUser, loading: loadingUser } = useUserContext();
 
   const [commentValue, setCommentValue] = useState();
@@ -76,6 +77,10 @@ const Comments = ({ postID }) => {
     setComments(commentsDocs);
     // setLastPost(querySnapshot.docs[querySnapshot.docs.length - 1]);\
     setLoading(false);
+  }
+
+  function getFirst10Words(inputString) {
+    return inputString.split(/\s+/).slice(0, 10).join(" ");
   }
 
   const handleEnterPress = (event) => {
@@ -110,6 +115,7 @@ const Comments = ({ postID }) => {
 
   const handleSubmit = async () => {
     if (commentValue) {
+      const commentValueCurr = commentValue;
       setDisableComment(true);
       try {
         // Add a new document with a generated ID
@@ -124,10 +130,16 @@ const Comments = ({ postID }) => {
         );
 
         console.log("Document written with ID:", docRef.id);
-        setDisableComment(false);
-
         setCommentValue();
+        setDisableComment(false);
         getFSData();
+        if (postAdminUID) {
+          sendNotification(
+            postAdminUID,
+            `New comment: "${commentValueCurr.slice(0, 30)}"`,
+            `posts/${postID}`
+          );
+        }
       } catch (e) {
         console.error("Error adding document:", e);
         setDisableComment(false);
@@ -161,7 +173,7 @@ const Comments = ({ postID }) => {
                 sx={{ height: "2rem" }}
                 onClick={() => {
                   setCommentValue(
-                    `"${comment.comment}.." @${comment.userName} `
+                    `"${comment.comment.slice(0, 15)}.." @${comment.userName} `
                   );
                 }}
               >

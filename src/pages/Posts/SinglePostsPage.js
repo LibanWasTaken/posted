@@ -300,7 +300,7 @@ export default function SinglePostPage() {
               </div>
               {postData.links && <LinkList links={postData.links} />}
             </section>
-            <Comments postID={id} />
+            <Comments postID={id} postAdminUID={postData.user} />
 
             {true && (
               // FIXME: {postData.diary && }
@@ -521,6 +521,7 @@ const Wrapper = styled.main`
       color: whitesmoke;
       animation: spin 30s linear infinite;
       user-select: none;
+      z-index: -1;
     }
 
     @keyframes spin {

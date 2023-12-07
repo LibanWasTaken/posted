@@ -19,7 +19,7 @@ import {
   getAuth,
 } from "firebase/auth";
 import { auth, provider, db } from "../services/firebase-config";
-import { Spinner1 } from "../components/Spinner";
+import { Spinner3 } from "../components/Spinner";
 import { collection, addDoc, getDoc, setDoc, doc } from "firebase/firestore";
 
 import { useUserContext } from "../context/UserContext";
@@ -187,7 +187,7 @@ export function AccPage() {
   return (
     <Wrapper>
       {loading ? (
-        <Spinner1 />
+        <Spinner3 />
       ) : (
         <ThemeProvider theme={theme}>
           {user ? (

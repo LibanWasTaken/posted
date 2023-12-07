@@ -24,9 +24,11 @@ import Tooltip from "@mui/material/Tooltip";
 import PersonAdd from "@mui/icons-material/PersonAdd";
 import Settings from "@mui/icons-material/Settings";
 import Logout from "@mui/icons-material/Logout";
+import Login from "@mui/icons-material/Login";
 
-import { getDocs, collection, query, orderBy } from "firebase/firestore";
-import { db as FSdb } from "../services/firebase-config";
+import { getDocs, collection, query, orderBy, limit } from "firebase/firestore";
+import { db as FSdb, auth } from "../services/firebase-config";
+import { signOut, getAuth } from "firebase/auth";
 import dayjs from "dayjs";
 
 const Navbar = () => {
@@ -40,7 +42,8 @@ const Navbar = () => {
 
     const notificationsQuery = query(
       collection(FSdb, `/users/${userID}/notifs`),
-      orderBy("ts", "desc")
+      orderBy("ts", "desc"),
+      limit(5)
     );
 
     await getDocs(notificationsQuery).then((querySnapshot) => {
@@ -76,6 +79,16 @@ const Navbar = () => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+  async function handleLogout() {
+    try {
+      await signOut(auth);
+      handleClose();
+      window.location.reload();
+    } catch (error) {
+      alert(`Logout error`);
+      console.log(error);
+    }
+  }
 
   function getTimeDifference(timestamp) {
     const currentTime = dayjs();
@@ -125,26 +138,40 @@ const Navbar = () => {
   function generateNotifications(notifs) {
     return notifs.map((notif) => (
       <MenuItem
-        key={notif.id}
         onClick={handleClose}
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: 2,
-        }}
+        key={notif.id}
+
+        // sx={{
+        //   display: "flex",
+        //   alignItems: "center",
+        //   justifyContent: "space-between",
+        //   gap: 2,
+        // }}
       >
-        <span
+        <Link
+          to={notif.link ? notif.link : notif.msg}
           style={{
-            maxWidth: "300px",
-            overflow: "hidden",
-            whiteSpace: "nowrap",
-            textOverflow: "ellipsis",
+            textDecoration: "none",
+            color: "black",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "20px",
+            width: "100%",
           }}
         >
-          • {notif.msg}
-        </span>
-        <span style={{ opacity: 0.5 }}>{getTimeDifference(notif.ts)}</span>
+          <span
+            style={{
+              maxWidth: "300px",
+              overflow: "hidden",
+              whiteSpace: "nowrap",
+              textOverflow: "ellipsis",
+            }}
+          >
+            • {notif.msg}
+          </span>
+          <span style={{ opacity: 0.5 }}>{getTimeDifference(notif.ts)}</span>
+        </Link>
       </MenuItem>
     ));
   }
@@ -195,7 +222,7 @@ const Navbar = () => {
                   elevation: 0,
                   sx: {
                     overflow: "visible",
-                    filter: "drop-shadow(rgba(0, 0, 0, 0.16) 0px 1px 2px)",
+                    filter: "drop-shadow(rgba(0, 0, 0, 0.16) 0px 0px 2px)",
                     mt: 1.5,
                     "& .MuiAvatar-root": {
                       width: 32,
@@ -220,6 +247,9 @@ const Navbar = () => {
                 transformOrigin={{ horizontal: "right", vertical: "top" }}
                 anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
               >
+                {/* <MenuItem onClick={handleClose}>
+                  <Avatar /> Profile
+                </MenuItem> */}
                 <Link
                   to="/account"
                   style={{
@@ -228,18 +258,32 @@ const Navbar = () => {
                   }}
                 >
                   <MenuItem onClick={handleClose}>
-                    <Avatar /> Profile
+                    <Avatar /> My account
                   </MenuItem>
                 </Link>
-                <MenuItem onClick={handleClose}>
-                  <Avatar /> My account
-                </MenuItem>
-                <Divider />
-                {notifications && (
-                  <>
+                <Divider sx={{ marginTop: 1 }} />
+                {notifications && notifications.length > 0 && (
+                  <Box>
                     {generateNotifications(notifications)}
+                    {/* {notifications.length > 5 && ( */}
+                    {true && (
+                      <MenuItem>
+                        <Link
+                          to={{
+                            pathname: "/account",
+                            state: { changeStateValue: true },
+                          }}
+                          style={{
+                            textDecoration: "none",
+                            color: "black",
+                          }}
+                        >
+                          Show all notifications..
+                        </Link>
+                      </MenuItem>
+                    )}
                     <Divider />
-                  </>
+                  </Box>
                 )}
                 <MenuItem onClick={handleClose}>
                   <ListItemIcon>
@@ -253,12 +297,21 @@ const Navbar = () => {
                   </ListItemIcon>
                   Settings
                 </MenuItem>
-                <MenuItem onClick={handleClose}>
-                  <ListItemIcon>
-                    <Logout fontSize="small" />
-                  </ListItemIcon>
-                  Logout
-                </MenuItem>
+                {currentUser ? (
+                  <MenuItem onClick={handleLogout}>
+                    <ListItemIcon>
+                      <Logout fontSize="small" />
+                    </ListItemIcon>
+                    Logout
+                  </MenuItem>
+                ) : (
+                  <MenuItem onClick={handleClose}>
+                    <ListItemIcon>
+                      <Login fontSize="small" />
+                    </ListItemIcon>
+                    Login
+                  </MenuItem>
+                )}
               </Menu>
               <div
                 // to="/account"
@@ -269,7 +322,11 @@ const Navbar = () => {
                 onClick={handleClick}
               >
                 {currentUser ? (
-                  <Badge badgeContent={notifications.length} color="primary">
+                  <Badge
+                    badgeContent={notifications.length}
+                    max={4}
+                    color="primary"
+                  >
                     {/* <Avatar
                       alt="pfp"
                       src={currentUser.photoURL || defaultAccPNG}
