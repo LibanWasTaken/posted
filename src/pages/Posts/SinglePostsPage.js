@@ -147,7 +147,6 @@ export default function SinglePostPage() {
       const postDataReceived = docSnap.data();
       let postDataLikes = postDataReceived.likes || [];
       const uid = currentUser.uid;
-      console.log(uid);
 
       if (hearted) {
         postDataLikes = postDataLikes.filter((userId) => userId !== uid);
@@ -363,8 +362,10 @@ export default function SinglePostPage() {
 }
 
 const Wrapper = styled.main`
-  margin: 1rem;
+  /* margin: 1rem 0; */
   overflow-x: hidden;
+  padding: 1.5rem 0 1rem 0;
+  background-color: rgb(250, 250, 250);
 
   .postContainer {
     display: flex;
@@ -382,7 +383,7 @@ const Wrapper = styled.main`
       width: 95%;
       max-width: 100vw;
       padding-bottom: 2rem;
-      border-bottom: 1px solid whitesmoke;
+      border-bottom: 1px solid #ddd;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -458,6 +459,7 @@ const Wrapper = styled.main`
 
       .letter {
         min-width: 90%;
+
         /* border: 1px solid red; */
       }
 

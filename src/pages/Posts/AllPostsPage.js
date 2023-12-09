@@ -400,6 +400,7 @@ const Wrapper = styled.main`
       padding: 10px;
       background-color: #eee;
       cursor: pointer;
+      margin-right: 1rem;
     }
     .collapseBtn:hover {
       background-color: #ddd;

@@ -118,6 +118,23 @@ const Navbar = () => {
     }
   }
 
+  function generateMenuItemLink(url, div) {
+    return (
+      <Link
+        to={url}
+        style={{
+          textDecoration: "none",
+          color: "black",
+          // display: "flex",
+          // alignItems: "center",
+          // width: "100%",
+        }}
+      >
+        <MenuItem>{div}</MenuItem>
+      </Link>
+    );
+  }
+
   function generateLinks(navOptions) {
     return navOptions.map((option) => (
       <li key={option.value}>
@@ -267,20 +284,18 @@ const Navbar = () => {
                     {generateNotifications(notifications)}
                     {/* {notifications.length > 5 && ( */}
                     {true && (
-                      <MenuItem>
-                        <Link
-                          to={{
-                            pathname: "/account",
-                            state: { changeStateValue: true },
-                          }}
-                          style={{
-                            textDecoration: "none",
-                            color: "black",
-                          }}
-                        >
-                          Show all notifications..
-                        </Link>
-                      </MenuItem>
+                      <Link
+                        to={{
+                          pathname: "/account",
+                          state: { changeStateValue: true },
+                        }}
+                        style={{
+                          textDecoration: "none",
+                          color: "black",
+                        }}
+                      >
+                        <MenuItem>Show all notifications..</MenuItem>
+                      </Link>
                     )}
                     <Divider />
                   </Box>
@@ -305,12 +320,17 @@ const Navbar = () => {
                     Logout
                   </MenuItem>
                 ) : (
-                  <MenuItem onClick={handleClose}>
-                    <ListItemIcon>
-                      <Login fontSize="small" />
-                    </ListItemIcon>
-                    Login
-                  </MenuItem>
+                  <Box>
+                    {generateMenuItemLink(
+                      "/account",
+                      <Box>
+                        <ListItemIcon>
+                          <Login fontSize="small" />
+                        </ListItemIcon>
+                        Login
+                      </Box>
+                    )}
+                  </Box>
                 )}
               </Menu>
               <div
@@ -388,7 +408,7 @@ const Wrapper = styled.section`
     font-weight: 600;
     font-size: 3rem;
     /* letter-spacing: 5px; */
-    margin: 1rem 0 1rem 3rem;
+    margin: 0.5rem 0 0.5rem 2rem;
     cursor: pointer;
     outline: none;
     border: none;
@@ -462,7 +482,7 @@ const Wrapper = styled.section`
     }
   }
 
-  @media screen and (max-width: 800px) {
+  /* @media screen and (max-width: 800px) {
     .logo {
       font-size: 2rem;
       margin: 0.5rem 1rem;
@@ -475,7 +495,7 @@ const Wrapper = styled.section`
     .navLinks {
       padding: 0;
     }
-  }
+  } */
 `;
 
 export default Navbar;

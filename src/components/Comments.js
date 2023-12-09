@@ -129,7 +129,6 @@ const Comments = ({ postID, postAdminUID }) => {
           }
         );
 
-        console.log("Document written with ID:", docRef.id);
         setCommentValue();
         setDisableComment(false);
         getFSData();
@@ -266,10 +265,11 @@ const Comments = ({ postID, postAdminUID }) => {
 };
 
 const Wrapper = styled.main`
-  margin: 2rem 0;
+  margin: 2rem 0 0 0;
   padding: 1rem 2rem;
-  /* border: 5px solid whitesmoke;
-      border-radius: 10px; */
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,
+    rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+  /*     border-radius: 10px; */
   /* background-color: whitesmoke; */
   background-color: #f8f8f8;
   width: 95%;

@@ -12,6 +12,7 @@ import {
   query,
   collection,
   getDocs,
+  deleteDoc,
   orderBy,
 } from "firebase/firestore";
 import { db } from "../services/firebase-config";
@@ -37,6 +38,7 @@ import {
   Tooltip,
   Menu,
   MenuItem,
+  LinearProgress,
 } from "@mui/material";
 import { Spinner3 } from "./Spinner";
 
@@ -153,11 +155,14 @@ function Settings({ userID }) {
 
       // Optional: Delete the collection itself (if needed)
       // await deleteDoc(collectionRef);
+      setNotifications([]);
+      setNotificationsLoading(false);
 
       console.log(`Collection "${collectionName}" deleted successfully.`);
     } catch (error) {
       console.error("Error deleting collection:", error);
       alert("Error clearing notifications");
+      setNotificationsLoading(false);
     }
   };
 
@@ -250,7 +255,7 @@ function Settings({ userID }) {
         return false;
       }
     } else {
-      return true;
+      return false;
     }
   }
 
@@ -357,11 +362,12 @@ function Settings({ userID }) {
                   </AccordionSummary>
                   {notificationsLoading ? (
                     <AccordionDetails sx={{ p: 1 }}>
-                      <Spinner3 />
+                      {/* <Spinner3 /> */}
+                      <LinearProgress />
                     </AccordionDetails>
                   ) : (
                     <AccordionDetails sx={{ p: 1 }}>
-                      {notifications ? (
+                      {notifications && notifications.length > 0 ? (
                         <Box
                           sx={{
                             width: "100%",
@@ -378,10 +384,17 @@ function Settings({ userID }) {
                           >
                             {generateNotifications(notifications)}
                           </Box>
-                          <button className="classicBtn">clear all</button>
+                          <button
+                            className="classicBtn"
+                            onClick={handleClearNotifications}
+                          >
+                            clear all
+                          </button>
                         </Box>
                       ) : (
-                        <Typography>Nothing to show here</Typography>
+                        <Typography sx={{ m: 2 }}>
+                          Nothing to show here
+                        </Typography>
                       )}
                     </AccordionDetails>
                   )}

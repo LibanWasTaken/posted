@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 
-import TextField from "@mui/material/TextField";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 import {
@@ -26,10 +25,23 @@ import { useUserContext } from "../context/UserContext";
 import Settings from "../components/Settings";
 import PasswordReset from "../components/modals/PasswordReset";
 
+import HALO_video from "./../assets/halo.mp4";
+
+import Box from "@mui/material/Box";
+import BottomNavigation from "@mui/material/BottomNavigation";
+import BottomNavigationAction from "@mui/material/BottomNavigationAction";
+import Grow from "@mui/material/Grow";
+import { TextField } from "@mui/material";
+import LoginIcon from "@mui/icons-material/Login";
+import LogoutIcon from "@mui/icons-material/Logout";
+import GoogleIcon from "@mui/icons-material/Google";
+import CircularProgress from "@mui/material/CircularProgress";
+import Fade from "@mui/material/Fade";
+
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#FF0000",
+      main: "#000000",
     },
     // secondary: {
     //   main: "#11cb5f",
@@ -138,36 +150,36 @@ export function AccPage() {
   };
 
   const loginGmail = () => {
-    const auth = getAuth();
+    // const auth = getAuth();
 
-    // signInWithRedirect(auth, provider)
-    //   .then(() => {
-    //     // This code will not run since the user is redirected to the Google sign-in page
-    //   })
-    //   .catch((error) => {
-    //     console.error("Error initiating redirect sign-in: ", error);
-    //   });
-    // getRedirectResult(auth)
-    //   .then((result) => {
-    //     const user = result.user;
-    //     console.log("User authenticated: ", user);
-    //     addAccToFireStore(user);
-    //   })
-    //   .catch((error) => {
-    //     console.error("Error getting redirect result: ", error);
-    //   });
-
-    signInWithPopup(auth, provider)
+    signInWithRedirect(auth, provider)
+      .then(() => {
+        // This code will not run since the user is redirected to the Google sign-in page
+      })
+      .catch((error) => {
+        console.error("Error initiating redirect sign-in: ", error);
+      });
+    getRedirectResult(auth)
       .then((result) => {
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        const token = credential.accessToken;
         const user = result.user;
         console.log("User authenticated: ", user);
         addAccToFireStore(user);
       })
       .catch((error) => {
-        console.error("Error getting pop-up result: ", error);
+        console.error("Error getting redirect result: ", error);
       });
+
+    // signInWithPopup(auth, provider)
+    //   .then((result) => {
+    //     const credential = GoogleAuthProvider.credentialFromResult(result);
+    //     const token = credential.accessToken;
+    //     const user = result.user;
+    //     console.log("User authenticated: ", user);
+    //     addAccToFireStore(user);
+    //   })
+    //   .catch((error) => {
+    //     console.error("Error getting pop-up result: ", error);
+    //   });
   };
 
   const logout = async () => {
@@ -229,113 +241,288 @@ export function AccPage() {
               </button>
             </section>
           ) : (
-            <section className="section ">
-              {/* Tab Buttons */}
-              <div className="btn-container">
-                <button
-                  className={`tabBtn ${value === 0 && "active-btn"}`}
-                  onClick={() => setValue(0)}
-                >
-                  LOGIN
-                </button>
-                <button
-                  className={`tabBtn ${value === 1 && "active-btn"}`}
-                  onClick={() => setValue(1)}
-                >
-                  REGISTER
-                </button>
-                <button className={`tabBtn `} onClick={loginGmail}>
-                  GMAIL
-                </button>
-              </div>
-              {value === 0 ? (
-                // Sign in tab
-                <div className="containers">
+            // <section className="section ">
+            //   {/* Tab Buttons */}
+            //   <div className="btn-container">
+            //     <button
+            //       className={`tabBtn ${value === 0 && "active-btn"}`}
+            //       onClick={() => setValue(0)}
+            //     >
+            //       LOGIN
+            //     </button>
+            //     <button
+            //       className={`tabBtn ${value === 1 && "active-btn"}`}
+            //       onClick={() => setValue(1)}
+            //     >
+            //       REGISTER
+            //     </button>
+            //     <button className={`tabBtn `} onClick={loginGmail}>
+            //       GMAIL
+            //     </button>
+            //   </div>
+            //   {value === 0 ? (
+            //     // Sign in tab
+            //     <div className="containers">
+            //       <div className="inputs">
+            //         <TextField
+            //           className="fields"
+            //           label="Email"
+            //           type="email"
+            //           variant="standard"
+            //           value={loginEmail}
+            //           onChange={(event) => setLoginEmail(event.target.value)}
+            //         />
+            //         <TextField
+            //           className="fields"
+            //           label="Password"
+            //           type="password"
+            //           variant="standard"
+            //           value={loginPassword}
+            //           onChange={(event) => setLoginPassword(event.target.value)}
+            //         />
+            //       </div>
+            //       <p
+            //         style={{ textDecoration: "underline", cursor: "pointer" }}
+            //         onClick={handlePasswordResetOpen}
+            //       >
+            //         Forgot your password?
+            //       </p>
+            //       <button
+            //         className={`classicBtn ${
+            //           btnLoading && "loadingClassicBtn disabledClassicBtn"
+            //         }`}
+            //         style={{ marginTop: "4rem" }}
+            //         onClick={login}
+            //       >
+            //         SIGN IN
+            //       </button>
+            //       <div className="errMsg">{errMsg !== "" && errMsg}</div>
+            //       <PasswordReset
+            //         open={passwordResetOpen}
+            //         handleClose={handlePasswordResetClose}
+            //         userMail={loginEmail} // TODO: check if mail
+            //         // userID={currentUser.uid}
+            //       />
+            //     </div>
+            //   ) : (
+            //     // Register tab
+            //     <div className="containers">
+            //       <div className="inputs">
+            //         <TextField
+            //           className="fields"
+            //           label="User Name"
+            //           variant="filled"
+            //           value={userName}
+            //           onChange={(event) => setUserName(event.target.value)}
+            //         />
+            //         <TextField
+            //           className="fields"
+            //           label="Email"
+            //           type="email"
+            //           variant="filled"
+            //           value={registerEmail}
+            //           onChange={(event) => setRegisterEmail(event.target.value)}
+            //         />
+            //         <TextField
+            //           className="fields"
+            //           label="Password"
+            //           type="password"
+            //           variant="filled"
+            //           value={registerPassword}
+            //           onChange={(event) =>
+            //             setRegisterPassword(event.target.value)
+            //           }
+            //         />
+            //       </div>
+            //       <button
+            //         className={`classicBtn ${
+            //           btnLoading && "loadingClassicBtn disabledClassicBtn"
+            //         }`}
+            //         style={{ marginTop: "4rem" }}
+            //         onClick={register}
+            //       >
+            //         SIGN UP
+            //       </button>
+            //       <div className="errMsg">{errMsg !== "" && errMsg}</div>
+            //     </div>
+            //   )}
+            //   {/* <div className="errMsg">{errMsg !== "" && errMsg}</div> */}
+            // </section>
+            <div className="log">
+              <section className="design">
+                <Fade in={HALO_video}>
+                  <video className="video" autoPlay loop muted>
+                    <source src={HALO_video} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                </Fade>
+              </section>
+              <section className="form">
+                {value == 0 && (
+                  <Grow in={value == 0}>
+                    <div className="inputs">
+                      <h1>Log In</h1>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexDirection: "column",
+                          gap: "2rem",
+                        }}
+                      >
+                        <TextField
+                          sx={{ width: "30ch" }}
+                          className="fields"
+                          label="Email"
+                          type="email"
+                          variant="standard"
+                          value={loginEmail}
+                          onChange={(event) =>
+                            setLoginEmail(event.target.value)
+                          }
+                        />
+                        <TextField
+                          sx={{ width: "30ch" }}
+                          className="fields"
+                          label="Password"
+                          type="password"
+                          variant="standard"
+                          value={loginPassword}
+                          onChange={(event) =>
+                            setLoginPassword(event.target.value)
+                          }
+                        />
+                        <p
+                          style={{
+                            textDecoration: "underline",
+                            cursor: "pointer",
+                          }}
+                          onClick={handlePasswordResetOpen}
+                        >
+                          Forgot your password?
+                        </p>
+                      </Box>
+
+                      <button
+                        className={`classicBtn ${
+                          btnLoading && "loadingClassicBtn disabledClassicBtn"
+                        }`}
+                        onClick={login}
+                      >
+                        SIGN IN
+                      </button>
+                      <PasswordReset
+                        open={passwordResetOpen}
+                        handleClose={handlePasswordResetClose}
+                        userMail={loginEmail} // TODO: check if mail
+                        // userID={currentUser.uid}
+                      />
+                    </div>
+                  </Grow>
+                )}
+                {value == 1 && (
+                  <Grow in={value == 1}>
+                    <div className="inputs">
+                      <h1>Register</h1>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexDirection: "column",
+                          gap: "2rem",
+                          marginTop: 2,
+                        }}
+                      >
+                        <TextField
+                          sx={{ width: "30ch" }}
+                          className="fields"
+                          label="User Name"
+                          variant="filled"
+                          value={userName}
+                          onChange={(event) => setUserName(event.target.value)}
+                        />
+                        <TextField
+                          sx={{ width: "30ch" }}
+                          className="fields"
+                          label="Email"
+                          type="email"
+                          variant="filled"
+                          value={registerEmail}
+                          onChange={(event) =>
+                            setRegisterEmail(event.target.value)
+                          }
+                        />
+                        <TextField
+                          sx={{ width: "30ch" }}
+                          className="fields"
+                          label="Password"
+                          type="password"
+                          variant="filled"
+                          value={registerPassword}
+                          onChange={(event) =>
+                            setRegisterPassword(event.target.value)
+                          }
+                        />
+                        <TextField
+                          sx={{ width: "30ch" }}
+                          className="fields"
+                          label="Confirm Password"
+                          type="password"
+                          variant="filled"
+                          // value={registerPassword}
+                          // onChange={(event) => setRegisterPassword(event.target.value)}
+                        />
+                      </Box>
+                      <button
+                        className={`classicBtn ${
+                          btnLoading && "loadingClassicBtn disabledClassicBtn"
+                        }`}
+                        style={{ marginTop: "2rem" }}
+                        onClick={register}
+                      >
+                        SIGN UP
+                      </button>
+                    </div>
+                  </Grow>
+                )}
+                {value == 2 && (
+                  // <Grow in={value == 2}>
                   <div className="inputs">
-                    <TextField
-                      className="fields"
-                      label="Email"
-                      type="email"
-                      variant="standard"
-                      value={loginEmail}
-                      onChange={(event) => setLoginEmail(event.target.value)}
-                    />
-                    <TextField
-                      className="fields"
-                      label="Password"
-                      type="password"
-                      variant="standard"
-                      value={loginPassword}
-                      onChange={(event) => setLoginPassword(event.target.value)}
-                    />
+                    <CircularProgress />
                   </div>
-                  <p
-                    style={{ textDecoration: "underline", cursor: "pointer" }}
-                    onClick={handlePasswordResetOpen}
+                  // </Grow>
+                )}
+                <Box sx={{ width: 500 }}>
+                  <BottomNavigation
+                    showLabels
+                    sx={{ backgroundColor: "whitesmoke", p: 1 }}
+                    value={value}
+                    onChange={(event, newValue) => {
+                      setValue(newValue);
+                    }}
                   >
-                    Forgot your password?
-                  </p>
-                  <button
-                    className={`classicBtn ${
-                      btnLoading && "loadingClassicBtn disabledClassicBtn"
-                    }`}
-                    style={{ marginTop: "4rem" }}
-                    onClick={login}
-                  >
-                    SIGN IN
-                  </button>
+                    <BottomNavigationAction
+                      label="Log In"
+                      icon={<LoginIcon />}
+                    />
+                    <BottomNavigationAction
+                      label="Sign Up"
+                      icon={<LogoutIcon />}
+                    />
+                    <BottomNavigationAction
+                      label=""
+                      icon={<GoogleIcon />}
+                      onClick={loginGmail}
+                    />
+                  </BottomNavigation>
+                </Box>
+                {errMsg !== "" && (
                   <div className="errMsg">{errMsg !== "" && errMsg}</div>
-                  <PasswordReset
-                    open={passwordResetOpen}
-                    handleClose={handlePasswordResetClose}
-                    userMail={loginEmail} // TODO: check if mail
-                    // userID={currentUser.uid}
-                  />
-                </div>
-              ) : (
-                // Register tab
-                <div className="containers">
-                  <div className="inputs">
-                    <TextField
-                      className="fields"
-                      label="User Name"
-                      variant="filled"
-                      value={userName}
-                      onChange={(event) => setUserName(event.target.value)}
-                    />
-                    <TextField
-                      className="fields"
-                      label="Email"
-                      type="email"
-                      variant="filled"
-                      value={registerEmail}
-                      onChange={(event) => setRegisterEmail(event.target.value)}
-                    />
-                    <TextField
-                      className="fields"
-                      label="Password"
-                      type="password"
-                      variant="filled"
-                      value={registerPassword}
-                      onChange={(event) =>
-                        setRegisterPassword(event.target.value)
-                      }
-                    />
-                  </div>
-                  <button
-                    className={`classicBtn ${
-                      btnLoading && "loadingClassicBtn disabledClassicBtn"
-                    }`}
-                    style={{ marginTop: "4rem" }}
-                    onClick={register}
-                  >
-                    SIGN UP
-                  </button>
-                  <div className="errMsg">{errMsg !== "" && errMsg}</div>
-                </div>
-              )}
-              {/* <div className="errMsg">{errMsg !== "" && errMsg}</div> */}
-            </section>
+                )}
+              </section>
+            </div>
           )}
         </ThemeProvider>
       )}
@@ -345,13 +532,67 @@ export function AccPage() {
 
 const Wrapper = styled.main`
   /* font-family: "Poppins", sans-serif; */
-
-  margin-top: 1rem;
-  display: flex;
+  /* display: flex;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
+  flex-direction: column; */
   /* padding: 5rem; */
+
+  .log {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    overflow: hidden;
+    height: 874px;
+    .design {
+      background-color: black;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding: 5rem;
+      width: 70vw;
+      height: 100%;
+
+      video {
+        /* margin: 5rem; */
+        width: 40vw;
+      }
+    }
+    .form {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      flex-direction: column;
+      width: 50%;
+      height: 100%;
+      .inputs {
+        /* border-radius: 10px;
+      border: 1px solid #ddd;
+      padding: 2rem 4rem; */
+        transition: 1s;
+        h1 {
+          font-size: 2rem;
+          margin: 0;
+          padding: 0;
+        }
+        height: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        flex-direction: column;
+      }
+    }
+    @media screen and (max-width: 1370px) {
+      .design {
+        display: none;
+      }
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
 
   a {
     text-decoration: underline;
@@ -361,13 +602,13 @@ const Wrapper = styled.main`
     font-weight: 100;
     margin-top: 1rem;
   }
-
+  /* 
   .inputs {
     flex-direction: column;
     display: flex;
     gap: 2rem;
     padding-bottom: 1rem;
-  }
+  } */
 
   .fields {
     color: red;
@@ -416,7 +657,7 @@ const Wrapper = styled.main`
   }
 
   .errMsg {
-    margin: 3rem;
+    /* margin: 3rem; */
     text-align: center;
     color: red;
   }
