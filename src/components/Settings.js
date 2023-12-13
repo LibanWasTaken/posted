@@ -15,7 +15,7 @@ import {
   deleteDoc,
   orderBy,
 } from "firebase/firestore";
-import { db } from "../services/firebase-config";
+import { db, auth } from "../services/firebase-config";
 
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
@@ -131,7 +131,7 @@ function Settings({ userID }) {
 
       setNotifications(notificationData);
       setNotificationsLoading(false);
-      console.log(notificationData);
+      // console.log(notificationData);
     } catch (error) {
       console.error("Error fetching notifications:", error);
       setNotificationsLoading(false);
@@ -186,7 +186,7 @@ function Settings({ userID }) {
     }
 
     try {
-      const auth = getAuth();
+      // const auth = getAuth();
       const user = auth.currentUser;
 
       if (Object.keys(tempObj).length) {
@@ -306,7 +306,7 @@ function Settings({ userID }) {
         <span
           style={{ opacity: 0.5, fontFamily: "Poppins", fontSize: "0.75rem" }}
         >
-          {dayjs(notif.ts).format("h:m:s a DD-MM-YY")}
+          {dayjs(notif.ts).format("h:mm:ss a - DD/MM/YYYY")}
         </span>
         {/* </div> */}
       </MenuItem>

@@ -276,8 +276,9 @@ export default function AllProductPage() {
                 </span>
               </div>
             )}
-            <div className="posts">
-              {/* <Skeleton
+            {posts && (
+              <div className="posts">
+                {/* <Skeleton
               // sx={{ bgcolor: "black" }}
               variant="rectangular"
               width={280}
@@ -285,27 +286,28 @@ export default function AllProductPage() {
               animation="wave"
             />*/}
 
-              {/* {generateCards(posts)} */}
-              {generateCards(posts)}
-              {posts && (
-                <div
-                  style={{
-                    width: "100%",
-                    display: "flex",
-                    justifyContent: "center",
-                  }}
-                >
+                {/* {generateCards(posts)} */}
+                {generateCards(posts)}
+                {posts.length && (
                   <div
-                    className={`classicBtn loadMorBtn ${
-                      loadingMore && "disabledClassicBtn"
-                    }`}
-                    onClick={handleLoadMore}
+                    style={{
+                      width: "100%",
+                      display: "flex",
+                      justifyContent: "center",
+                    }}
                   >
-                    {loadingMore ? "Loading More.." : "Load More.."}
+                    <div
+                      className={`classicBtn loadMorBtn ${
+                        loadingMore && "disabledClassicBtn"
+                      }`}
+                      onClick={handleLoadMore}
+                    >
+                      {loadingMore ? "Loading More.." : "Load More.."}
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            )}
           </section>
         )}
       </Wrapper>
@@ -316,8 +318,10 @@ export default function AllProductPage() {
 const Wrapper = styled.main`
   display: flex;
   justify-content: center;
-  margin: 2rem 0;
+  padding: 2rem 0;
   overflow-x: hidden;
+  min-height: 100vh;
+  background-color: whitesmoke;
 
   section {
     display: flex;
@@ -367,7 +371,8 @@ const Wrapper = styled.main`
     flex-direction: column;
     padding: 2rem;
     height: 50vh;
-    background-color: whitesmoke;
+    background-color: white;
+    box-shadow: 0 0 1px gray;
     width: 15rem;
     position: relative;
     transition: 0.3s;
@@ -409,10 +414,11 @@ const Wrapper = styled.main`
   }
 
   .posts {
-    display: grid;
     /* grid-template-columns: repeat(5, 1fr); */
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: start;
     grid-template-columns: repeat(1, 1fr);
     gap: 1rem;
 

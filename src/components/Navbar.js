@@ -25,6 +25,7 @@ import PersonAdd from "@mui/icons-material/PersonAdd";
 import Settings from "@mui/icons-material/Settings";
 import Logout from "@mui/icons-material/Logout";
 import Login from "@mui/icons-material/Login";
+import ChatIcon from "@mui/icons-material/Chat";
 
 import { getDocs, collection, query, orderBy, limit } from "firebase/firestore";
 import { db as FSdb, auth } from "../services/firebase-config";
@@ -52,7 +53,7 @@ const Navbar = () => {
         id: doc.id,
       }));
       setNotifications(notifData);
-      console.log(notifData);
+      // console.log(notifData);
     });
   }
 
@@ -278,6 +279,20 @@ const Navbar = () => {
                     <Avatar /> My account
                   </MenuItem>
                 </Link>
+                <Link
+                  to="/messages"
+                  style={{
+                    textDecoration: "none",
+                    color: "black",
+                  }}
+                >
+                  <MenuItem onClick={handleClose}>
+                    <ListItemIcon>
+                      <ChatIcon />
+                    </ListItemIcon>
+                    My Messages
+                  </MenuItem>
+                </Link>
                 <Divider sx={{ marginTop: 1 }} />
                 {notifications && notifications.length > 0 && (
                   <Box>
@@ -294,7 +309,7 @@ const Navbar = () => {
                           color: "black",
                         }}
                       >
-                        <MenuItem>Show all notifications..</MenuItem>
+                        <MenuItem sx={{}}>Show all notifications..</MenuItem>
                       </Link>
                     )}
                     <Divider />

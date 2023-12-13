@@ -366,6 +366,7 @@ const Wrapper = styled.main`
   overflow-x: hidden;
   padding: 1.5rem 0 1rem 0;
   background-color: rgb(250, 250, 250);
+  min-height: 100vh;
 
   .postContainer {
     display: flex;

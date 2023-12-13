@@ -79,10 +79,6 @@ const Comments = ({ postID, postAdminUID }) => {
     setLoading(false);
   }
 
-  function getFirst10Words(inputString) {
-    return inputString.split(/\s+/).slice(0, 10).join(" ");
-  }
-
   const handleEnterPress = (event) => {
     if (event.key === "Enter") {
       handleSubmit();
@@ -123,7 +119,7 @@ const Comments = ({ postID, postAdminUID }) => {
           collection(db, "posts", postID, "comments"), //TODO: change to posted
           {
             comment: commentValue,
-            timestamp: String(dayjs().valueOf()),
+            timestamp: Number(dayjs().valueOf()),
             userName: userData.displayName,
             uid: currentUser.uid,
           }
@@ -183,8 +179,9 @@ const Comments = ({ postID, postAdminUID }) => {
         </div>
         <div className="content">
           <p>
-            {new Date(Number(comment.timestamp)).toLocaleTimeString()} -{" "}
-            {new Date(Number(comment.timestamp)).toLocaleDateString()}
+            {dayjs(comment.timestamp).format("h:m:s a - DD/MM/YYYY")}{" "}
+            {/* {new Date(Number(comment.timestamp)).toLocaleTimeString()} -{" "}
+            {new Date(Number(comment.timestamp)).toLocaleDateString()} */}
           </p>
           <div className="vote">
             <span className="material-symbols-outlined">thumb_up</span>

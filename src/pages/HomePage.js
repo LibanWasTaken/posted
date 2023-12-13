@@ -44,6 +44,18 @@ const HomePage = () => {
   return (
     <Wrapper>
       <div className="hero">
+        <video
+          className="video"
+          width="750"
+          height="500"
+          style={{ position: "absolute", opacity: 0.025, zIndex: -1 }}
+          autoPlay
+          loop
+          muted
+        >
+          <source src={typefaceanimator} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
         <Parallax
           opacity={[1, 0]}
           speed={-10}
@@ -361,17 +373,18 @@ const Wrapper = styled.main`
     justify-content: space-around;
     width: 100vw;
     .text {
-      /* color: rgb(172, 172, 172); */
-      color: white;
+      padding: 0 2rem;
+      color: #ccc;
 
       font-size: 2rem;
       /* font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif; */
       text-transform: uppercase;
     }
     .pop {
-      color: white;
+      color: #fff;
+      /* font-weight: 800; */
       /* font-size: larger; */
-      font-style: italic;
+      /* font-style: italic; */
     }
     background-color: black;
     height: 90vh;

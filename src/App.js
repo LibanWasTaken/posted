@@ -25,6 +25,7 @@ import {
   AllPostsPage,
   Playground,
   MessagePage,
+  Messages,
   Information,
 } from "./pages";
 
@@ -82,10 +83,11 @@ function App() {
                 <Route exact path="/posts" element={<AllPostsPage />} />
                 <Route exact path="/playground" element={<Playground />} />
                 <Route exact path="/account" element={<AccPage />} />
+                <Route exact path="/messages" element={<Messages />} />
                 <Route exact path="/what-is-this" element={<Information />} />
                 <Route exact path="/toaster_fixer" element={<ToasterFixer />} />
                 <Route path="/posts/:id" element={<SinglePostsPage />} />
-
+                <Route path="/messages/:chatID" element={<Messages />} />
                 <Route path="*" element={<Error />} />
               </Routes>
               {/* <Footer /> */}
@@ -179,8 +181,12 @@ whatsapp: https://www.youtube.com/watch?v=c0PuGJW2yz8
 https://www.youtube.com/watch?v=S9VXgFIY73I
 do messenger, fb post, insta, insta post
 
+https://console.firebase.google.com/u/0/project/posted-1413e/authentication/emails
+
 make the private post thing only available to one of the posts (unless prem)
 in the user db add post.private etc (for the user page and other stuff and the thing above this)
+
+firebase, one doc has max mb? so letter should be split up/limited
 
 maybe be able to switch out the diary and letter? like switch the modal with the, yeah
 

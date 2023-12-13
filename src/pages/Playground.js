@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import HALO_video from "./../assets/halo.mp4";
 
@@ -16,8 +16,47 @@ import GoogleIcon from "@mui/icons-material/Google";
 import CircularProgress from "@mui/material/CircularProgress";
 import Fade from "@mui/material/Fade";
 
+import {
+  GoogleAuthProvider,
+  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
+  getAuth,
+} from "firebase/auth";
+import { auth, provider, db } from "../services/firebase-config";
+
 const Playground = () => {
   const [value, setValue] = useState(0);
+
+  function dodo() {
+    console.log("starting");
+    signInWithRedirect(auth, provider).catch((error) => {
+      // Handle Errors here.
+      console.log(error);
+    });
+  }
+  useEffect(async () => {
+    if (auth) {
+      const response = await getRedirectResult(auth);
+      if (response) {
+        getRedirectResult(auth)
+          .then((result) => {
+            // This gives you a Google Access Token. You can use it to access Google APIs.
+            const credential = GoogleAuthProvider.credentialFromResult(result);
+            const token = credential.accessToken;
+            // The signed-in user info.
+            const user = result.user;
+            console.log("user");
+            console.log(user);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+    }
+
+    return () => {};
+  }, []);
 
   return (
     <Wrapper>
@@ -155,9 +194,7 @@ const Playground = () => {
             <BottomNavigationAction
               label=""
               icon={<GoogleIcon />}
-              onClick={() => {
-                console.log("yo");
-              }}
+              onClick={dodo}
             />
           </BottomNavigation>
         </Box>

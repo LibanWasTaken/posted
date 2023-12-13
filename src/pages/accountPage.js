@@ -13,8 +13,8 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   sendEmailVerification,
-  signInWithRedirect,
-  getRedirectResult,
+  // signInWithRedirect,
+  // getRedirectResult,
   getAuth,
 } from "firebase/auth";
 import { auth, provider, db } from "../services/firebase-config";
@@ -27,17 +27,26 @@ import PasswordReset from "../components/modals/PasswordReset";
 
 import HALO_video from "./../assets/halo.mp4";
 
+import Grow from "@mui/material/Grow";
 import Box from "@mui/material/Box";
+import { TextField } from "@mui/material";
+import CircularProgress from "@mui/material/CircularProgress";
+import Fade from "@mui/material/Fade";
 import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
-import Grow from "@mui/material/Grow";
-import { TextField } from "@mui/material";
+
 import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
 import GoogleIcon from "@mui/icons-material/Google";
-import CircularProgress from "@mui/material/CircularProgress";
-import Fade from "@mui/material/Fade";
 
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+
+import PhoneIcon from "@mui/icons-material/Phone";
+import FacebookIcon from "@mui/icons-material/Facebook";
+import GitHubIcon from "@mui/icons-material/GitHub";
+import TwitterIcon from "@mui/icons-material/Twitter";
+import AppleIcon from "@mui/icons-material/Apple";
+import MicrosoftIcon from "@mui/icons-material/Microsoft";
 const theme = createTheme({
   palette: {
     primary: {
@@ -59,11 +68,20 @@ export function AccPage() {
   const [userName, setUserName] = useState("");
   const [errMsg, setErrMsg] = useState("");
   const [btnLoading, setBtnLoading] = useState(false);
+  const [loginMethods, setLoginMethods] = useState(1);
   const navigate = useNavigate();
 
   const [passwordResetOpen, setPasswordResetOpen] = useState(false);
   const handlePasswordResetOpen = () => setPasswordResetOpen(true);
   const handlePasswordResetClose = () => setPasswordResetOpen(false);
+
+  function handleLoginMethodsScroll() {
+    if (loginMethods >= 3) {
+      setLoginMethods(1);
+    } else {
+      setLoginMethods(loginMethods + 1);
+    }
+  }
 
   const formatErr = (str) => {
     const words = str.split(" ");
@@ -150,37 +168,52 @@ export function AccPage() {
   };
 
   const loginGmail = () => {
-    // const auth = getAuth();
-
-    signInWithRedirect(auth, provider)
-      .then(() => {
-        // This code will not run since the user is redirected to the Google sign-in page
-      })
-      .catch((error) => {
-        console.error("Error initiating redirect sign-in: ", error);
-      });
-    getRedirectResult(auth)
+    signInWithPopup(auth, provider)
       .then((result) => {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        const token = credential.accessToken;
+        // The signed-in user info.
         const user = result.user;
-        console.log("User authenticated: ", user);
+        // IdP data available using getAdditionalUserInfo(result)
         addAccToFireStore(user);
+        // ...
       })
       .catch((error) => {
-        console.error("Error getting redirect result: ", error);
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // The email of the user's account used.
+        const email = error.customData.email;
+        // The AuthCredential type that was used.
+        const credential = GoogleAuthProvider.credentialFromError(error);
+        console.log(errorMessage);
+        setErrMsg(formatErr(errorMessage));
+        // setErrMsg(errorCode);
+        setValue(0);
       });
-
-    // signInWithPopup(auth, provider)
-    //   .then((result) => {
-    //     const credential = GoogleAuthProvider.credentialFromResult(result);
-    //     const token = credential.accessToken;
-    //     const user = result.user;
-    //     console.log("User authenticated: ", user);
-    //     addAccToFireStore(user);
-    //   })
-    //   .catch((error) => {
-    //     console.error("Error getting pop-up result: ", error);
-    //   });
   };
+
+  // useEffect(() => {
+  //   loginGmail();
+  // }, []);
+  // useEffect(async () => {
+  //   try {
+  //     const response = await getRedirectResult(auth);
+  //     if (response) {
+  //       // This gives you a Google Access Token. You can use it to access Google APIs.
+  //       // const credential = GoogleAuthProvider.credentialFromResult(result);
+  //       // const token = credential.accessToken;
+  //       // The signed-in user info.
+  //       const user = response.user;
+  //       addAccToFireStore(user);
+  //       console.log(user);
+  //     }
+  //   } catch (error) {
+  //     console.log("Error signing in:", error);
+  //   }
+  //   return () => {};
+  // }, []);
 
   const logout = async () => {
     try {
@@ -199,7 +232,16 @@ export function AccPage() {
   return (
     <Wrapper>
       {loading ? (
-        <Spinner3 />
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            paddingTop: "5rem",
+          }}
+        >
+          <Spinner3 />
+        </div>
       ) : (
         <ThemeProvider theme={theme}>
           {user ? (
@@ -209,25 +251,6 @@ export function AccPage() {
                 paddingTop: "2rem",
               }}
             >
-              {/* <div
-                style={{
-                  display: "flex",
-                  gap: "2rem",
-                  margin: "2rem",
-                  alignItems: "center",
-                }}
-              >
-                <img
-                  src={
-                    user.photoURL ||
-                    "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Windows_10_Default_Profile_Picture.svg/2048px-Windows_10_Default_Profile_Picture.svg.png"
-                  }
-                  alt="pfp"
-                  className="profilePic"
-                />
-                <h2>Welcome, {user.displayName}</h2>
-              </div> */}
-
               <Settings userID={user.uid} />
 
               <button
@@ -350,12 +373,12 @@ export function AccPage() {
             // </section>
             <div className="log">
               <section className="design">
-                <Fade in={HALO_video}>
+                <Grow in={HALO_video}>
                   <video className="video" autoPlay loop muted>
                     <source src={HALO_video} type="video/mp4" />
                     Your browser does not support the video tag.
                   </video>
-                </Fade>
+                </Grow>
               </section>
               <section className="form">
                 {value == 0 && (
@@ -497,24 +520,105 @@ export function AccPage() {
                 <Box sx={{ width: 500 }}>
                   <BottomNavigation
                     showLabels
-                    sx={{ backgroundColor: "whitesmoke", p: 1 }}
+                    sx={{
+                      backgroundColor: "whitesmoke",
+                      p: 1,
+                    }}
                     value={value}
                     onChange={(event, newValue) => {
                       setValue(newValue);
                     }}
                   >
-                    <BottomNavigationAction
-                      label="Log In"
-                      icon={<LoginIcon />}
-                    />
-                    <BottomNavigationAction
-                      label="Sign Up"
-                      icon={<LogoutIcon />}
-                    />
-                    <BottomNavigationAction
-                      label=""
-                      icon={<GoogleIcon />}
-                      onClick={loginGmail}
+                    {loginMethods == 1 && (
+                      <Fade in={loginMethods == 1}>
+                        <BottomNavigationAction
+                          label="Log In"
+                          icon={<LoginIcon />}
+                        />
+                      </Fade>
+                    )}
+                    {loginMethods == 1 && (
+                      <Fade in={loginMethods == 1}>
+                        <BottomNavigationAction
+                          label="Sign Up"
+                          icon={<LogoutIcon />}
+                        />
+                      </Fade>
+                    )}
+                    {loginMethods == 1 && (
+                      <Fade in={loginMethods == 1}>
+                        <BottomNavigationAction
+                          label=""
+                          icon={<GoogleIcon />}
+                          onClick={loginGmail}
+                        />
+                      </Fade>
+                    )}
+                    {loginMethods == 2 && (
+                      <Fade in={loginMethods == 2}>
+                        <BottomNavigationAction
+                          label="Phone"
+                          disabled
+                          icon={<PhoneIcon sx={{ opacity: 0.5 }} />}
+                        />
+                      </Fade>
+                    )}
+                    {loginMethods == 2 && (
+                      <Fade in={loginMethods == 2}>
+                        <BottomNavigationAction
+                          label="Facebook"
+                          disabled
+                          icon={<FacebookIcon sx={{ opacity: 0.5 }} />}
+                        />
+                      </Fade>
+                    )}
+                    {loginMethods == 2 && (
+                      <Fade in={loginMethods == 2}>
+                        <BottomNavigationAction
+                          label="Github"
+                          disabled
+                          icon={<GitHubIcon sx={{ opacity: 0.5 }} />}
+                        />
+                      </Fade>
+                    )}
+                    {loginMethods == 3 && (
+                      <Fade in={loginMethods == 3}>
+                        <BottomNavigationAction
+                          label="Twitter"
+                          disabled
+                          icon={<TwitterIcon sx={{ opacity: 0.5 }} />}
+                        />
+                      </Fade>
+                    )}
+                    {loginMethods == 3 && (
+                      <Fade in={loginMethods == 3}>
+                        <BottomNavigationAction
+                          label="Apple"
+                          disabled
+                          icon={<AppleIcon sx={{ opacity: 0.5 }} />}
+                        />
+                      </Fade>
+                    )}
+                    {loginMethods == 3 && (
+                      <Fade in={loginMethods == 3}>
+                        <BottomNavigationAction
+                          label="Microsoft"
+                          disabled
+                          icon={<MicrosoftIcon sx={{ opacity: 0.5 }} />}
+                        />
+                      </Fade>
+                    )}
+
+                    <KeyboardArrowRightIcon
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        height: "100%",
+                        cursor: "pointer",
+                      }}
+                      onClick={handleLoginMethodsScroll}
+                      className="scrollMore"
                     />
                   </BottomNavigation>
                 </Box>
@@ -538,6 +642,11 @@ const Wrapper = styled.main`
   flex-direction: column; */
   /* padding: 5rem; */
 
+  .scrollMore:hover {
+    transition: 300ms;
+    transform: translateX(5px);
+  }
+
   .log {
     display: flex;
     flex-direction: row;
@@ -560,6 +669,11 @@ const Wrapper = styled.main`
         width: 40vw;
       }
     }
+    .design:hover {
+      transition: 1s;
+      filter: invert(1);
+    }
+
     .form {
       display: flex;
       align-items: center;

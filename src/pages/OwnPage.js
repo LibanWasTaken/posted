@@ -132,7 +132,16 @@ const OwnPage = () => {
             {!loading && !currentUser ? (
               <div style={{ textAlign: "center" }}>
                 <h1>Invalid User, Beep Boop</h1>
-                <h4 style={{ letterSpacing: "2px" }}>LOG IN</h4>
+                <a
+                  href="/account"
+                  style={{
+                    letterSpacing: "2px",
+                    color: "white",
+                    textDecoration: "none",
+                  }}
+                >
+                  <h4>LOG IN</h4>
+                </a>
               </div>
             ) : (
               <Spinner2 />

@@ -355,10 +355,10 @@ const Wrapper = styled.main`
 
   @keyframes swing {
     0% {
-      transform: rotate(15deg);
+      transform: rotate(7deg);
     }
     100% {
-      transform: rotate(-15deg); /* Adjust the angle of swing as needed */
+      transform: rotate(-7deg); /* Adjust the angle of swing as needed */
     }
     /* 100% {
       transform: rotate(10deg);
