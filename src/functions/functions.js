@@ -57,3 +57,31 @@ export async function sendNotification(uid, message, url) {
     }
   }
 }
+
+export function getTimeDifferenceShort(timestamp) {
+  const currentTime = dayjs();
+  const targetTime = dayjs(timestamp);
+
+  const secondsDiff = Math.abs(currentTime.diff(targetTime, "second"));
+  const minutesDiff = Math.abs(currentTime.diff(targetTime, "minute"));
+  const hoursDiff = Math.abs(currentTime.diff(targetTime, "hour"));
+  const daysDiff = Math.abs(currentTime.diff(targetTime, "day"));
+  const monthsDiff = Math.abs(currentTime.diff(targetTime, "month"));
+  const yearsDiff = Math.abs(currentTime.diff(targetTime, "year"));
+
+  if (secondsDiff < 60) {
+    return `${secondsDiff}s`;
+  } else if (minutesDiff < 60) {
+    return `${minutesDiff}m`;
+  } else if (hoursDiff < 24) {
+    return `${hoursDiff}h`;
+  } else if (daysDiff < 30) {
+    return `${daysDiff}d`;
+  } else if (monthsDiff < 12) {
+    return `${monthsDiff}M`;
+  } else if (secondsDiff < 0) {
+    return `${monthsDiff}f`;
+  } else {
+    return `${yearsDiff}y`;
+  }
+}

@@ -25,21 +25,19 @@ const CountDown = (props) => {
   const navigate = useNavigate();
 
   function redirect() {
-    // Use the history.push method to navigate to the desired URL
     navigate(`/me`);
   }
 
-  // const targetDate = dayjs.utc("2023-09-30T00:01:00Z");
   const targetDate = dayjs(releaseDate);
   const newDate = dayjs(releaseDate).add(1, "month");
 
   async function handleDelay() {
+    setDelaying(true);
     try {
       const postRef = doc(db, "posts", postID);
       await updateDoc(postRef, { releaseDate: newDate.valueOf() });
       console.log("Document successfully updated");
 
-      setDelaying(false);
       window.location.reload();
     } catch (error) {
       alert("Error Delaying");
@@ -62,8 +60,8 @@ const CountDown = (props) => {
   const calculateTimeRemaining = () => {
     const now = dayjs.utc();
     const timeRemaining = targetDate.diff(now);
+    const timeRemainingInDays = targetDate.diff(now, "days");
     const duration = dayjs.duration(timeRemaining);
-    // console.log(releaseDate, duration);
     return {
       years: formatNumberWithTwoSignificantFigures(duration.years()),
       months: formatNumberWithTwoSignificantFigures(duration.months()),
@@ -71,6 +69,7 @@ const CountDown = (props) => {
       hours: formatNumberWithTwoSignificantFigures(duration.hours()),
       minutes: formatNumberWithTwoSignificantFigures(duration.minutes()),
       seconds: formatNumberWithTwoSignificantFigures(duration.seconds()),
+      inDays: Number(timeRemainingInDays),
     };
   };
 
@@ -78,9 +77,8 @@ const CountDown = (props) => {
 
   useEffect(() => {
     if (!warn) {
-      if (timeRemaining.days <= warnDuration) setWarn(true);
+      if (timeRemaining.inDays <= warnDuration) setWarn(true);
     }
-    console.log(disabled);
     // TODO: enable && not disabled?
     // if (timeRemaining && !disabled && timeRemaining.seconds < 0) {
     //   redirect();

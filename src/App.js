@@ -188,6 +188,8 @@ in the user db add post.private etc (for the user page and other stuff and the t
 
 firebase, one doc has max mb? so letter should be split up/limited
 
+set userName as userID?
+
 maybe be able to switch out the diary and letter? like switch the modal with the, yeah
 
 premium:

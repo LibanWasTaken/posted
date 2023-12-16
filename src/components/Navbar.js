@@ -6,6 +6,7 @@ import { useUserContext } from "../context/UserContext";
 import defaultAccPNG from "../assets/defaultAccount.png";
 import { Link } from "react-router-dom";
 
+import { getTimeDifferenceShort } from "../functions/functions";
 import { NAV_OPTIONS } from "../context/UserOptions";
 
 import SearchTwoToneIcon from "@mui/icons-material/SearchTwoTone";
@@ -91,33 +92,33 @@ const Navbar = () => {
     }
   }
 
-  function getTimeDifference(timestamp) {
-    const currentTime = dayjs();
-    const targetTime = dayjs(timestamp);
+  // function getTimeDifferenceShort(timestamp) {
+  //   const currentTime = dayjs();
+  //   const targetTime = dayjs(timestamp);
 
-    const secondsDiff = Math.abs(currentTime.diff(targetTime, "second"));
-    const minutesDiff = Math.abs(currentTime.diff(targetTime, "minute"));
-    const hoursDiff = Math.abs(currentTime.diff(targetTime, "hour"));
-    const daysDiff = Math.abs(currentTime.diff(targetTime, "day"));
-    const monthsDiff = Math.abs(currentTime.diff(targetTime, "month"));
-    const yearsDiff = Math.abs(currentTime.diff(targetTime, "year"));
+  //   const secondsDiff = Math.abs(currentTime.diff(targetTime, "second"));
+  //   const minutesDiff = Math.abs(currentTime.diff(targetTime, "minute"));
+  //   const hoursDiff = Math.abs(currentTime.diff(targetTime, "hour"));
+  //   const daysDiff = Math.abs(currentTime.diff(targetTime, "day"));
+  //   const monthsDiff = Math.abs(currentTime.diff(targetTime, "month"));
+  //   const yearsDiff = Math.abs(currentTime.diff(targetTime, "year"));
 
-    if (secondsDiff < 60) {
-      return `${secondsDiff}s`;
-    } else if (minutesDiff < 60) {
-      return `${minutesDiff}m`;
-    } else if (hoursDiff < 24) {
-      return `${hoursDiff}h`;
-    } else if (daysDiff < 30) {
-      return `${daysDiff}d`;
-    } else if (monthsDiff < 12) {
-      return `${monthsDiff}M`;
-    } else if (secondsDiff < 0) {
-      return `${monthsDiff}f`;
-    } else {
-      return `${yearsDiff}y`;
-    }
-  }
+  //   if (secondsDiff < 60) {
+  //     return `${secondsDiff}s`;
+  //   } else if (minutesDiff < 60) {
+  //     return `${minutesDiff}m`;
+  //   } else if (hoursDiff < 24) {
+  //     return `${hoursDiff}h`;
+  //   } else if (daysDiff < 30) {
+  //     return `${daysDiff}d`;
+  //   } else if (monthsDiff < 12) {
+  //     return `${monthsDiff}M`;
+  //   } else if (secondsDiff < 0) {
+  //     return `${monthsDiff}f`;
+  //   } else {
+  //     return `${yearsDiff}y`;
+  //   }
+  // }
 
   function generateMenuItemLink(url, div) {
     return (
@@ -188,7 +189,9 @@ const Navbar = () => {
           >
             • {notif.msg}
           </span>
-          <span style={{ opacity: 0.5 }}>{getTimeDifference(notif.ts)}</span>
+          <span style={{ opacity: 0.5 }}>
+            {getTimeDifferenceShort(notif.ts)}
+          </span>
         </Link>
       </MenuItem>
     ));

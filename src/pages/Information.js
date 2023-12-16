@@ -12,6 +12,7 @@ import {
   ThemeProvider,
   createTheme,
   Fade,
+  Grow,
   Link,
 } from "@mui/material/";
 import PropTypes from "prop-types";
@@ -195,93 +196,79 @@ const HowToPostPage = () => {
       ),
     },
     {
-      title: "Getting Started",
+      title: "Chat",
       content: (
         <div>
-          <ul className="list">
-            <li className="list-item">
-              1. Download and install the Posted app from the App Store or
-              Google Play.
-            </li>
-            <li className="list-item">
-              2. Create an account and verify your identity for security
-              purposes.
-            </li>
-          </ul>
-          <p>
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Ut,
-            voluptatem!
-          </p>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Sapiente
-            reprehenderit cumque voluptatum recusandae quos quod, odio suscipit
-            et dignissimos, asperiores delectus eos voluptate placeat ipsam,
-            laborum sequi. Qui repellat, nesciunt, modi pariatur ipsam minima
-            veniam minus, quod impedit molestias deserunt. Quasi asperiores
-            consectetur, reiciendis magnam quibusdam ducimus eius porro nostrum.
-          </p>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
-            Exercitationem libero asperiores hic iusto commodi ducimus!
-          </p>
-          <p>
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fuga,
-            aliquam accusamus laudantium illum aut eaque architecto aliquid
-            consequuntur est sed quasi sapiente reprehenderit culpa hic
-            dignissimos animi quaerat quidem ullam enim autem perferendis?
-            Doloribus, amet ipsa vitae maxime odio dignissimos?
-          </p>
-          <p>Lorem, ipsum.</p>
-          <p>
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Odio natus
-            soluta porro consequatur et blanditiis provident eaque reiciendis
-            deserunt est esse impedit delectus consequuntur unde tempora
-            laudantium, necessitatibus veritatis perferendis nemo voluptatibus
-            fugiat, officiis id sit! Cumque, veniam? Accusantium doloribus
-            pariatur, veritatis perspiciatis sapiente minima sunt impedit
-            inventore cum modi dolores?
-          </p>
-          <p>
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-            Necessitatibus iure est iste!
-          </p>
-          <p>
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Ut,
-            voluptatem!
-          </p>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Sapiente
-            reprehenderit cumque voluptatum recusandae quos quod, odio suscipit
-            et dignissimos, asperiores delectus eos voluptate placeat ipsam,
-            laborum sequi. Qui repellat, nesciunt, modi pariatur ipsam minima
-            veniam minus, quod impedit molestias deserunt. Quasi asperiores
-            consectetur, reiciendis magnam quibusdam ducimus eius porro nostrum.
-          </p>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
-            Exercitationem libero asperiores hic iusto commodi ducimus!
-          </p>
-          <p>
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fuga,
-            aliquam accusamus laudantium illum aut eaque architecto aliquid
-            consequuntur est sed quasi sapiente reprehenderit culpa hic
-            dignissimos animi quaerat quidem ullam enim autem perferendis?
-            Doloribus, amet ipsa vitae maxime odio dignissimos?
-          </p>
-          <p>Lorem, ipsum.</p>
-          <p>
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Odio natus
-            soluta porro consequatur et blanditiis provident eaque reiciendis
-            deserunt est esse impedit delectus consequuntur unde tempora
-            laudantium, necessitatibus veritatis perferendis nemo voluptatibus
-            fugiat, officiis id sit! Cumque, veniam? Accusantium doloribus
-            pariatur, veritatis perspiciatis sapiente minima sunt impedit
-            inventore cum modi dolores?
-          </p>
-          <p>
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-            Necessitatibus iure est iste!
-          </p>
+          <div>
+            <p>
+              Welcome to your personal haven within "Posted," where your
+              messages become a digital legacy. Here, every post reflects your
+              unique voice, and you hold the reins of access. Your messages are
+              securely guarded, accessible only with your permission. Embrace
+              the freedom to share thoughts, memories, and moments with trusted
+              recipients, ensuring that your digital presence remains as private
+              or as shared as you desire. Your space, your posts, your
+              legacy—guarded by the assurance of utmost privacy.
+            </p>
+          </div>
+
+          <div>
+            <p>
+              Your "Posted" page, a vault for cherished words. Personal posts,
+              shared selectively. Secure, private, and timeless—your digital
+              legacy begins here.
+            </p>
+          </div>
+
+          <div>
+            <p>
+              In your "Posted" sanctuary, messages echo your essence.
+              Safeguarded and selectively shared, each post carries the weight
+              of your digital legacy.
+            </p>
+          </div>
+
+          <div>
+            <p>
+              "Posted" goes beyond time capsules—it's a full-fledged messaging
+              app. Connect, converse, and share messages seamlessly, creating
+              meaningful connections that withstand the test of time.
+            </p>
+          </div>
+
+          <div>
+            <p>
+              Welcome to the all-encompassing realm of communication within
+              'Posted'—where timeless messaging meets seamless connection.
+              Beyond the traditional notion of time capsules, 'Posted' unfolds
+              into a fully-fledged messaging app, designed to facilitate
+              meaningful interactions that transcend temporal constraints.
+            </p>
+            <p>
+              Engage in conversations that echo across the years, crafting a
+              digital dialogue that stands as a testament to enduring
+              connections. The platform provides a spectrum of communication
+              options, from sending instant messages to scheduling messages for
+              the future, ensuring that your expressions resonate exactly when
+              intended.
+            </p>
+            <p>
+              The 'Posted' messaging app isn't just a conduit for words; it's a
+              conduit for emotions, memories, and the essence of personal
+              connection. Embrace the versatility to share your thoughts
+              spontaneously or curate messages meticulously for future delivery.
+              Communicate with loved ones, friends, or even yourself in a manner
+              that aligns with the rhythm of your life.
+            </p>
+            <p>
+              Privacy remains paramount. 'Posted' ensures that your
+              conversations are safeguarded, accessible only to those with whom
+              you've chosen to share. Whether it's one-on-one exchanges, group
+              discussions, or solo reflections scheduled for the future, every
+              interaction is a celebration of connection and a tribute to the
+              enduring power of communication.
+            </p>
+          </div>
         </div>
       ),
     },
@@ -374,7 +361,7 @@ const HowToPostPage = () => {
 
           {sections2.map((section, index) => (
             <TabPanel key={index} value={value} index={index}>
-              {section.content}
+              <Grow in={section.content}>{section.content}</Grow>
             </TabPanel>
           ))}
         </Box>

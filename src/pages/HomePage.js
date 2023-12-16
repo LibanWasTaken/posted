@@ -280,18 +280,26 @@ const HomePage = () => {
       </section>
 
       <section className="section9">
-        <h1>uhh yeah do it</h1>
-        <Link
-          to={"/what-is-this"}
-          style={{ textDecoration: "none", color: "white" }}
-        >
-          <p>do what?</p>
-        </Link>
+        <div className="slide">
+          <h1>one</h1>
+        </div>
+        <div className="slide">
+          <h1>uhh yeah do it</h1>
+          <Link
+            to={"/what-is-this"}
+            style={{ textDecoration: "none", color: "white" }}
+          >
+            <p>do what?</p>
+          </Link>
+        </div>
+        <div className="slide">
+          <h1>2</h1>
+        </div>
       </section>
-      <video className="video" width="750" height="500" autoPlay loop muted>
+      {/* <video className="video" width="750" height="500" autoPlay loop muted>
         <source src={typefaceanimator} type="video/mp4" />
         Your browser does not support the video tag.
-      </video>
+      </video> */}
 
       <Footer />
     </Wrapper>
@@ -549,12 +557,24 @@ const Wrapper = styled.main`
   .section9 {
     background-color: black;
     height: 90vh;
-    width: 100%;
+    width: 100vw;
     color: white;
     display: flex;
-    align-items: center;
+    /* align-items: center; */
     justify-content: center;
-    flex-direction: column;
+    flex-direction: row;
+
+    overflow: hidden;
+    .slide {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      height: 90vh;
+      min-width: 100vw;
+      width: 100vw;
+      /* animation: scrollText 9s infinite linear; */
+    }
     h1 {
       margin: 0;
       padding: 0;
@@ -581,10 +601,19 @@ const Wrapper = styled.main`
 
   @keyframes scrollText {
     0% {
-      transform: translateX(100%); /* Start off screen to the right */
+      opacity: 0;
+      transform: translateX(100vw); /* Start off screen to the right */
+    }
+    5% {
+      opacity: 1;
+    }
+    95% {
+      opacity: 1;
     }
     100% {
-      transform: translateX(-100%); /* Move off screen to the left */
+      opacity: 0;
+
+      transform: translateX(-100vw); /* Move off screen to the left */
     }
   }
 

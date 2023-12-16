@@ -2,12 +2,21 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import { Spinner2 } from "../components/Spinner";
-import { getDoc, getDocs, collection, doc } from "firebase/firestore";
+import {
+  getDoc,
+  getDocs,
+  collection,
+  doc,
+  updateDoc,
+  setDoc,
+  addDoc,
+} from "firebase/firestore";
 import { db } from "../services/firebase-config";
 import { Link } from "react-router-dom";
 import dayjs from "dayjs";
-
+import { useUserContext } from "../context/UserContext";
 import Pendulum from "../assets/pendulum.svg";
+import { sendNotification } from "../functions/functions";
 
 import {
   createTheme,
@@ -20,6 +29,7 @@ import {
   DialogContentText,
   DialogTitle,
   Avatar,
+  LinearProgress,
 } from "@mui/material/";
 
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
@@ -88,31 +98,34 @@ const themeInverse = createTheme({
 
 const UserPage = () => {
   const { uid } = useParams();
+  const { user: currentUser, loading: loadingUser } = useUserContext();
   const [loading, setLoading] = useState(true);
   const [loadingPosts, setLoadingPosts] = useState(true);
   const [user, setUser] = useState();
   const [userPosts, setUserPosts] = useState();
   const [userExists, setUserExists] = useState();
+
+  const [followingList, setFollowingList] = useState([]);
+  const [followingCall, setFollowingCall] = useState(false);
+  const [following, setFollowing] = useState(false);
   const [openPrivateModal, setOpenPrivateModal] = useState(false);
+  const [openMessageModal, setOpenMessageModal] = useState(false);
+  const [msgProgressing, setMsgProgressing] = useState(false);
   const [privateID, setPrivateID] = useState();
   const navigate = useNavigate();
-
-  const handleOpenPrivateModal = () => {
-    setOpenPrivateModal(true);
-  };
-
-  const handleClosePrivateModal = () => {
-    setOpenPrivateModal(false);
-  };
 
   const fetchUserDoc = async () => {
     const userDocRef = doc(db, "users", uid);
     try {
       const docSnapshot = await getDoc(userDocRef);
       if (docSnapshot.exists()) {
-        console.log("Document data:", docSnapshot.data());
+        console.log(docSnapshot.data());
+        const userData = docSnapshot.data();
         setLoading(false);
-        setUser(docSnapshot.data());
+        setUser(userData);
+        userData.followers
+          ? setFollowingList(userData.followers)
+          : setFollowingList([]);
         setUserExists(true);
       } else {
         setLoading(false);
@@ -144,10 +157,88 @@ const UserPage = () => {
     }
   }
 
+  async function handleFollow(currentUid) {
+    try {
+      setFollowingCall(true);
+
+      if (currentUid && currentUid !== uid) {
+        console.log("yeh");
+
+        // Create a copy of the array to avoid mutating state directly
+        let updatedFollowingList = [...followingList];
+
+        if (following) {
+          // Unfollow
+          updatedFollowingList = updatedFollowingList.filter(
+            (userId) => userId !== currentUid
+          );
+          setFollowing(false);
+        } else {
+          // Follow
+          updatedFollowingList.push(currentUid);
+          setFollowing(true);
+        }
+
+        const userRef = doc(db, "users", uid);
+        await updateDoc(userRef, { followers: updatedFollowingList });
+
+        console.log(updatedFollowingList);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setFollowingCall(false);
+    }
+  }
+
+  async function handleSendMessage(currUser, postAdminUID, msg) {
+    try {
+      const timestamp = Number(dayjs().valueOf());
+
+      const messageCollectionRef = collection(db, "messages");
+      const messageDocRef = await addDoc(messageCollectionRef, {
+        uids: [currUser.uid, postAdminUID],
+      });
+
+      const generatedId = messageDocRef.id;
+      console.log(generatedId, "messages new");
+
+      const chatCollectionRef = collection(messageDocRef, "chat");
+      const chatDocRef = await addDoc(chatCollectionRef, {
+        msg: msg,
+        ts: timestamp,
+        uid: currUser.uid,
+        displayName: currUser.displayName,
+      });
+      console.log(chatDocRef.id, "messages/chat new");
+
+      await setDoc(doc(db, "users", postAdminUID, "chats", generatedId), {
+        name: currUser.displayName,
+        ts: timestamp,
+        msg: msg,
+      });
+      console.log("user chat list");
+
+      const newMsg = `New Message from ${
+        currUser.displayName
+      }: "${msg.substring(0, 20)}"`;
+      sendNotification(postAdminUID, newMsg, `messages/${generatedId}`);
+    } catch (error) {
+      console.error("Error handling message:", error);
+    } finally {
+      setMsgProgressing(false);
+    }
+  }
+
   useEffect(() => {
     fetchUserDoc();
     getPostsData();
   }, []);
+  useEffect(() => {
+    if (user && user.followers && user.followers.includes(currentUser.uid)) {
+      setFollowing(true);
+    }
+  }, [user, currentUser]);
 
   function generatePostLinks(posts) {
     // console.log(posts);
@@ -175,6 +266,12 @@ const UserPage = () => {
     ));
   }
 
+  const handleOpenPrivateModal = () => {
+    setOpenPrivateModal(true);
+  };
+  const handleClosePrivateModal = () => {
+    setOpenPrivateModal(false);
+  };
   function PrivatePostModal({ open, handleClose }) {
     const [postIDValue, setPostIDValue] = useState("");
 
@@ -223,6 +320,67 @@ const UserPage = () => {
       </ThemeProvider>
     );
   }
+  const handleOpenMessageModal = () => {
+    setOpenMessageModal(true);
+  };
+  const handleCloseMessageModal = () => {
+    setOpenMessageModal(false);
+  };
+  function MessageModal({ open, handleClose }) {
+    const [msgValue, setMsgValue] = useState("");
+
+    function handleCheck() {
+      if (msgValue) {
+        // TODO: check if messages (get the values in useEffect), if alredy then reidrect, else create new, both users..?
+        setMsgProgressing(true);
+        handleSendMessage(currentUser, uid, msgValue);
+      }
+    }
+
+    return (
+      <ThemeProvider theme={theme}>
+        <Dialog open={open} onClose={handleClose}>
+          <DialogTitle>Message</DialogTitle>
+          <DialogContent sx={{ m: 1, overflow: "hidden" }}>
+            <DialogContentText sx={{ marginBottom: 5 }}>
+              Enter your message:
+            </DialogContentText>
+
+            <TextField
+              sx={{ m: 1, width: "40ch" }}
+              margin="normal"
+              id="name"
+              label="Text"
+              type="text"
+              variant="standard"
+              value={msgValue}
+              disabled={msgProgressing}
+              inputProps={{ maxLength: 200 }}
+              multiline
+              onChange={(e) => setMsgValue(e.target.value)}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button
+              sx={{ letterSpacing: 1, fontWeight: 400 }}
+              onClick={handleClose}
+              disabled={msgProgressing}
+            >
+              Cancel
+            </Button>
+            <Button
+              sx={{ letterSpacing: 1, fontWeight: 400 }}
+              onClick={handleCheck}
+              disabled={msgProgressing || !msgValue}
+            >
+              Send
+            </Button>
+          </DialogActions>
+          {msgProgressing && <LinearProgress />}
+        </Dialog>
+      </ThemeProvider>
+    );
+  }
 
   return (
     <Wrapper>
@@ -252,46 +410,56 @@ const UserPage = () => {
           </div>
 
           <div className="pageBreak"></div>
-          <ThemeProvider theme={themeInverse}>
-            <div className="buttons">
-              <Button
-                sx={{
-                  p: 2,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 2,
-                }}
-                variant="outlined"
-              >
-                Follow <PersonAddIcon />
-              </Button>
-              <Button
-                sx={{
-                  p: 2,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 2,
-                }}
-                variant="outlined"
-              >
-                Message <MessageIcon />
-              </Button>
-              <Button
-                sx={{
-                  p: 2,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 2,
-                }}
-                variant="outlined"
-              >
-                Report <FlagIcon />
-              </Button>
-            </div>
-          </ThemeProvider>
+
+          {currentUser && (
+            <ThemeProvider theme={themeInverse}>
+              <div className="buttons">
+                <Button
+                  sx={{
+                    p: 2,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 2,
+                  }}
+                  className={followingCall && "loadingClassicBtn"}
+                  disabled={followingCall}
+                  variant={following ? "contained" : "outlined"}
+                  onClick={() => {
+                    handleFollow(currentUser.uid);
+                  }}
+                >
+                  Follow <PersonAddIcon />
+                </Button>
+                <Button
+                  sx={{
+                    p: 2,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 2,
+                  }}
+                  variant="outlined"
+                  onClick={handleOpenMessageModal}
+                >
+                  Message <MessageIcon />
+                </Button>
+                <Button
+                  sx={{
+                    p: 2,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 2,
+                  }}
+                  variant="outlined"
+                >
+                  Report <FlagIcon />
+                </Button>
+              </div>
+            </ThemeProvider>
+          )}
+
           <div className="info">
             Welcome to your personal haven within "Posted," where your messages
             become a digital legacy. Here, every post reflects your unique
@@ -319,6 +487,10 @@ const UserPage = () => {
       <PrivatePostModal
         open={openPrivateModal}
         handleClose={handleClosePrivateModal}
+      />
+      <MessageModal
+        open={openMessageModal}
+        handleClose={handleCloseMessageModal}
       />
     </Wrapper>
   );
@@ -348,7 +520,7 @@ const Wrapper = styled.main`
     height: 10rem;
     position: absolute;
     top: -5px;
-    right: 10rem;
+    right: 7rem;
     transform-origin: top center; /* Set the transformation origin to the top center of the element */
     animation: swing 1s infinite ease-in-out alternate; /* Adjust the duration and timing function as needed */
   }
@@ -369,6 +541,7 @@ const Wrapper = styled.main`
     display: flex;
     align-items: center;
     justify-content: space-around;
+    flex-wrap: wrap;
     gap: 1rem;
     width: 95vw;
     /* flex-direction: column; */

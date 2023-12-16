@@ -9,6 +9,7 @@ import styled from "styled-components";
 import { useUserContext } from "../context/UserContext";
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { getTimeDifferenceShort } from "../functions/functions";
 
 import {
   addDoc,
@@ -19,6 +20,7 @@ import {
   getDoc,
   orderBy,
   onSnapshot,
+  limit,
 } from "firebase/firestore";
 import { db } from "../services/firebase-config";
 import dayjs from "dayjs";
@@ -88,7 +90,9 @@ const Messages = () => {
   const { chatID } = useParams();
   const [tabValue, setTabValue] = useState(0);
   const [chat, setChat] = useState();
-  //   const [chatIDs, setChatIDs] = useState();
+  const [userChatsList, setUserChatsList] = useState([]);
+  const [loadingChatList, setLoadingChatList] = useState(true);
+
   const [chatIDsValidity, setChatIDsValidity] = useState();
   const [chatMsgValue, setChatMsgValue] = useState();
 
@@ -113,13 +117,33 @@ const Messages = () => {
       alert("Error getting document");
     }
   }
+  async function getUsersChatIDs(id) {
+    setLoadingChatList(true);
+    console.log("uhh");
+    try {
+      await getDocs(collection(db, "users", id, "chats")).then(
+        (querySnapshot) => {
+          const chatsData = querySnapshot.docs.map((doc) => ({
+            ...doc.data(),
+            id: doc.id,
+          }));
+          setUserChatsList(chatsData);
+          console.log(chatsData);
+        }
+      );
+    } catch (error) {
+      console.log("Error getting document:", error);
+      alert("Error getting document");
+    }
+    setLoadingChatList(false);
+  }
 
   async function getChatHistory(id) {
     setLoadingChat(true);
     const queryRecieved = query(
       collection(db, "messages", id, "chat"),
       orderBy("ts", "asc")
-      //   limit(countPosts) TODO:
+      // limit(25)
     );
     const querySnapshot = await getDocs(queryRecieved);
     const chatDocs = querySnapshot.docs.map((doc) => ({
@@ -157,16 +181,22 @@ const Messages = () => {
   };
 
   useEffect(() => {
-    console.log(currentUser);
     const fetchData = async () => {
       try {
+        if (currentUser) {
+          getUsersChatIDs(currentUser.uid);
+        }
         if (chatID && currentUser) {
+          console.log("uhh");
+
+          !userChatsList && getUsersChatIDs(currentUser.uid);
           getChatIDs(chatID);
           getChatHistory(chatID);
 
           const colRef = query(
             collection(db, "messages", chatID, "chat"),
             orderBy("ts", "asc")
+            // limit(25)
           );
           const unsubscribe = onSnapshot(colRef, (snapshot) => {
             const updatedChat = snapshot.docs.map((doc) => ({
@@ -225,14 +255,8 @@ const Messages = () => {
   }
 
   function renderChatList(chats) {
-    const timestampStyle = {
-      position: "absolute",
-      fontSize: "0.75rem",
-      color: "#c5c5c5",
-      bottom: "20%",
-    };
-
     return chats.map((chat) => {
+      // chat
       return (
         <Link
           to={"/messages/ZbH1dTP9eo63HsTfcAtf"}
@@ -246,7 +270,7 @@ const Messages = () => {
             />
           </ListItemAvatar> */}
             <ListItemText
-              primary="Adam Sandler"
+              primary={chat.name}
               secondary={
                 <React.Fragment>
                   <Typography
@@ -255,11 +279,9 @@ const Messages = () => {
                     variant="body2"
                     color="text.primary"
                   >
-                    04:57 pm
+                    {getTimeDifferenceShort(chat.lastTs)}
                   </Typography>
-                  {
-                    " — I'll be in your thiasda da sd a d asd a  sd asd a s asdnkjansdkjansdkajn  akjsdnakjsdnakjsdnakn knkjasnd akjnda kjdnaksndjjas…"
-                  }
+                  {` — ${chat.lastTxt}`}
                 </React.Fragment>
               }
             />
@@ -285,7 +307,7 @@ const Messages = () => {
 
   return (
     <Wrapper>
-      <h1>Messages</h1>
+      {/* <h1>Messages</h1> */}
       {loadingUser || checkingIDs ? (
         <CircularProgress sx={{ fontSize: "5rem" }} />
       ) : currentUser && chatIDsValidity ? (
@@ -294,14 +316,21 @@ const Messages = () => {
             <Tabs value={tabValue} onChange={handleTabChange} centered>
               <Tab label="All Messages" />
               <Tab disabled label="Following" />
-              <Tab disabled label="Stranger" />
+              <Tab label="Stranger" />
             </Tabs>
           </Box>
 
           {tabValue == 0 && (
             <div className="tab">
               <div className="list">
-                <List sx={{ padding: "2rem 0" }}>
+                <h3 style={{ padding: "0.25rem 1rem" }}>Chats</h3>
+                <List sx={{ padding: "2rem 0" }} className="theList">
+                  {loadingChatList ? (
+                    <CircularProgress sx={{ p: "3rem" }} />
+                  ) : (
+                    renderChatList(userChatsList)
+                  )}
+
                   <Link
                     to={"/messages/ZbH1dTP9eo63HsTfcAtf"}
                     style={{ color: "black", textDecoration: "none" }}
@@ -326,7 +355,7 @@ const Messages = () => {
                               04:57 pm
                             </Typography>
                             {
-                              " — I'll be in your thiasda da sd a d asd a  sd asd a s asdnkjansdkjansdkajn  akjsdnakjsdnakjsdnakn knkjasnd akjnda kjdnaksndjjas…"
+                              " — I'll be in your thiasda da sd a d asd a  sd asd a s asdnkjas…"
                             }
                           </React.Fragment>
                         }
@@ -485,7 +514,7 @@ const Wrapper = styled.main`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin: 2rem;
+  /* margin-bottom: 2rem; */
   /* overflow-x: hidden; */
 
   .tab {
@@ -496,7 +525,6 @@ const Wrapper = styled.main`
     display: flex;
     align-items: center;
     justify-content: center;
-    display: flex;
     /* align-items: center; */
     /* justify-content: space-between; */
     height: 50rem;
@@ -507,7 +535,7 @@ const Wrapper = styled.main`
       height: 100%;
       overflow-y: auto;
       border-right: 1px solid #ccc;
-      width: 20%;
+      /* width: 20%; */
       min-width: 11rem;
       flex-direction: column;
 
@@ -560,23 +588,6 @@ const Wrapper = styled.main`
           border-bottom-left-radius: 0;
         }
 
-        /* .sender::after {
-          position: absolute;
-          right: -3rem;
-          bottom: 20%;
-          content: "4:30 am";
-          font-size: 0.75rem;
-          color: #c5c5c5;
-        } 
-        .user::after {
-          position: absolute;
-          left: -3.5rem;
-          bottom: 20%;
-          content: "4:30 am";
-          font-size: 0.75rem;
-          color: #c5c5c5;
-        }*/
-
         .user {
           text-align: right;
           align-self: flex-end;
@@ -606,6 +617,25 @@ const Wrapper = styled.main`
       color: gray;
     }
   }
+
+  /* @media screen and (max-width: 1000px) {
+    .tab {
+      flex-direction: column-reverse;
+      align-items: normal;
+    }
+
+    .list {
+      overflow-y: hidden;
+    }
+
+    .theList {
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+      padding: 0;
+      overflow-y: hidden;
+    }
+  } */
 `;
 
 export default Messages;
