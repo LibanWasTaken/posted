@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Spinner2 } from "../components/Spinner";
 import {
   getDoc,
@@ -35,8 +35,6 @@ import {
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import MessageIcon from "@mui/icons-material/Message";
 import FlagIcon from "@mui/icons-material/Flag";
-
-import { useNavigate } from "react-router-dom";
 
 const theme = createTheme({
   typography: {
@@ -191,38 +189,73 @@ const UserPage = () => {
     }
   }
 
-  async function handleSendMessage(currUser, postAdminUID, msg) {
+  async function handleMessage(currUserID, postAdminUID) {
+    setMsgProgressing(true);
+    handleOpenMessageModal();
+
+    try {
+      const chatCollectionRef = collection(db, "users", postAdminUID, "chats");
+      const chatDocs = await getDocs(chatCollectionRef);
+      console.log(chatDocs);
+      chatDocs.forEach((doc) => {
+        const chatData = doc.data();
+        if (chatData.uid === currUserID) {
+          navigate(`/messages/${doc.id}`);
+          return;
+        }
+      });
+
+      // If currUserID is not found in any chat data
+      setMsgProgressing(false);
+      console.log("New");
+    } catch (error) {
+      console.error("Error handling message:", error);
+    }
+  }
+  async function handleSendMessage(currUser, pageAdminUID, pageAdminName, msg) {
     try {
       const timestamp = Number(dayjs().valueOf());
+      if (currUser && pageAdminUID && pageAdminName && msg) {
+        const messageCollectionRef = collection(db, "messages");
+        const messageDocRef = await addDoc(messageCollectionRef, {
+          uids: [currUser.uid, pageAdminUID],
+        });
 
-      const messageCollectionRef = collection(db, "messages");
-      const messageDocRef = await addDoc(messageCollectionRef, {
-        uids: [currUser.uid, postAdminUID],
-      });
+        const generatedId = messageDocRef.id;
+        console.log(generatedId, "messages new");
 
-      const generatedId = messageDocRef.id;
-      console.log(generatedId, "messages new");
+        const chatCollectionRef = collection(messageDocRef, "chat");
+        const chatDocRef = await addDoc(chatCollectionRef, {
+          msg: msg,
+          ts: timestamp,
+          uid: currUser.uid,
+          displayName: currUser.displayName,
+        });
+        console.log(chatDocRef.id, "messages/chat new");
 
-      const chatCollectionRef = collection(messageDocRef, "chat");
-      const chatDocRef = await addDoc(chatCollectionRef, {
-        msg: msg,
-        ts: timestamp,
-        uid: currUser.uid,
-        displayName: currUser.displayName,
-      });
-      console.log(chatDocRef.id, "messages/chat new");
+        await setDoc(doc(db, "users", pageAdminUID, "chats", generatedId), {
+          name: currUser.displayName,
+          lastTs: timestamp,
+          lastTxt: msg,
+          uid: currUser.uid,
+        });
+        console.log("user admin chat list");
 
-      await setDoc(doc(db, "users", postAdminUID, "chats", generatedId), {
-        name: currUser.displayName,
-        ts: timestamp,
-        msg: msg,
-      });
-      console.log("user chat list");
+        await setDoc(doc(db, "users", currUser.uid, "chats", generatedId), {
+          name: pageAdminName,
+          lastTs: timestamp,
+          lastTxt: msg,
+          uid: pageAdminUID,
+        });
+        console.log("current user chat list");
 
-      const newMsg = `New Message from ${
-        currUser.displayName
-      }: "${msg.substring(0, 20)}"`;
-      sendNotification(postAdminUID, newMsg, `messages/${generatedId}`);
+        const newMsg = `New Message from ${
+          currUser.displayName
+        }: "${msg.substring(0, 20)}"`;
+        sendNotification(pageAdminUID, newMsg, `messages/${generatedId}`);
+      } else {
+        throw new Error("Invalid Data");
+      }
     } catch (error) {
       console.error("Error handling message:", error);
     } finally {
@@ -330,10 +363,10 @@ const UserPage = () => {
     const [msgValue, setMsgValue] = useState("");
 
     function handleCheck() {
-      if (msgValue) {
+      if (msgValue && user) {
         // TODO: check if messages (get the values in useEffect), if alredy then reidrect, else create new, both users..?
         setMsgProgressing(true);
-        handleSendMessage(currentUser, uid, msgValue);
+        handleSendMessage(currentUser, uid, user.displayName, msgValue);
       }
     }
 
@@ -411,7 +444,7 @@ const UserPage = () => {
 
           <div className="pageBreak"></div>
 
-          {currentUser && (
+          {currentUser && uid !== currentUser.uid && (
             <ThemeProvider theme={themeInverse}>
               <div className="buttons">
                 <Button
@@ -440,7 +473,9 @@ const UserPage = () => {
                     gap: 2,
                   }}
                   variant="outlined"
-                  onClick={handleOpenMessageModal}
+                  onClick={() => {
+                    handleMessage(currentUser.uid, uid);
+                  }}
                 >
                   Message <MessageIcon />
                 </Button>

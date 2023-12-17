@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useLayoutEffect,
-  Fragment,
-  useRef,
-} from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { useUserContext } from "../context/UserContext";
 import { useParams } from "react-router-dom";
@@ -92,7 +86,7 @@ const Messages = () => {
   const [chat, setChat] = useState();
   const [userChatsList, setUserChatsList] = useState([]);
   const [loadingChatList, setLoadingChatList] = useState(true);
-
+  const [chatUserName, setChatUserName] = useState("Uhh");
   const [chatIDsValidity, setChatIDsValidity] = useState();
   const [chatMsgValue, setChatMsgValue] = useState();
 
@@ -112,25 +106,27 @@ const Messages = () => {
         console.log("UserID invalid");
       }
       setCheckingIDs(false);
+      console.log("done");
     } catch (error) {
       console.log("Error getting document:", error);
       alert("Error getting document");
     }
   }
+
   async function getUsersChatIDs(id) {
     setLoadingChatList(true);
     console.log("uhh");
     try {
-      await getDocs(collection(db, "users", id, "chats")).then(
-        (querySnapshot) => {
-          const chatsData = querySnapshot.docs.map((doc) => ({
-            ...doc.data(),
-            id: doc.id,
-          }));
-          setUserChatsList(chatsData);
-          console.log(chatsData);
-        }
-      );
+      await getDocs(
+        query(collection(db, "users", id, "chats"), orderBy("lastTs", "desc"))
+      ).then((querySnapshot) => {
+        const chatsData = querySnapshot.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+        }));
+        setUserChatsList(chatsData);
+        console.log(chatsData);
+      });
     } catch (error) {
       console.log("Error getting document:", error);
       alert("Error getting document");
@@ -176,6 +172,8 @@ const Messages = () => {
         // }
       } catch (e) {
         console.error("Error adding document:", e);
+      } finally {
+        setChatMsgValue("");
       }
     }
   };
@@ -203,11 +201,10 @@ const Messages = () => {
               id: doc.id,
               ...doc.data(),
             }));
-
-            setChat((prev) => [...prev, ...updatedChat]);
+            // console.log(updatedChat);
+            updatedChat && setChat([...updatedChat]);
           });
 
-          // Cleanup the listener when the component unmounts
           return () => {
             unsubscribe();
           };
@@ -259,8 +256,9 @@ const Messages = () => {
       // chat
       return (
         <Link
-          to={"/messages/ZbH1dTP9eo63HsTfcAtf"}
+          to={`/messages/${chat.id}`}
           style={{ color: "black", textDecoration: "none" }}
+          key={chat.id}
         >
           <ListItemButton alignItems="flex-start">
             {/* <ListItemAvatar>
@@ -323,98 +321,20 @@ const Messages = () => {
           {tabValue == 0 && (
             <div className="tab">
               <div className="list">
-                <h3 style={{ padding: "0.25rem 1rem" }}>Chats</h3>
+                <h3
+                  style={{
+                    padding: "0.25rem 0rem 1rem 1rem",
+                    borderBottom: "1px solid gray",
+                  }}
+                >
+                  Chats
+                </h3>
                 <List sx={{ padding: "2rem 0" }} className="theList">
                   {loadingChatList ? (
                     <CircularProgress sx={{ p: "3rem" }} />
                   ) : (
                     renderChatList(userChatsList)
                   )}
-
-                  <Link
-                    to={"/messages/ZbH1dTP9eo63HsTfcAtf"}
-                    style={{ color: "black", textDecoration: "none" }}
-                  >
-                    <ListItem button alignItems="flex-start">
-                      {/* <ListItemAvatar>
-                        <Avatar
-                          alt="Remy Sharp"
-                          src="/static/images/avatar/1.jpg"
-                        />
-                      </ListItemAvatar> */}
-                      <ListItemText
-                        primary="Adam Sandler"
-                        secondary={
-                          <React.Fragment>
-                            <Typography
-                              sx={{ display: "inline" }}
-                              component="span"
-                              variant="body2"
-                              color="text.primary"
-                            >
-                              04:57 pm
-                            </Typography>
-                            {
-                              " — I'll be in your thiasda da sd a d asd a  sd asd a s asdnkjas…"
-                            }
-                          </React.Fragment>
-                        }
-                      />
-                    </ListItem>
-                    <Divider component="li" />
-                  </Link>
-                  <ListItem button alignItems="flex-start">
-                    <ListItemAvatar>
-                      <Avatar
-                        alt="Remy Sharp"
-                        src="/static/images/avatar/1.jpg"
-                      />
-                    </ListItemAvatar>
-                    <ListItemText
-                      primary="John Smith"
-                      secondary={
-                        <React.Fragment>
-                          <Typography
-                            sx={{ display: "inline" }}
-                            component="span"
-                            variant="body2"
-                            color="text.primary"
-                          >
-                            Ali Connors
-                          </Typography>
-                          {
-                            " — I'll be in your neighborhood doing errands this…"
-                          }
-                        </React.Fragment>
-                      }
-                    />
-                  </ListItem>
-                  <Divider component="li" />
-                  <ListItem button alignItems="flex-start">
-                    <ListItemAvatar>
-                      <Avatar
-                        alt="Remy Sharp"
-                        src="/static/images/avatar/1.jpg"
-                      />
-                    </ListItemAvatar>
-                    <ListItemText
-                      primary="Adam Sandler"
-                      secondary={
-                        <React.Fragment>
-                          <Typography
-                            sx={{ display: "inline" }}
-                            component="span"
-                            variant="body2"
-                            color="text.primary"
-                          >
-                            04:57 pm
-                          </Typography>
-                          {" — I'll be in your this…"}
-                        </React.Fragment>
-                      }
-                    />
-                  </ListItem>
-                  <Divider component="li" />
                 </List>
               </div>
               {loadingChat ? (
@@ -463,7 +383,6 @@ const Messages = () => {
                         const { key } = event;
                         if (key === "Enter") {
                           handleSubmit();
-                          setChatMsgValue("");
                         }
                       }}
                       // multiline
@@ -476,7 +395,7 @@ const Messages = () => {
                         border: "none",
                       }}
                     />
-                    <IconButton size="large">
+                    <IconButton size="large" onClick={handleSubmit}>
                       {/* <DeleteIcon fontSize="inherit" /> */}
                       <SendIcon />
                     </IconButton>
@@ -582,14 +501,14 @@ const Wrapper = styled.main`
           line-height: 1.25rem;
         }
         .sender {
+          align-self: flex;
           text-align: left;
-          align-self: flex-start;
           background-color: rgba(0, 0, 0, 0.05);
           border-bottom-left-radius: 0;
         }
 
         .user {
-          text-align: right;
+          text-align: left;
           align-self: flex-end;
           color: white;
           background-color: black;
