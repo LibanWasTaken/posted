@@ -45,6 +45,7 @@ export default function SinglePostPage() {
   const { id } = useParams();
   const [postData, setPostData] = useState();
   const [userData, setUserData] = useState();
+  const [diaryData, setDiaryData] = useState();
   const [postAdmin, setPostAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [hearted, setHearted] = useState(false);
@@ -306,7 +307,7 @@ export default function SinglePostPage() {
               <Diary
                 open={diaryOpenMUI}
                 handleClose={handleDiaryCloseMUI}
-                // info={id}
+                info={id}
                 editable={false}
               />
             )}
@@ -517,11 +518,11 @@ const Wrapper = styled.main`
       bottom: 2rem;
     }
     .settingImg {
-      position: absolute;
+      position: block;
       right: -20rem;
       bottom: -20rem;
       font-size: 50rem;
-      color: whitesmoke;
+      color: #eee;
       animation: spin 30s linear infinite;
       user-select: none;
       z-index: -1;

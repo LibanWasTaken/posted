@@ -181,6 +181,8 @@ const UserPage = () => {
         await updateDoc(userRef, { followers: updatedFollowingList });
 
         console.log(updatedFollowingList);
+
+        // update current users follwing array
       }
     } catch (error) {
       console.error(error);
@@ -253,6 +255,7 @@ const UserPage = () => {
           currUser.displayName
         }: "${msg.substring(0, 20)}"`;
         sendNotification(pageAdminUID, newMsg, `messages/${generatedId}`);
+        navigate(`/messages/${generatedId}`);
       } else {
         throw new Error("Invalid Data");
       }

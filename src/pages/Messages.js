@@ -15,12 +15,13 @@ import {
   orderBy,
   onSnapshot,
   limit,
+  deleteDoc,
+  where,
 } from "firebase/firestore";
 import { db } from "../services/firebase-config";
 import dayjs from "dayjs";
 
 import {
-  Dialog,
   ListItemText,
   ListItem,
   ListItemButton,
@@ -35,6 +36,15 @@ import {
   Typography,
   TextField,
   Grow,
+  Button,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from "@mui/material";
 
 import PropTypes from "prop-types";
@@ -45,6 +55,7 @@ import SendIcon from "@mui/icons-material/Send";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ErrorTwoToneIcon from "@mui/icons-material/ErrorTwoTone";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -86,9 +97,26 @@ const Messages = () => {
   const [chat, setChat] = useState();
   const [userChatsList, setUserChatsList] = useState([]);
   const [loadingChatList, setLoadingChatList] = useState(true);
-  const [chatUserName, setChatUserName] = useState("Uhh");
+  const [chatUserIDs, setChatUserIDS] = useState("Uhh");
   const [chatIDsValidity, setChatIDsValidity] = useState();
   const [chatMsgValue, setChatMsgValue] = useState();
+
+  const [openDeletionModal, setOpenDeletionModal] = useState(false);
+  const handleClickOpenDeletionModal = () => {
+    setOpenDeletionModal(true);
+  };
+  const handleCloseDeletionModal = () => {
+    setOpenDeletionModal(false);
+  };
+
+  const [anchorEl, setAnchorEl] = useState(null);
+  const openChatMenu = Boolean(anchorEl);
+  const handleClickChatMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleCloseChatMenu = () => {
+    setAnchorEl(null);
+  };
 
   //   TODO: check if currentUser, check if any of the id, notification, check if there the chatID (url) == one of the normal ids, if chats array.length > 25 show a load more above the .chat, maybe show that "sending message" by making chat bg gray (add transition?), also add a grow/fade
 
@@ -98,6 +126,7 @@ const Messages = () => {
     try {
       const docSnapshot = await getDoc(userDocRef);
       const chatIDsReceived = docSnapshot.data();
+      setChatUserIDS(chatIDsReceived.uids);
       if (chatIDsReceived.uids.includes(currentUser.uid)) {
         setChatIDsValidity(true);
         console.log("UserID valid");
@@ -149,6 +178,77 @@ const Messages = () => {
     // console.log(chatDocs);
     setChat(chatDocs);
     setLoadingChat(false);
+  }
+
+  async function deleteCollection(db, collectionPath, batchSize) {
+    const collectionRef = db.collection(collectionPath);
+    const query = collectionRef.orderBy("__name__").limit(batchSize);
+
+    return new Promise((resolve, reject) => {
+      deleteQueryBatch(db, query, resolve).catch(reject);
+    });
+  }
+
+  async function deleteQueryBatch(db, query, resolve) {
+    const snapshot = await query.get();
+
+    const batchSize = snapshot.size;
+    if (batchSize === 0) {
+      // When there are no documents left, we are done
+      resolve();
+      return;
+    }
+
+    // Delete documents in a batch
+    const batch = db.batch();
+    snapshot.docs.forEach((doc) => {
+      batch.delete(doc.ref);
+    });
+    await batch.commit();
+
+    // Recurse on the next process tick, to avoid
+    // exploding the stack.
+    process.nextTick(() => {
+      deleteQueryBatch(db, query, resolve);
+    });
+  }
+
+  async function handleDelete(chatID, uidArr) {
+    const chatRef = db.collection("chats").doc(chatID);
+    chatRef
+      .delete()
+      .then(() => {
+        console.log("Chat document successfully deleted!");
+      })
+      .catch((error) => {
+        console.error("Error removing chat document: ", error);
+      });
+
+    const chatMessagesRef = db
+      .collection("chats")
+      .doc(chatID)
+      .collection("chat");
+    chatMessagesRef.get().then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        doc.ref.delete();
+      });
+    });
+
+    uidArr.forEach((uid) => {
+      const userChatRef = db
+        .collection("users")
+        .doc(uid)
+        .collection("chats")
+        .doc(chatID);
+      userChatRef
+        .delete()
+        .then(() => {
+          console.log(`Chat removed from user ${uid}`);
+        })
+        .catch((error) => {
+          console.error("Error removing chat from user: ", error);
+        });
+    });
   }
 
   const handleSubmit = async () => {
@@ -290,6 +390,16 @@ const Messages = () => {
     });
   }
 
+  function createChatName(userIDarr, ownID) {
+    if (userIDarr && ownID) {
+      const filteredArray = userIDarr.filter((item) => item !== ownID);
+      const result = filteredArray.join(", ");
+      return result;
+    } else {
+      return "Uhh";
+    }
+  }
+
   const messagesRef = useRef();
   useEffect(() => {
     if (messagesRef && messagesRef.current) {
@@ -329,7 +439,16 @@ const Messages = () => {
                 >
                   Chats
                 </h3>
-                <List sx={{ padding: "2rem 0" }} className="theList">
+                <List
+                  sx={
+                    {
+                      // padding: "0",
+                      // maxHeight: "85%",
+                      // overflow: "scroll",
+                    }
+                  }
+                  className="theList"
+                >
                   {loadingChatList ? (
                     <CircularProgress sx={{ p: "3rem" }} />
                   ) : (
@@ -357,11 +476,95 @@ const Messages = () => {
                         alt="Remy Sharp"
                         src="/static/images/avatar/1.jpg"
                       />
-                      John Smith
+                      John Smith {createChatName(chatUserIDs, currentUser.uid)}
                     </span>
-                    <IconButton size="large" sx={{ marginRight: "1rem" }}>
+                    <IconButton
+                      size="large"
+                      sx={{ marginRight: "1rem" }}
+                      onClick={handleClickChatMenu}
+                    >
                       <MoreVertIcon />
                     </IconButton>
+                    <Menu
+                      anchorEl={anchorEl}
+                      id="account-menu"
+                      open={openChatMenu}
+                      onClose={handleCloseChatMenu}
+                      onClick={handleCloseChatMenu}
+                      // hideBackdrop
+                      // disableScrollLock
+                      PaperProps={{
+                        elevation: 0,
+                        sx: {
+                          overflow: "visible",
+                          filter:
+                            "drop-shadow(rgba(0, 0, 0, 0.16) 0px 0px 2px)",
+                          mt: 1.5,
+                          "& .MuiAvatar-root": {
+                            width: 32,
+                            height: 32,
+                            ml: -0.5,
+                            mr: 1,
+                          },
+                          "&:before": {
+                            content: '""',
+                            display: "block",
+                            position: "absolute",
+                            top: 0,
+                            right: 14,
+                            width: 10,
+                            height: 10,
+                            bgcolor: "background.paper",
+                            transform: "translateY(-50%) rotate(45deg)",
+                            zIndex: 0,
+                          },
+                        },
+                      }}
+                      transformOrigin={{
+                        horizontal: "right",
+                        vertical: "top",
+                      }}
+                      anchorOrigin={{
+                        horizontal: "right",
+                        vertical: "bottom",
+                      }}
+                    >
+                      <MenuItem onClick={handleClickOpenDeletionModal}>
+                        <ListItemIcon>
+                          <DeleteIcon />
+                        </ListItemIcon>
+                        Delete Chat
+                      </MenuItem>
+                      {/* <Divider sx={{ marginTop: 1 }} /> */}
+                    </Menu>
+                    <Dialog
+                      open={openDeletionModal}
+                      onClose={handleCloseDeletionModal}
+                      aria-labelledby="alert-dialog-title"
+                      aria-describedby="alert-dialog-description"
+                    >
+                      <DialogTitle id="alert-dialog-title">
+                        {"Delete the whole chat history?"}
+                      </DialogTitle>
+                      <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                          This is irreversible.
+                        </DialogContentText>
+                      </DialogContent>
+                      <DialogActions>
+                        <Button onClick={handleCloseDeletionModal}>
+                          cancel
+                        </Button>
+                        <Button
+                          onClick={() => {
+                            handleDelete(chatID, chatUserIDs);
+                          }}
+                          autoFocus
+                        >
+                          delete
+                        </Button>
+                      </DialogActions>
+                    </Dialog>
                   </div>
                   <div className="chat">
                     {/* <Grow on={chat}>{renderChat(chat, currentUser.uid)}</Grow> */}
@@ -454,10 +657,9 @@ const Wrapper = styled.main`
       height: 100%;
       overflow-y: auto;
       border-right: 1px solid #ccc;
-      /* width: 20%; */
       min-width: 11rem;
       flex-direction: column;
-
+      /* overflow: hidden; */
       p {
         margin: 0;
       }

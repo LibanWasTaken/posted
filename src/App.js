@@ -171,7 +171,7 @@ TODO:
 
 add a whitelist array. to ban/temp ban people. then almost everywhere if(userid == thatId0 dont do it), no need to delete. in case unbanning
 
-https://mui.com/material-ui/transitions/#fade instead of the loading images svg
+https://mui.com/material-ui/react-menu/ -> all post page
 
 
 https://support.google.com/firebase/answer/7000714?authuser=0

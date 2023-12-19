@@ -192,7 +192,8 @@ export default function Diary({ open, handleClose, info, editable = true }) {
   const [diaryPages, setDiaryPages] = useState(false);
   const [pageInfo, setPageInfo] = useState(null);
   const [sortDesc, setSortDesc] = useState(false);
-  const { id } = useParams();
+  // const { info } = useParams();
+  console.log(info);
 
   const handlePageAdderOpen = () => {
     if (!loading) {
@@ -222,7 +223,7 @@ export default function Diary({ open, handleClose, info, editable = true }) {
   async function getFSData() {
     setLoading(true);
     const queryReceived = query(
-      collection(db, `/posts/${id}/diary/`),
+      collection(db, `/posts/${info}/diary/`),
       orderBy("timestamp", sortDesc ? "desc" : "asc")
     );
     const querySnapshot = await getDocs(queryReceived);

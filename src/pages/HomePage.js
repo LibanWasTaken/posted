@@ -108,6 +108,8 @@ const HomePage = () => {
         </Parallax>
       </section>
       <section className="section3">
+        <div className="backgroundCoverWhite"></div>
+
         <div className="textContainer">
           <Parallax
             opacity={[0, 1]}
@@ -118,8 +120,15 @@ const HomePage = () => {
             <h1>WRITE</h1>
           </Parallax>
         </div>
+        <p>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic dolorum
+          adipisci facilis repellendus explicabo, praesentium qui a porro cumque
+          nesciunt.
+        </p>
       </section>
       <section className="section4">
+        <div className="backgroundCoverBlack"></div>
+
         <Parallax
           opacity={[0, 1]}
           translateX={["-40%", 0]}
@@ -129,6 +138,11 @@ const HomePage = () => {
         >
           <h1>SET</h1>
         </Parallax>
+        <p>
+          Lorem ipsum dolor sit amet. Lorem ipsum dolor sit, amet consectetur
+          adipisicing elit. Neque, hic! Lorem ipsum dolor sit amet consectetur
+          adipisicing elit. Ut doloremque rerum illum debitis assumenda iure!
+        </p>
       </section>
       {/* <section className="section6">
         <h1>View some of the Posted</h1>
@@ -137,6 +151,8 @@ const HomePage = () => {
         <h1>Unmatched Flexibilty</h1>
       </section> */}
       <section className="section5">
+        <div className="backgroundCoverBlack"></div>
+
         <Parallax
           opacity={[0, 1]}
           translateX={["40%", 0]}
@@ -146,6 +162,11 @@ const HomePage = () => {
         >
           <h1>SEND</h1>
         </Parallax>
+        <p>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic dolorum
+          adipisci facilis repellendus explicabo, praesentium qui a porro cumque
+          nesciunt.
+        </p>
       </section>
       <section className="section7">
         <Parallax
@@ -171,7 +192,7 @@ const HomePage = () => {
           <Parallax
             opacity={[0, 1]}
             // translateY={["40%", 0]}
-            speed={-10}
+            speed={-5}
             startScroll={4900}
             endScroll={5600}
             easing="easeInOutBack"
@@ -181,7 +202,7 @@ const HomePage = () => {
           <Parallax
             opacity={[0, 1]}
             // translateY={["100%", 0]}
-            speed={-10}
+            speed={-5}
             startScroll={4850 + 100}
             endScroll={5600 + 100}
             easing="easeInOutBack"
@@ -191,7 +212,7 @@ const HomePage = () => {
           <Parallax
             opacity={[0, 1]}
             // translateY={["40%", 0]}
-            speed={-10}
+            speed={-5}
             startScroll={4850 + 100 + 100}
             endScroll={5600 + 100 + 100}
             easing="easeInOutBack"
@@ -409,17 +430,26 @@ const Wrapper = styled.main`
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
+
     background-image: url("https://images.pexels.com/photos/4295845/pexels-photo-4295845.jpeg");
     background-repeat: no-repeat; /* Do not repeat the image */
     background-size: cover;
     width: 100vw;
 
-    h1 {
-      font-size: 30rem;
-      /* width: 90vw; */
-      /* text-align: center; */
+    p {
+      /* border: 1px solid red; */
+      color: black;
+      margin: 0;
+      z-index: 5;
+      max-width: 35vw;
+      line-height: 2rem;
+      text-align: center;
+    }
 
-      /* color: white; */
+    h1 {
+      font-size: 20rem;
+      margin: 0;
     }
     overflow: hidden;
   }
@@ -429,13 +459,22 @@ const Wrapper = styled.main`
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
     background-image: url("https://images.pexels.com/photos/5386754/pexels-photo-5386754.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1");
     background-repeat: no-repeat; /* Do not repeat the image */
     background-size: cover;
     width: 100vw;
-
+    p {
+      /* border: 1px solid red; */
+      color: white;
+      margin: 0;
+      z-index: 1;
+      max-width: 35vw;
+      line-height: 2rem;
+    }
     h1 {
-      font-size: 30rem;
+      font-size: 20rem;
+      margin: 0;
       color: white;
     }
     overflow: hidden;
@@ -446,13 +485,25 @@ const Wrapper = styled.main`
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
+
     background-image: url("https://images.pexels.com/photos/193003/pexels-photo-193003.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1");
     background-repeat: no-repeat; /* Do not repeat the image */
     background-size: cover;
     width: 100vw;
 
+    p {
+      /* border: 1px solid red; */
+      color: white;
+      margin: 0;
+      z-index: 1;
+      max-width: 35vw;
+      line-height: 2rem;
+      text-align: right;
+    }
     h1 {
-      font-size: 30rem;
+      font-size: 20rem;
+      margin: 0;
       color: white;
     }
     overflow: hidden;
@@ -656,6 +707,20 @@ const Wrapper = styled.main`
         font-size: 1rem;
       }
     }
+  }
+
+  .backgroundCoverWhite {
+    width: 100%;
+    z-index: 0;
+    height: 120vh;
+    position: absolute;
+    background-color: rgb(255, 255, 255, 0.75);
+  }
+  .backgroundCoverBlack {
+    width: 100%;
+    height: 120vh;
+    position: absolute;
+    background-color: rgb(0, 0, 0, 0.9);
   }
 `;
 

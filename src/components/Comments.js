@@ -16,6 +16,8 @@ import { useUserContext } from "../context/UserContext";
 import { sendNotification } from "../functions/functions";
 
 import { Button, TextField } from "@mui/material";
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 const theme = createTheme({
@@ -178,14 +180,16 @@ const Comments = ({ postID, postAdminUID }) => {
           </div>
         </div>
         <div className="content">
-          <p>
-            {dayjs(comment.timestamp).format("h:m:s a - DD/MM/YYYY")}{" "}
+          <p className="date">
+            {dayjs(comment.timestamp).format("h:m:s a - DD/MM/YYYY")}
             {/* {new Date(Number(comment.timestamp)).toLocaleTimeString()} -{" "}
             {new Date(Number(comment.timestamp)).toLocaleDateString()} */}
           </p>
           <div className="vote">
-            <span className="material-symbols-outlined">thumb_up</span>
-            {/* <p>15</p> */}
+            {/* <span className="material-symbols-outlined">thumb_up</span> */}
+            <ArrowDropUpIcon />
+            <p>15</p>
+            <ArrowDropDownIcon />
           </div>
         </div>
       </div>
@@ -330,8 +334,9 @@ const Wrapper = styled.main`
         padding: 10px;
       }
       .user {
-        font-style: italic;
+        /* font-style: italic; */
         /* padding-left: 1rem; */
+        margin: 0 0 1rem 0;
         font-size: 0.9rem;
       }
       .content {
@@ -340,12 +345,21 @@ const Wrapper = styled.main`
         gap: 1rem;
         max-width: 80%;
       }
-      .vote {
-        cursor: pointer;
-        fill: black;
-      }
-      .vote:active {
+      .date {
         color: gray;
+      }
+      .vote {
+        /* cursor: pointer; */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        fill: black;
+        gap: -50px;
+        p {
+          margin: 0;
+          padding: 0;
+        }
       }
       .show {
         opacity: 0;

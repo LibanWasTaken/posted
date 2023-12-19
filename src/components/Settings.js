@@ -34,6 +34,7 @@ import {
   createTheme,
   ThemeProvider,
   Button,
+  ButtonGroup,
   Avatar,
   Tooltip,
   Menu,
@@ -88,6 +89,7 @@ function Settings({ userID }) {
   const [notifications, setNotifications] = useState([]);
   const [notificationsLoading, setNotificationsLoading] = useState(true);
   const [changeState, setChangeState] = useState(false);
+  const [followingTab, setFollowingTab] = useState(true);
   const location = useLocation();
 
   // TODO: fix this + nav bar wrap the whole "show all notif" in the Link tag
@@ -694,9 +696,67 @@ function Settings({ userID }) {
                     </Box>
                   </AccordionDetails>
                 </Accordion>
+                <Accordion
+                  sx={{
+                    m: 3,
+                    boxShadow: "rgba(0, 0, 0, 0.18) 0px 2px 4px",
+                  }}
+                >
+                  <AccordionSummary
+                    sx={{ backgroundColor: "whitesmoke" }}
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel1a-content"
+                    id="User-Follows"
+                  >
+                    <Typography>Follow</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails sx={{ p: 2 }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <ButtonGroup
+                        variant="outlined"
+                        aria-label="outlined button group"
+                      >
+                        <Button
+                          onClick={() => {
+                            setFollowingTab(!followingTab);
+                          }}
+                          disabled={followingTab}
+                        >
+                          ERS
+                        </Button>
+                        <Button
+                          onClick={() => {
+                            setFollowingTab(!followingTab);
+                          }}
+                          disabled={!followingTab}
+                        >
+                          ING
+                        </Button>
+                      </ButtonGroup>
+                    </Box>
+                    {followingTab ? (
+                      <Box sx={{ marginTop: 2 }}>
+                        <MenuItem>John Smith</MenuItem>
+                        <MenuItem>John Smith</MenuItem>
+                      </Box>
+                    ) : (
+                      <Box sx={{ marginTop: 2 }}>
+                        <MenuItem>Alex Steve</MenuItem>
+                        <MenuItem>Alex Steve</MenuItem>
+                      </Box>
+                    )}
+                  </AccordionDetails>
+                </Accordion>
               </div>
               <div className="details">
                 <p>Created on: bla bla bla</p>
+                <p>UID: {userID}</p>
                 <p>Prem or not prem: bla bla bla</p>
                 <p>Freinds, Following, Always mail these guys: close firends</p>
               </div>
@@ -726,6 +786,13 @@ function Settings({ userID }) {
             </div>
 
             <div className="skeleton">
+              <Skeleton
+                variant="rectangular"
+                width={832}
+                height={49.7}
+                sx={{ m: 3 }}
+                animation="wave"
+              />
               <Skeleton
                 variant="rectangular"
                 width={832}
@@ -838,7 +905,8 @@ const Wrapper = styled.section`
   }
 
   .details {
-    padding: 0 2rem;
+    padding: 2rem;
+    background-color: whitesmoke;
   }
 
   @media screen and (max-width: 1460px) {
