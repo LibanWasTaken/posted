@@ -38,12 +38,12 @@ function easeInOutCubic(t) {
   return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
 }
 
-export async function sendNotification(uid, message, url) {
+export async function sendNotification(uid, message, url = "#") {
   if (uid && message) {
     const newNotification = {
       msg: message,
       ts: Number(dayjs().valueOf()),
-      link: url ? url : "#",
+      link: url,
     };
     try {
       const docRef = await addDoc(
@@ -51,7 +51,7 @@ export async function sendNotification(uid, message, url) {
         newNotification
       );
 
-      console.log("Notification Sent");
+      console.log("Notification Sent", docRef);
     } catch (e) {
       console.error("Error sending notification", e);
     }

@@ -46,6 +46,7 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
+import { Link as LinkMUI } from "@mui/material";
 
 import PropTypes from "prop-types";
 
@@ -129,13 +130,13 @@ const Messages = () => {
       setChatUserIDS(chatIDsReceived.uids);
       if (chatIDsReceived.uids.includes(currentUser.uid)) {
         setChatIDsValidity(true);
-        console.log("UserID valid");
+        // console.log("UserID valid");
       } else {
         setChatIDsValidity(false);
-        console.log("UserID invalid");
+        // console.log("UserID invalid");
       }
       setCheckingIDs(false);
-      console.log("done");
+      // console.log("done");
     } catch (error) {
       console.log("Error getting document:", error);
       alert("Error getting document");
@@ -144,7 +145,7 @@ const Messages = () => {
 
   async function getUsersChatIDs(id) {
     setLoadingChatList(true);
-    console.log("uhh");
+    // console.log("uhh");
     try {
       await getDocs(
         query(collection(db, "users", id, "chats"), orderBy("lastTs", "desc"))
@@ -154,7 +155,7 @@ const Messages = () => {
           id: doc.id,
         }));
         setUserChatsList(chatsData);
-        console.log(chatsData);
+        // console.log(chatsData);
       });
     } catch (error) {
       console.log("Error getting document:", error);
@@ -254,7 +255,7 @@ const Messages = () => {
   const handleSubmit = async () => {
     if (chatMsgValue) {
       const chatValueCurr = chatMsgValue;
-      setChatMsgValue(); // TODO: empty
+      setChatMsgValue(""); // TODO: empty
       console.log("Sending:", chatValueCurr);
       try {
         await addDoc(collection(db, "messages", chatID, "chat"), {
@@ -285,7 +286,7 @@ const Messages = () => {
           getUsersChatIDs(currentUser.uid);
         }
         if (chatID && currentUser) {
-          console.log("uhh");
+          // console.log("uhh");
 
           !userChatsList && getUsersChatIDs(currentUser.uid);
           getChatIDs(chatID);
@@ -476,7 +477,13 @@ const Messages = () => {
                         alt="Remy Sharp"
                         src="/static/images/avatar/1.jpg"
                       />
-                      John Smith {createChatName(chatUserIDs, currentUser.uid)}
+                      <LinkMUI
+                        href={`/user/${currentUser.uid}`}
+                        underline="hover"
+                      >
+                        {chatUserIDs &&
+                          createChatName(chatUserIDs, currentUser.uid)}
+                      </LinkMUI>
                     </span>
                     <IconButton
                       size="large"

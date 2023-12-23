@@ -10,6 +10,8 @@ import {
   updateDoc,
   setDoc,
   addDoc,
+  arrayUnion,
+  arrayRemove,
 } from "firebase/firestore";
 import { db } from "../services/firebase-config";
 import { Link } from "react-router-dom";
@@ -30,6 +32,10 @@ import {
   DialogTitle,
   Avatar,
   LinearProgress,
+  CircularProgress,
+  Alert,
+  AlertTitle,
+  Snackbar,
 } from "@mui/material/";
 
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
@@ -155,34 +161,99 @@ const UserPage = () => {
     }
   }
 
-  async function handleFollow(currentUid) {
+  // async function handleFollow(currentUid) {
+  //   // TODO: https://firebase.google.com/docs/firestore/manage-data/add-data#update_elements_in_an_array
+  //   try {
+  //     setFollowingCall(true);
+  //     if (currentUid && uid && currentUid !== uid) {
+  //       // Create a copy of the array to avoid mutating state directly
+  //       let updatedFollowingList = [...followingList];
+  //       console.log(followingList);
+  //       console.log(updatedFollowingList);
+  //       if (following) {
+  //         // Unfollow
+  //         updatedFollowingList = updatedFollowingList.filter(
+  //           (userId) => userId !== currentUid
+  //         );
+  //         setFollowing(false);
+  //       } else {
+  //         // Follow
+  //         updatedFollowingList.push(currentUid);
+  //         setFollowing(true);
+  //         if (user && user.displayName) {
+  //           sendNotification(
+  //             currentUid,
+  //             `New follower: ${user.displayName}`,
+  //             `user/${uid}`
+  //           );
+  //         }
+  //       }
+
+  //       const userRef = doc(db, "users", uid);
+  //       await updateDoc(userRef, { followers: updatedFollowingList });
+  //       console.log(updatedFollowingList);
+
+  //       // Update following array in the target user's document
+  //       const targetUserRef = doc(db, "users", currentUid);
+  //       const targetUserDoc = await getDoc(targetUserRef);
+  //       const targetUserFollowingList = targetUserDoc.data().following || [];
+
+  //       if (following) {
+  //         // Unfollow
+  //         const updatedTargetFollowingList = targetUserFollowingList.filter(
+  //           (userId) => userId !== uid
+  //         );
+  //         await updateDoc(targetUserRef, {
+  //           following: updatedTargetFollowingList,
+  //         });
+  //       } else {
+  //         // Follow
+  //         targetUserFollowingList.push(uid);
+  //         await updateDoc(targetUserRef, {
+  //           following: targetUserFollowingList,
+  //         });
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //   } finally {
+  //     setFollowingCall(false);
+  //   }
+  // }
+
+  async function handleFollow(currentUid, currentName) {
     try {
       setFollowingCall(true);
-
-      if (currentUid && currentUid !== uid) {
-        console.log("yeh");
-
-        // Create a copy of the array to avoid mutating state directly
-        let updatedFollowingList = [...followingList];
+      if (currentUid && currentName && currentUid !== uid) {
+        const userRef = doc(db, "users", uid);
+        const currentUserRef = doc(db, "users", currentUid);
 
         if (following) {
           // Unfollow
-          updatedFollowingList = updatedFollowingList.filter(
-            (userId) => userId !== currentUid
-          );
+          await updateDoc(userRef, {
+            followers: arrayRemove(currentUid),
+          });
+          await updateDoc(currentUserRef, {
+            following: arrayRemove(uid),
+          });
           setFollowing(false);
         } else {
           // Follow
-          updatedFollowingList.push(currentUid);
+          await updateDoc(userRef, {
+            followers: arrayUnion(currentUid),
+          });
+          await updateDoc(currentUserRef, {
+            following: arrayUnion(uid),
+          });
           setFollowing(true);
+          if (user && user.displayName) {
+            sendNotification(
+              uid,
+              `New follower: ${currentName}`,
+              `user/${currentUid}`
+            );
+          }
         }
-
-        const userRef = doc(db, "users", uid);
-        await updateDoc(userRef, { followers: updatedFollowingList });
-
-        console.log(updatedFollowingList);
-
-        // update current users follwing array
       }
     } catch (error) {
       console.error(error);
@@ -429,9 +500,10 @@ const UserPage = () => {
             <Avatar
               alt="Remy Sharp"
               src={user.photoURL}
-              sx={{ width: "15rem", height: "15rem", marginTop: "3rem" }}
+              sx={{ width: "15rem", height: "15rem" }}
             />
           )}
+
           <h1>{user.displayName}</h1>
           <p>userName</p>
           <div className="posts">
@@ -458,14 +530,21 @@ const UserPage = () => {
                     justifyContent: "center",
                     gap: 2,
                   }}
-                  className={followingCall && "loadingClassicBtn"}
-                  disabled={followingCall}
+                  // className={followingCall && "loadingClassicBtn"}
+                  // disabled={followingCall}
                   variant={following ? "contained" : "outlined"}
                   onClick={() => {
-                    handleFollow(currentUser.uid);
+                    if (!followingCall) {
+                      handleFollow(currentUser.uid, currentUser.displayName);
+                    }
                   }}
                 >
-                  Follow <PersonAddIcon />
+                  Follow{" "}
+                  {followingCall ? (
+                    <CircularProgress size={"1.5rem"} />
+                  ) : (
+                    <PersonAddIcon />
+                  )}
                 </Button>
                 <Button
                   sx={{
@@ -530,6 +609,18 @@ const UserPage = () => {
         open={openMessageModal}
         handleClose={handleCloseMessageModal}
       />
+      {/* <Alert
+        severity="error"
+        sx={{
+          position: "fixed",
+          bottom: "1rem",
+          left: "1rem",
+          textAlign: "left",
+        }}
+      >
+        <AlertTitle>Error</AlertTitle>
+        This is an error alert — <strong>check it out!</strong>
+      </Alert> */}
     </Wrapper>
   );
 };
@@ -539,7 +630,7 @@ const Wrapper = styled.main`
   flex-direction: column;
   align-items: center;
   /* justify-content: center; */
-  padding-top: 1rem;
+  padding-top: 3rem;
   background-color: black;
   color: white;
   min-height: 100vh;

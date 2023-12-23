@@ -173,6 +173,7 @@ add a whitelist array. to ban/temp ban people. then almost everywhere if(userid 
 
 https://mui.com/material-ui/react-menu/ -> all post page
 
+npm install smooth-scrollbar
 
 https://support.google.com/firebase/answer/7000714?authuser=0
 custom domain in mail for pass restting / verification

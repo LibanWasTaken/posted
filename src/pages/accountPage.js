@@ -641,7 +641,8 @@ const Wrapper = styled.main`
   justify-content: center;
   flex-direction: column; */
   /* padding: 5rem; */
-
+  background-color: #fafafa;
+  height: 100vh;
   .scrollMore:hover {
     transition: 300ms;
     transform: translateX(5px);
@@ -654,6 +655,8 @@ const Wrapper = styled.main`
     justify-content: space-between;
     overflow: hidden;
     height: 874px;
+    height: 100vh;
+    background-color: white;
     .design {
       background-color: black;
       display: flex;

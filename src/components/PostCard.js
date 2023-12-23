@@ -210,7 +210,7 @@ const Wrapper = styled.section`
     bottom: 20px;
     letter-spacing: 1px;
     font-size: 0.75rem;
-    font-style: italic;
+    /* font-style: italic; */
     margin: 0;
     /* padding-top: 10.5rem; */
     color: white;

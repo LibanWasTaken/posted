@@ -15,7 +15,7 @@ import {
 import dayjs from "dayjs";
 
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { Skeleton, TextField, Tooltip, Button, Box } from "@mui/material";
+import { Skeleton, TextField, Tooltip, Button, Box, Grow } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 // import Collapse from "@mui/material/Collapse";
 
@@ -194,10 +194,68 @@ export default function AllProductPage() {
                 Filter
               </div>
             ) : (
-              <div className={`filter`}>
-                <div className="heading">
-                  <h2>Filter</h2>
+              <Grow in={!collapse}>
+                <div className="filter">
+                  <div className="heading">
+                    <h2>Filter</h2>
+                    <Tooltip
+                      title={`Sort by ${
+                        sortType == "asc" ? "Newest First" : "Oldest First"
+                      }`}
+                      placement="top"
+                      arrow
+                    >
+                      <div className="sort" onClick={handleSort}>
+                        <span className="material-symbols-outlined">sort</span>
+                      </div>
+                    </Tooltip>
+                  </div>
+                  <p>Search</p>
+                  <TextField
+                    label="Posts Count"
+                    variant="standard"
+                    type="number"
+                    sx={{
+                      m: 1,
+                      width: "10ch",
+                      marginBottom: 3,
+                    }}
+                    defaultValue={countPosts}
+                    inputProps={{
+                      min: 4,
+                      max: 500,
+                    }}
+                    onChange={(e) => {
+                      const count = e.target.value;
+                      if (count && count > 3 && count < 501) {
+                        setCountPosts(Math.round(count));
+                      }
+                    }}
+                  />
+                  <DatePicker
+                    label="From"
+                    // minDate={tomorrow}
+                    value={selectedDate1 ? dayjs(selectedDate1) : null}
+                    onChange={handleDateChange1}
+                    onError={handleError}
+                    sx={{ margin: "0.5rem 0", width: "20ch" }}
+                    views={["year", "month", "day"]}
+                  />
+                  <DatePicker
+                    label="To"
+                    // minDate={tomorrow}
+                    value={selectedDate2 ? dayjs(selectedDate2) : null}
+                    onChange={handleDateChange2}
+                    onError={handleError}
+                    sx={{ margin: "0.5rem 0", width: "20ch" }}
+                    views={["year", "month", "day"]}
+                  />
+                  <Box>
+                    <Button onClick={handleRangeToday}>Today</Button>
+                    <Button onClick={handleResetRange}>Reset</Button>
+                  </Box>
                   <Tooltip
+                    className="smallView"
                     title={`Sort by ${
                       sortType == "asc" ? "Newest First" : "Oldest First"
                     }`}
@@ -208,73 +266,17 @@ export default function AllProductPage() {
                       <span className="material-symbols-outlined">sort</span>
                     </div>
                   </Tooltip>
-                </div>
-                <p>Search</p>
-                <TextField
-                  label="Posts Count"
-                  variant="standard"
-                  type="number"
-                  sx={{
-                    m: 1,
-                    width: "10ch",
-                    marginBottom: 3,
-                  }}
-                  defaultValue={countPosts}
-                  inputProps={{
-                    min: 4,
-                    max: 500,
-                  }}
-                  onChange={(e) => {
-                    const count = e.target.value;
-                    if (count && count > 3 && count < 501) {
-                      setCountPosts(Math.round(count));
-                    }
-                  }}
-                />
-                <DatePicker
-                  label="From"
-                  // minDate={tomorrow}
-                  value={selectedDate1 ? dayjs(selectedDate1) : null}
-                  onChange={handleDateChange1}
-                  onError={handleError}
-                  sx={{ margin: "0.5rem 0", width: "20ch" }}
-                  views={["year", "month", "day"]}
-                />
-                <DatePicker
-                  label="To"
-                  // minDate={tomorrow}
-                  value={selectedDate2 ? dayjs(selectedDate2) : null}
-                  onChange={handleDateChange2}
-                  onError={handleError}
-                  sx={{ margin: "0.5rem 0", width: "20ch" }}
-                  views={["year", "month", "day"]}
-                />
-                <Box>
-                  <Button onClick={handleRangeToday}>Today</Button>
-                  <Button onClick={handleResetRange}>Reset</Button>
-                </Box>
-                <Tooltip
-                  className="smallView"
-                  title={`Sort by ${
-                    sortType == "asc" ? "Newest First" : "Oldest First"
-                  }`}
-                  placement="top"
-                  arrow
-                >
-                  <div className="sort" onClick={handleSort}>
-                    <span className="material-symbols-outlined">sort</span>
-                  </div>
-                </Tooltip>
 
-                <span
-                  className="collapseBtn smallView"
-                  onClick={() => {
-                    setCollapse(true);
-                  }}
-                >
-                  <CloseIcon />
-                </span>
-              </div>
+                  <span
+                    className="collapseBtn smallView"
+                    onClick={() => {
+                      setCollapse(true);
+                    }}
+                  >
+                    <CloseIcon />
+                  </span>
+                </div>
+              </Grow>
             )}
             {posts && (
               <div className="posts">
@@ -414,12 +416,11 @@ const Wrapper = styled.main`
   }
 
   .posts {
-    /* grid-template-columns: repeat(5, 1fr); */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: start;
-    grid-template-columns: repeat(1, 1fr);
+
     gap: 1rem;
 
     /* width: 80vw; */
@@ -480,12 +481,15 @@ const Wrapper = styled.main`
     }
   }
   @media screen and (max-width: 1420px) {
-    /* flex-direction: column; */
-
+    section {
+      /* align-items: center; */
+    }
     .posts {
       display: flex;
       flex-wrap: wrap;
-
+      align-items: center;
+      justify-content: center;
+      flex-direction: row;
       gap: 1rem;
     }
   }

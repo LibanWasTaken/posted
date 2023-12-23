@@ -14,6 +14,8 @@ import {
   Fade,
   Grow,
   Link,
+  TextField,
+  Button,
 } from "@mui/material/";
 import PropTypes from "prop-types";
 
@@ -86,6 +88,13 @@ const FadingImage = ({ src, alt }) => {
 const HowToPostPage = () => {
   const [value, setValue] = useState(0);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [commentValue, setCommentValue] = useState();
+
+  const handleInputChange = (event) => {
+    const { id, value } = event.target;
+    console.log(id, value);
+    setCommentValue(value);
+  };
 
   const handleImageLoad = () => {
     setImageLoaded(true);
@@ -96,7 +105,8 @@ const HowToPostPage = () => {
 
   const sections2 = [
     {
-      title: 'How to Post on "Posted"',
+      title: 'What is Posted?"',
+      tab: 'Posted?"',
       content: (
         <div>
           <p className="paragraph">
@@ -110,6 +120,7 @@ const HowToPostPage = () => {
     },
     {
       title: "Types of Information You Can Store",
+      tab: "Like what?",
       content: (
         <div>
           <p className="paragraph">
@@ -318,7 +329,36 @@ const HowToPostPage = () => {
       content: (
         <div>
           <p className="paragraph">
-            <textarea name="" id="" cols="30" rows="10"></textarea>
+            <TextField
+              sx={{
+                m: 1,
+                width: "50rem",
+              }}
+              id="title"
+              // label={!userData ? "Log in to comment" : "Comment"} // Fix
+              placeholder="What's wrong..?"
+              type="text"
+              variant="standard"
+              value={commentValue}
+              inputProps={{ maxLength: 1234 }}
+              fullWidth
+              multiline
+              onChange={handleInputChange}
+              // disabled={!userData || disableComment}
+              // focused={commentValue}
+            />
+            <Button
+              sx={{
+                letterSpacing: 1,
+                fontWeight: 400,
+                backgroundColor: "#eee",
+                p: 2,
+              }}
+              // disabled={!commentValue}
+              // onClick={handleSubmit}
+            >
+              Submit
+            </Button>
           </p>
         </div>
       ),
@@ -355,7 +395,11 @@ const HowToPostPage = () => {
             }}
           >
             {sections2.map((section, index) => (
-              <Tab key={index} label={section.title} {...a11yProps(index)} />
+              <Tab
+                key={index}
+                label={section.tab || section.title}
+                {...a11yProps(index)}
+              />
             ))}
           </Tabs>
 
@@ -410,6 +454,11 @@ const Wrapper = styled.section`
     color: #666;
     line-height: 1.6;
     max-width: 60vw;
+    display: flex;
+    /* align-items: center;
+    justify-content: center; */
+    flex-direction: column;
+    gap: 1rem;
   }
 
   .section {

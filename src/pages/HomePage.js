@@ -169,57 +169,71 @@ const HomePage = () => {
         </p>
       </section>
       <section className="section7">
-        <Parallax
+        {/* <Parallax
+          style={{ width: "90vw" }}
           // style={{ background: "black", color: "white", width: "100vw" }}
           // opacity={[1, 0]}
           // startScroll={5900}
           // endScroll={6600}
           className="section7"
-        >
-          <img
-            src="https://freesvg.org/img/Simple-Cloud-Icon-Silhouette.png"
-            alt=""
-            className="cloud"
-            style={{ top: 0, right: 0 }}
-          />
+        > */}
+        <img
+          src="https://freesvg.org/img/Simple-Cloud-Icon-Silhouette.png"
+          alt=""
+          className="cloud"
+          style={{ top: 0, right: 0 }}
+        />
 
-          <img
-            src="https://freesvg.org/img/Simple-Cloud-Icon-Silhouette.png"
-            alt=""
-            className="cloud"
-            style={{ bottom: 0, left: 0 }}
-          />
-          <Parallax
-            opacity={[0, 1]}
-            // translateY={["40%", 0]}
-            speed={-5}
-            startScroll={4900}
-            endScroll={5600}
-            easing="easeInOutBack"
-          >
-            <h1>Exceptional customizability</h1>
-          </Parallax>
-          <Parallax
-            opacity={[0, 1]}
-            // translateY={["100%", 0]}
-            speed={-5}
-            startScroll={4850 + 100}
-            endScroll={5600 + 100}
-            easing="easeInOutBack"
-          >
-            <h1>Unparalleled adaptability</h1>
-          </Parallax>
-          <Parallax
-            opacity={[0, 1]}
-            // translateY={["40%", 0]}
-            speed={-5}
-            startScroll={4850 + 100 + 100}
-            endScroll={5600 + 100 + 100}
-            easing="easeInOutBack"
-          >
-            <h1>Unmatched Flexibilty</h1>
-          </Parallax>
-        </Parallax>
+        <img
+          src="https://freesvg.org/img/Simple-Cloud-Icon-Silhouette.png"
+          alt=""
+          className="cloud"
+          style={{ bottom: 0, left: 0 }}
+        />
+        {/* <Parallax
+          opacity={[0, 1]}
+          // translateY={["40%", 0]}
+          speed={-5}
+          startScroll={4900}
+          endScroll={5600}
+          easing="easeInOutBack"
+        > */}
+        <h1>Exceptional customizability</h1>
+        {/* </Parallax> */}
+        {/* <Parallax
+          opacity={[0, 1]}
+          // translateY={["100%", 0]}
+          speed={-5}
+          startScroll={4850 + 100}
+          endScroll={5600 + 100}
+          easing="easeInOutBack"
+        > */}
+        <h1>Unparalleled adaptability</h1>
+        {/* </Parallax> */}
+        {/* <Parallax
+          opacity={[0, 1]}
+          // translateY={["40%", 0]}
+          speed={-5}
+          startScroll={4850 + 100 + 100}
+          endScroll={5600 + 100 + 100}
+          easing="easeInOutBack"
+        > */}
+        <h1>Unmatched Flexibilty</h1>
+        {/* </Parallax> */}
+        <div className="other">
+          <h3>
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nostrum
+            rem, porro adipisci quis corporis voluptatem.
+          </h3>
+          <h3>Lorem ipsum dolor sit amet.</h3>
+          <p>
+            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quasi,
+            ducimus? Officiis veniam molestiae aliquid perferendis laudantium
+            suscipit porro perspiciatis snsequuntur, quam debitis sit incidunt
+            vitae est asperiores obcaecati atque animi placeat.
+          </p>
+        </div>
+        {/* </Parallax> */}
       </section>
       <div className="divider"></div>
 
@@ -274,6 +288,11 @@ const HomePage = () => {
             customizability
           </h1>
         </Parallax>
+        {/* <h3>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quia error
+          eligendi neque sed et recusandae alias asperiores deleniti fugiat
+          earum!
+        </h3> */}
         <div className="msg">
           <Parallax
             opacity={[0, 1]}
@@ -533,15 +552,19 @@ const Wrapper = styled.main`
   .section7 {
     height: 140vh;
     display: flex;
-    align-items: center;
+    /* align-items: start; */
     justify-content: center;
     flex-direction: column;
-    font-size: 4rem;
     letter-spacing: 2px;
-    gap: 5rem;
+    gap: 3rem;
     text-transform: uppercase;
     h1 {
+      text-align: left;
+      font-size: 4rem;
       margin: 0;
+    }
+    .other {
+      max-width: 60vw;
     }
   }
 
@@ -559,7 +582,7 @@ const Wrapper = styled.main`
       z-index: 1;
       /* padding: 2rem; */
       border-radius: 50%;
-      box-shadow: rgb(255, 255, 255) 0px 8px 24px;
+      /* box-shadow: rgb(255, 255, 255) 0px 8px 24px; */
     }
 
     h1 {

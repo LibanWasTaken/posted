@@ -289,7 +289,7 @@ const Navbar = () => {
                     color: "black",
                   }}
                 >
-                  <MenuItem onClick={handleClose}>
+                  <MenuItem onClick={handleClose} disabled={!currentUser}>
                     <ListItemIcon>
                       <ChatIcon />
                     </ListItemIcon>
@@ -324,12 +324,14 @@ const Navbar = () => {
                   </ListItemIcon>
                   Add another account
                 </MenuItem>
-                <MenuItem onClick={handleClose}>
-                  <ListItemIcon>
-                    <Settings fontSize="small" />
-                  </ListItemIcon>
-                  Settings
-                </MenuItem>
+                {currentUser && (
+                  <MenuItem onClick={handleClose}>
+                    <ListItemIcon>
+                      <Settings fontSize="small" />
+                    </ListItemIcon>
+                    Settings
+                  </MenuItem>
+                )}
                 {currentUser ? (
                   <MenuItem onClick={handleLogout}>
                     <ListItemIcon>
@@ -352,7 +354,6 @@ const Navbar = () => {
                 )}
               </Menu>
               <div
-                // to="/account"
                 style={{
                   textDecoration: "none",
                 }}
