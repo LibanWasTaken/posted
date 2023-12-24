@@ -119,6 +119,8 @@ export default function AllProductPage() {
     }
   }
 
+  // TODO: store the current length of posts. when the post count updates, subtract the new count with the previous count, if its NOT 10 (or whatever is set), then it means it ran out, and hide the load more button / load more when screen at the bottom
+
   function generateCards(posts) {
     return Object.values(posts).map((post) => {
       if (true) {

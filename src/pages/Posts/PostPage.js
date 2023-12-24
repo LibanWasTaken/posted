@@ -921,6 +921,7 @@ const OwnPostPage = () => {
 const Wrapper = styled.main`
   display: flex;
   padding: 2rem 0;
+  padding-bottom: 0rem;
   flex-direction: column;
   justify-content: center;
   align-items: center;

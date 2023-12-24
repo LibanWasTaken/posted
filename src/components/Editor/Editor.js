@@ -202,6 +202,8 @@ export default function Editor() {
           sx={{
             bgcolor: "white",
             borderColor: "whitesmoke",
+            letterSpacing: 1,
+            padding: "0 1rem",
           }}
           disabled={!changed || incoming || saving}
           className={`${saving && "loadingClassicBtn"}`}

@@ -261,14 +261,22 @@ function Settings({ userID }) {
     }
   }
 
-  const goToNotificationLink = (link) => {
+  const goToLink = (link) => {
     window.location.href = link;
   };
+
+  function generateFollowList(arr) {
+    return arr.map((user) => (
+      <MenuItem key={user.id} onClick={() => goToLink(`/user/${user.id}`)}>
+        {user.name ? user.name : user.id}
+      </MenuItem>
+    ));
+  }
 
   function generateNotifications(notifs) {
     return notifs.map((notif) => (
       <MenuItem
-        onClick={() => notif.link && goToNotificationLink(notif.link)}
+        onClick={() => notif.link && goToLink(notif.link)}
         key={notif.id}
         sx={{
           display: "flex",
@@ -742,13 +750,11 @@ function Settings({ userID }) {
                     </Box>
                     {followingTab ? (
                       <Box sx={{ marginTop: 2 }}>
-                        <MenuItem>John Smith</MenuItem>
-                        <MenuItem>John Smith</MenuItem>
+                        {user.followers && generateFollowList(user.followers)}
                       </Box>
                     ) : (
                       <Box sx={{ marginTop: 2 }}>
-                        <MenuItem>Alex Steve</MenuItem>
-                        <MenuItem>Alex Steve</MenuItem>
+                        {user.following && generateFollowList(user.following)}
                       </Box>
                     )}
                   </AccordionDetails>

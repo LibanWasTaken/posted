@@ -231,19 +231,25 @@ const UserPage = () => {
         if (following) {
           // Unfollow
           await updateDoc(userRef, {
-            followers: arrayRemove(currentUid),
+            followers: arrayRemove({
+              id: currentUid,
+              name: currentUser.displayName,
+            }),
           });
           await updateDoc(currentUserRef, {
-            following: arrayRemove(uid),
+            following: arrayRemove({ id: uid, name: user.displayName }),
           });
           setFollowing(false);
         } else {
           // Follow
           await updateDoc(userRef, {
-            followers: arrayUnion(currentUid),
+            followers: arrayUnion({
+              id: currentUid,
+              name: currentUser.displayName,
+            }),
           });
           await updateDoc(currentUserRef, {
-            following: arrayUnion(uid),
+            following: arrayUnion({ id: uid, name: user.displayName }),
           });
           setFollowing(true);
           if (user && user.displayName) {
