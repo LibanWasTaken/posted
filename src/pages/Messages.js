@@ -286,8 +286,6 @@ const Messages = () => {
           getUsersChatIDs(currentUser.uid);
         }
         if (chatID && currentUser) {
-          // console.log("uhh");
-
           !userChatsList && getUsersChatIDs(currentUser.uid);
           getChatIDs(chatID);
           getChatHistory(chatID);
@@ -412,6 +410,11 @@ const Messages = () => {
   }, [tabValue, chat]);
   const handleTabChange = (event, newTabValue) => {
     setTabValue(newTabValue);
+
+    // if (newTabValue == 3) {
+    //   setUserChatsList(null);
+    //   setChat(null);
+    // }
   };
 
   return (
@@ -429,7 +432,8 @@ const Messages = () => {
             </Tabs>
           </Box>
 
-          {tabValue == 0 && (
+          {/* {tabValue == 0 &&  */}
+          {true && (
             <div className="tab">
               <div className="list">
                 <h3
@@ -619,8 +623,8 @@ const Messages = () => {
               )}
             </div>
           )}
-          {tabValue == 1 && <div className="tab">Item Two</div>}
-          {tabValue == 2 && <div className="tab">Item Three</div>}
+          {/* {tabValue == 1 && <div className="tab">Item Two</div>}
+          {tabValue == 2 && <div className="tab">Item Three</div>} */}
         </>
       ) : (
         <>

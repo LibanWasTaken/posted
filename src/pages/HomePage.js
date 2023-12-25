@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 
@@ -15,10 +15,14 @@ import typefaceanimator from "./../assets/STG_flash.mp4";
 
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
+import Lenis from "@studio-freight/lenis";
+
+import Fade from "react-reveal/Fade";
+import Rotate from "react-reveal/Rotate";
+
 dayjs.extend(utc);
 const HomePage = () => {
   const { user: currentUser, loading } = useUserContext();
-
   const currentDate = dayjs.utc();
   const formattedDate = currentDate.format("DD.MM.YY");
   const [value, setValue] = useState(formattedDate);
@@ -28,6 +32,23 @@ const HomePage = () => {
   const handleMouseLeave = () => {
     setValue(formattedDate);
   };
+
+  // lenis.on("scroll", (e) => {
+  //   console.log(e);
+  // });
+
+  useEffect(() => {
+    const lenis = new Lenis();
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+
+    return () => {
+      lenis.destroy();
+    };
+  }, []);
 
   useEffect(() => {
     function handleScroll() {
@@ -44,7 +65,7 @@ const HomePage = () => {
   return (
     <Wrapper>
       <div className="hero">
-        <video
+        {/* <video
           className="video"
           width="750"
           height="500"
@@ -55,7 +76,7 @@ const HomePage = () => {
         >
           <source src={typefaceanimator} type="video/mp4" />
           Your browser does not support the video tag.
-        </video>
+        </video> */}
         <Parallax
           opacity={[1, 0]}
           speed={-10}
@@ -160,7 +181,9 @@ const HomePage = () => {
           startScroll={3200}
           easing="easeInOut"
         >
-          <h1>SEND</h1>
+          <Fade right>
+            <h1>SEND</h1>
+          </Fade>
         </Parallax>
         <p>
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic dolorum
@@ -220,19 +243,22 @@ const HomePage = () => {
         > */}
         <h1>Unmatched Flexibilty</h1>
         {/* </Parallax> */}
-        <div className="other">
-          <h3>
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nostrum
-            rem, porro adipisci quis corporis voluptatem.
-          </h3>
-          <h3>Lorem ipsum dolor sit amet.</h3>
-          <p>
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quasi,
-            ducimus? Officiis veniam molestiae aliquid perferendis laudantium
-            suscipit porro perspiciatis snsequuntur, quam debitis sit incidunt
-            vitae est asperiores obcaecati atque animi placeat.
-          </p>
-        </div>
+        <Fade>
+          <div className="other">
+            <h3>
+              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nostrum
+              rem, porro adipisci quis corporis voluptatem.
+            </h3>
+            <h3>Lorem ipsum dolor sit amet.</h3>
+            <p>
+              Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quasi,
+              ducimus? Officiis veniam molestiae aliquid perferendis laudantium
+              suscipit porro perspiciatis snsequuntur, quam debitis sit incidunt
+              vitae est asperiores obcaecati atque animi placeat.
+            </p>
+          </div>
+        </Fade>
+
         {/* </Parallax> */}
       </section>
       <div className="divider"></div>
@@ -270,11 +296,13 @@ const HomePage = () => {
             endScroll={7000}
             easing="easeInOut"
           >
-            <img
-              className="clock"
-              src="https://www.freeiconspng.com/uploads/clock-png-5.png"
-              alt=""
-            />
+            <Rotate>
+              <img
+                className="clock"
+                src="https://www.freeiconspng.com/uploads/clock-png-5.png"
+                alt=""
+              />
+            </Rotate>
           </Parallax>
         </div>
         <Parallax
@@ -283,10 +311,12 @@ const HomePage = () => {
           endScroll={7100}
           easing="easeInOut"
         >
-          <h1>
-            Exceptional <br />
-            customizability
-          </h1>
+          <Fade left>
+            <h1>
+              Exceptional <br />
+              Punctuality
+            </h1>
+          </Fade>
         </Parallax>
         {/* <h3>
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Quia error
@@ -301,7 +331,7 @@ const HomePage = () => {
             endScroll={7300}
             easing="easeInOut"
           >
-            <p>Like actually.</p>
+            <p>Okay not really..</p>
           </Parallax>
         </div>
 

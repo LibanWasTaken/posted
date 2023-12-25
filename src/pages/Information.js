@@ -13,7 +13,7 @@ import {
   createTheme,
   Fade,
   Grow,
-  Link,
+  Link as LinkMui,
   TextField,
   Button,
 } from "@mui/material/";
@@ -86,7 +86,7 @@ const FadingImage = ({ src, alt }) => {
 };
 
 const HowToPostPage = () => {
-  const [value, setValue] = useState(0);
+  const [tabValue, setTabValue] = useState(0);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [commentValue, setCommentValue] = useState();
 
@@ -100,13 +100,13 @@ const HowToPostPage = () => {
     setImageLoaded(true);
   };
   const handleChange = (event, newValue) => {
-    setValue(newValue);
+    setTabValue(newValue);
   };
 
   const sections2 = [
     {
-      title: 'What is Posted?"',
-      tab: 'Posted?"',
+      title: "What is Posted?",
+      tab: "Posted?",
       content: (
         <div>
           <p className="paragraph">
@@ -114,6 +114,86 @@ const HowToPostPage = () => {
             future. It's a platform where you can leave a lasting impact by
             sharing your thoughts, memories, and important information with
             others, even beyond your lifetime.
+          </p>
+          <p>
+            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Iste,
+            corrupti explicabo. Repellendus, hic est fugiat praesentium sunt
+            dolorem itaque perferendis id iusto quibusdam natus et sed nemo at
+            modi impedit neque aliquam corporis consequuntur veritatis, voluptas
+            asperiores aliquid ullam! Ratione nemo numquam nobis dolorem porro
+            quas, iusto vero? Distinctio, itaque.
+          </p>
+          <p>
+            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nisi
+            cupiditate quos quis, amet labore voluptatem dolorem assumenda
+            molestias ex mollitia.
+          </p>
+        </div>
+      ),
+    },
+    {
+      title: "Possible Use Cases",
+      tab: "For?",
+      content: (
+        <div>
+          <p className="paragraph">
+            Posted opens up a world of possibilities for users. Some potential
+            use cases include:
+          </p>
+          <ul className="list">
+            <li className="list-item">
+              1. <strong>Automated Safety</strong> System Set up a system that
+              automatically publishes messages if certain conditions are not
+              met, providing a layer of safety.
+            </li>
+            <li className="list-item">
+              2. <strong>Post-Mortem Communication:</strong> Imagine crafting a
+              digital legacy that transcends time. With "Posted," you can
+              communicate with loved ones, friends, or even the world after
+              you've passed away. Leave behind a treasure trove of memories,
+              advice, or heartfelt messages, ensuring your voice resonates for
+              generations.
+            </li>
+
+            <li className="list-item">
+              3. <strong>Delayed Post Release:</strong> Utilize the power of
+              delayed post release to schedule messages for future events,
+              birthdays, or special occasions. Whether it's a heartfelt
+              congratulation or a nostalgic reflection, "Posted" allows you to
+              plan and share your sentiments at the perfect moment.
+            </li>
+
+            <li className="list-item">
+              4. <strong>Privacy Controls:</strong> "Posted" puts you in control
+              of your content. Adjust the settings to make posts public or
+              private, allowing you to curate who has access to your messages.
+              With automatically generated keys, ensure that your shared moments
+              remain secure and accessible only to those you choose.
+            </li>
+
+            <li className="list-item">
+              5. <strong>Anonymity:</strong> Explore the freedom of anonymous
+              posting on "Posted." Share your thoughts, stories, or advice
+              without revealing your identity. This feature enables users to
+              express themselves openly and honestly, fostering a space for
+              genuine communication.
+            </li>
+
+            <li className="list-item">
+              6. <strong>Post Disablement:</strong> Life is dynamic, and
+              circumstances can change. With "Posted," you have the option to
+              disable or retract a post, providing flexibility and control over
+              your shared content. Adapt to evolving situations while
+              maintaining the integrity of your digital legacy.
+            </li>
+          </ul>
+          <p>
+            "Posted" is more than a platform; it's a canvas for your stories, a
+            vault for your sentiments, and a conduit for the timeless
+            expressions that define you. As you explore these use cases, the
+            possibilities are boundless, offering a unique and personal way to
+            connect, share, and make an impact that lasts beyond the present
+            moment.
           </p>
         </div>
       ),
@@ -156,10 +236,9 @@ const HowToPostPage = () => {
     },
     {
       title: "Creating Multiple Posts",
+      tab: "Posts",
       content: (
         <div>
-          <h2 className="subtitle">What is Posted?</h2>
-
           <p className="paragraph">
             With "Posted," you can create and schedule multiple posts. This
             means you can plan messages for various occasions, ensuring that
@@ -207,7 +286,8 @@ const HowToPostPage = () => {
       ),
     },
     {
-      title: "Chat",
+      title: "Built-in Chat System",
+      tab: "Chat",
       content: (
         <div>
           <div>
@@ -283,52 +363,55 @@ const HowToPostPage = () => {
         </div>
       ),
     },
-    {
-      title: "Possible Use Cases",
-      content: (
-        <div>
-          <p className="paragraph">
-            Posted opens up a world of possibilities for users. Some potential
-            use cases include:
-          </p>
-          <ul className="list">
-            <li className="list-item">
-              1. <strong>Automated Safety</strong> System Set up a system that
-              automatically publishes messages if certain conditions are not
-              met, providing a layer of safety.
-            </li>
-            <li className="list-item">
-              2. <strong>Lorem ipsum</strong> dolor sit amet consectetur
-              adipisicing elit. Officia assumenda culpa atque quasi dolorum
-              aliquid nesciunt aut blanditiis, sunt cumque.
-            </li>
-            <li className="list-item">
-              3. <strong>Lort amet</strong>, cem ipsum dolor sit amet,
-              consectetur adipisicing elit. Minima quae commodi eos!
-            </li>
-          </ul>
-        </div>
-      ),
-    },
+
     {
       title: "Who's running this?",
       content: (
         <div>
-          <p className="paragraph">
-            You can contact me via the{" "}
-            <Link href="#" underline="always">
-              {"contact page"}
-            </Link>{" "}
-            or email to this thing
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum,
+            architecto earum corrupti dolor numquam sit.
+            <br />
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Sint nam
+            omnis possimus et soluta sit culpa voluptatum recusandae laboriosam
+            labore.
+          </p>
+          <p>
+            Lorem isit amet cosit amet copsum dolor sit amet consit amet
+            cosectetur adipisicing elit. Cum,sit amet cosit amet co architecto
+            earum corrupti dolsit amet coor numquam sit.
+          </p>
+          <p style={{ display: "flex", alignItems: "center", gap: "3px" }}>
+            You can{" "}
+            <p style={{ textDecoration: "line-through" }}>talk sh!t to</p>
+            contact me via the{" "}
+            <LinkMui
+              // underline="always"
+              href="#"
+              onClick={() => {
+                setTabValue(8);
+              }}
+            >
+              {"feedback page"}
+            </LinkMui>{" "}
+            or email <LinkMui>{"somepeopledoingstuffs@gmail.com"}</LinkMui>
           </p>
         </div>
       ),
     },
     {
-      title: "btw..",
+      title: "Btw..",
+      tab: "Feedback",
       content: (
         <div>
-          <p className="paragraph">
+          <p
+            className="paragraph"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
             <TextField
               sx={{
                 m: 1,
@@ -338,11 +421,12 @@ const HowToPostPage = () => {
               // label={!userData ? "Log in to comment" : "Comment"} // Fix
               placeholder="What's wrong..?"
               type="text"
-              variant="standard"
+              variant="filled"
               value={commentValue}
-              inputProps={{ maxLength: 1234 }}
+              inputProps={{ maxLength: 1000 }}
               fullWidth
               multiline
+              rows={10}
               onChange={handleInputChange}
               // disabled={!userData || disableComment}
               // focused={commentValue}
@@ -352,6 +436,7 @@ const HowToPostPage = () => {
                 letterSpacing: 1,
                 fontWeight: 400,
                 backgroundColor: "#eee",
+                width: "fit-content",
                 p: 2,
               }}
               // disabled={!commentValue}
@@ -368,7 +453,7 @@ const HowToPostPage = () => {
   return (
     <Wrapper>
       <ThemeProvider theme={theme}>
-        <h1 className="title"> {sections2[value].title}</h1>
+        <h1 className="title"> {sections2[tabValue].title}</h1>
 
         <Box
           sx={{
@@ -382,7 +467,7 @@ const HowToPostPage = () => {
           <Tabs
             orientation="vertical"
             variant="scrollable"
-            value={value}
+            value={tabValue}
             onChange={handleChange}
             selectionFollowsFocus
             aria-label="Vertical tabs example"
@@ -399,13 +484,20 @@ const HowToPostPage = () => {
                 key={index}
                 label={section.tab || section.title}
                 {...a11yProps(index)}
+                sx={{
+                  textAlign: "right",
+                  width: "95%",
+                  display: "flex",
+                  alignItems: "end",
+                  justifyContent: "end",
+                }}
               />
             ))}
           </Tabs>
 
           {sections2.map((section, index) => (
-            <TabPanel key={index} value={value} index={index}>
-              <Grow in={section.content}>{section.content}</Grow>
+            <TabPanel key={index} value={tabValue} index={index}>
+              <Fade in={section.content}>{section.content}</Fade>
             </TabPanel>
           ))}
         </Box>
