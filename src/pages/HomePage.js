@@ -109,6 +109,11 @@ const HomePage = () => {
               Make your <span className="pop">mark.</span> Your{" "}
               <span className="pop">Legacy.</span>{" "}
             </h3>
+            <p>
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Culpa
+              libero error consectetur, magni officia similique voluptate ut
+              obcaecati sit architecto?
+            </p>
           </Parallax>
         </div>
         <Parallax
@@ -292,28 +297,29 @@ const HomePage = () => {
         >
           <Parallax
             rotate={["90deg", "360deg"]}
-            startScroll={6300}
+            startScroll={6200}
             endScroll={7000}
             easing="easeInOut"
           >
-            <Rotate>
-              <img
-                className="clock"
-                src="https://www.freeiconspng.com/uploads/clock-png-5.png"
-                alt=""
-              />
-            </Rotate>
+            {/* <Rotate> */}
+            <img
+              className="clock"
+              src="https://www.freeiconspng.com/uploads/clock-png-5.png"
+              alt=""
+            />
+            {/* </Rotate> */}
           </Parallax>
         </div>
         <Parallax
-          translateX={["-100%", "-15%"]}
+          translateX={["-100%", "-30%"]}
+          // opacity={[0.5, 1]}
           startScroll={6300}
           endScroll={7100}
           easing="easeInOut"
         >
           <Fade left>
             <h1>
-              Exceptional <br />
+              Faultless <br />
               Punctuality
             </h1>
           </Fade>
@@ -348,8 +354,55 @@ const HomePage = () => {
           </Parallax>
         </div>
       </section>
+      {/* <div className="divider"></div> */}
 
       <section className="section9">
+        {/* <Parallax
+          rotate={[0, "10deg"]}
+          translateY={["100%", "-5%"]}
+          // opacity={[1, 0]}
+          scale={[0.6 , 0.75]}
+          startScroll={8040}
+          endScroll={8640}
+          easing="easeOut"
+          className="hourglass"
+        >
+          <img
+            src="https://pics.clipartpng.com/midle/Hourglass_PNG_Clip_Art-2426.png"
+            alt=""
+          />
+        </Parallax> */}
+        <Parallax speed={-10}>
+          <div className="box1 box"></div>
+        </Parallax>
+        <Parallax speed={-7}>
+          <div className="box2 box"></div>
+        </Parallax>
+        <Parallax speed={0} scale={[0.9, 1]}>
+          <img
+            src="https://images.pexels.com/photos/6446684/pexels-photo-6446684.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+            alt=""
+            className="laptop"
+          />
+        </Parallax>
+        <Parallax speed={-5} scale={[0.9, 1]}>
+          <img
+            src="https://images.pexels.com/photos/14979013/pexels-photo-14979013/free-photo-of-time-on-cellphone-screen.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+            alt=""
+            className="phone"
+          />
+        </Parallax>
+
+        <div className="line"></div>
+        <Fade>
+          <div className="text">
+            <h1>CRAFT FUTURE MOMENTS NOW</h1>
+            <h2>SEIZE THE PRESENT</h2>
+          </div>
+        </Fade>
+      </section>
+
+      <section className="endSection">
         <div className="slide">
           <h1>one</h1>
         </div>
@@ -357,7 +410,11 @@ const HomePage = () => {
           <h1>uhh yeah do it</h1>
           <Link
             to={"/what-is-this"}
-            style={{ textDecoration: "none", color: "white" }}
+            style={{
+              textDecoration: "none",
+              color: "white",
+            }}
+            className="anchor"
           >
             <p>do what?</p>
           </Link>
@@ -471,6 +528,12 @@ const Wrapper = styled.main`
       filter: saturate(0);
 
       /* transform: scaleX(-1); */
+    }
+    p {
+      margin: 0;
+      padding: 0;
+      font-size: 1rem;
+      max-width: 50rem;
     }
   }
 
@@ -644,11 +707,98 @@ const Wrapper = styled.main`
       position: absolute;
       bottom: -115px;
       right: 50px;
+      z-index: 1;
       img {
         height: 20rem;
       }
 
       filter: saturate(0);
+    }
+  }
+
+  .section9 {
+    height: 140vh;
+    position: relative;
+    width: 100vw;
+    filter: saturate(0);
+
+    /* background-image: url("https://images.pexels.com/photos/3570733/pexels-photo-3570733.jpeg");
+    background-repeat: no-repeat;
+    background-size: contain; */
+    background-color: whitesmoke;
+    .hourglass {
+      position: absolute;
+      filter: saturate(0);
+      /* bottom: -10rem;
+      left: 45%; */
+      right: 15rem;
+      bottom: 10rem;
+      /* width: 10rem; */
+      z-index: -1;
+    }
+
+    .laptop {
+      position: absolute;
+      left: 5rem;
+      top: 15rem;
+      width: 400px;
+      z-index: 1;
+    }
+
+    .phone {
+      position: absolute;
+      left: 20rem;
+      top: 45rem;
+      width: 400px;
+      z-index: 2;
+    }
+
+    .box {
+      /* padding: 5rem 0; */
+      border: 8px solid #d4d4d4;
+      width: 15rem;
+      height: 15rem;
+      position: absolute;
+      z-index: 0;
+    }
+
+    .box1 {
+      left: 25rem;
+      top: 23rem;
+    }
+    .box2 {
+      left: 32rem;
+      top: 35rem;
+    }
+    .line {
+      width: 30rem;
+      height: 8px;
+      background-color: #d4d4d4;
+      position: absolute;
+      right: 0;
+      top: 30rem;
+    }
+
+    .text {
+      z-index: 1;
+      /* font-size: 3rem; */
+      color: gray;
+      /* text-shadow: 0 0 rgba(0, 0, 0, 0.1); */
+      position: absolute;
+      bottom: 30rem;
+      right: 10rem;
+      text-align: right;
+      max-width: 35rem;
+      h1 {
+        font-size: 3.5rem;
+        padding: 0;
+        margin: 0;
+      }
+      h2 {
+        font-size: 2.5rem;
+        padding: 0;
+        margin: 0;
+      }
     }
   }
 
@@ -658,7 +808,7 @@ const Wrapper = styled.main`
     object-fit: cover;
   }
 
-  .section9 {
+  .endSection {
     background-color: black;
     height: 90vh;
     width: 100vw;
@@ -684,9 +834,11 @@ const Wrapper = styled.main`
       padding: 0;
       font-size: 6rem;
       gap: 2rem;
+      margin: 10px;
     }
-    p {
-      /* margin: 1rem; */
+    p:hover {
+      text-decoration: underline;
+      transition: 30ms;
     }
   }
 

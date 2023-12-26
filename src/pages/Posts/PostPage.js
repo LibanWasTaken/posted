@@ -38,6 +38,16 @@ import {
   Button,
 } from "@mui/material";
 
+import SpeedDial from "@mui/material/SpeedDial";
+import SpeedDialIcon from "@mui/material/SpeedDialIcon";
+import SpeedDialAction from "@mui/material/SpeedDialAction";
+import FileCopyIcon from "@mui/icons-material/FileCopyOutlined";
+import SaveIcon from "@mui/icons-material/Save";
+import PrintIcon from "@mui/icons-material/Print";
+import ShareIcon from "@mui/icons-material/Share";
+import EditIcon from "@mui/icons-material/Edit";
+import CloseIcon from "@mui/icons-material/Close";
+
 // mui x
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { MobileTimePicker } from "@mui/x-date-pickers/MobileTimePicker";
@@ -119,6 +129,9 @@ const OwnPostPage = () => {
     timePeriod: "Month",
     day: datesOptions[0].value,
   });
+  const [openEditDial, setOpenEditDial] = useState(false);
+  const handleOpenEditDial = () => setOpenEditDial(true);
+  const handleCloseEditDial = () => setOpenEditDial(false);
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
@@ -269,6 +282,7 @@ const OwnPostPage = () => {
   function handleEdit() {
     if (!editDisabled) {
       setEditDisabled(true);
+      console.log("edit");
     }
   }
 
@@ -362,6 +376,8 @@ const OwnPostPage = () => {
       </div>
     );
   }
+
+  function EditDrawer() {}
 
   const [diaryOpenMUI, setDiaryOpenMUI] = useState(false);
   const [linkAdderOpen, setLinkAdderOpen] = useState(false);
@@ -463,7 +479,37 @@ const OwnPostPage = () => {
               </Tabs>
               <h2>{postData.title ? postData.title : "Title"}</h2>
             </div>
-
+            {tabValue !== 0 && (
+              <SpeedDial
+                ariaLabel="SpeedDial controlled open example"
+                sx={{
+                  position: "absolute",
+                  bottom: 16,
+                  right: "7rem",
+                }}
+                icon={<EditIcon />}
+                onClose={handleCloseEditDial}
+                onOpen={handleOpenEditDial}
+                open={openEditDial}
+                onClick={handleEdit}
+              >
+                <SpeedDialAction
+                  key="Cancel"
+                  icon={<CloseIcon />}
+                  tooltipTitle="Cancel"
+                  disabled={!editDisabled}
+                  onClick={handleCancel}
+                />
+                <SpeedDialAction
+                  key="Save"
+                  icon={<SaveIcon />}
+                  tooltipTitle="Save"
+                  disabled={!editDisabled}
+                  onClick={handleCloseEditDial}
+                />
+              </SpeedDial>
+            )}
+            {/* TODO: add a button to change between the other layouts, frick it save it in the preference in the local storage */}
             <div className="textEditor">
               <CustomTabPanel value={tabValue} index={0}>
                 <Editor initialConfig={{ editable: true }} />
