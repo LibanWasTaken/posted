@@ -41,7 +41,7 @@ import { Box, TextField, Button } from "@mui/material";
 
 // import FloatingTextFormatToolbarPlugin from "./playground/plugins/FloatingTextFormatToolbarPlugin/SpeechToTextPlugin";
 
-export default function Editor() {
+export function DiaryEditor({ chooseMessage, text }) {
   const emptyState = {
     root: {
       children: [
@@ -73,11 +73,15 @@ export default function Editor() {
 
   const [valueApplied, setValueApplied] = useState(false);
   const { user: currentUser, loading } = useUserContext();
+  // useEffect(() => {
+  //   if (currentUser) {
+  //     getFSData();
+  //   }
+  // }, [currentUser]);
   useEffect(() => {
-    if (currentUser) {
-      getFSData();
-    }
-  }, [currentUser]);
+    text && setEditorValueReceivedFS(text);
+    console.log(text);
+  }, [text]);
 
   const editorConfig = {
     theme: ExampleTheme,
@@ -107,10 +111,10 @@ export default function Editor() {
     const docSnap = await getDoc(docRef);
     const userInfo = docSnap.data();
     userInfo.letter && setEditorValueReceivedFS(userInfo.letter);
+    userInfo.letter && console.log(userInfo.letter);
+
     userInfo.description && setDescription(userInfo.description);
     setIncoming(false);
-    // console.log(typeof userInfo.letter);
-    // console.log("editor value set");
   }
 
   function OnChangePlugin({ onChange }) {
@@ -118,6 +122,7 @@ export default function Editor() {
     useEffect(() => {
       !changed && setChanged(true); //FIXME: changed when loads
       setEditorValue(JSON.stringify(editor.getEditorState()));
+      chooseMessage(JSON.stringify(editor.getEditorState()));
       // console.log(JSON.stringify(editor.getEditorState()));
       return editor.registerUpdateListener((editorState) => {
         onChange(editorState);
@@ -178,43 +183,6 @@ export default function Editor() {
 
   return (
     <>
-      <Box sx={{ display: "flex", gap: "1rem" }}>
-        <TextField
-          sx={{
-            marginTop: 0,
-            bgcolor: "white",
-            "& fieldset": { border: "none" },
-            border: "1px solid #eee",
-          }}
-          fullWidth
-          label="Description"
-          variant="outlined"
-          id="outlined-controlled"
-          type="text"
-          placeholder="Keep it short"
-          value={description || ""}
-          inputProps={{ maxLength: 100 }}
-          disabled={incoming || saving}
-          onChange={(e) => {
-            !changed && setChanged(true);
-            setDescription(e.target.value);
-          }}
-        />
-        <Button
-          sx={{
-            bgcolor: "white",
-            borderColor: "whitesmoke",
-            letterSpacing: 1,
-            padding: "0 1rem",
-          }}
-          disabled={!changed || incoming || saving}
-          className={`${saving && "loadingClassicBtn"}`}
-          onClick={updateUserData}
-          variant="text"
-        >
-          save
-        </Button>
-      </Box>
       <LexicalComposer initialConfig={editorConfig}>
         <div className="editor-container">
           <ToolbarPlugin />

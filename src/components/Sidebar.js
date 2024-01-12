@@ -16,7 +16,7 @@ import { Link } from "react-router-dom";
 import { useUserContext } from "../context/UserContext";
 import MenuSharpIcon from "@mui/icons-material/MenuSharp";
 
-export default function Sidebar({ show }) {
+export default function Sidebar({ show, notifications }) {
   const { user: currentUser, loading } = useUserContext();
 
   const [state, setState] = useState({
@@ -45,7 +45,7 @@ export default function Sidebar({ show }) {
     return navOptions.map((option) => (
       <Link to={option.value} key={option.value}>
         {/* <a key={option.value} href={option.value}> */}
-        <ListItem disablePadding sx={{ marginBottom: 2 }}>
+        <ListItem>
           <ListItemButton>{option.label}</ListItemButton>
         </ListItem>
         {/* </a> */}
@@ -73,12 +73,23 @@ export default function Sidebar({ show }) {
             </ListItem>
           </a> */}
         </List>
-        <Divider />
+        {currentUser && (
+          <>
+            <Divider />
+            <Link to={"/messages"}>
+              <ListItem>
+                <ListItemButton>Messages</ListItemButton>
+              </ListItem>
+            </Link>
+            {notifications}
+            <Divider />
+          </>
+        )}
 
         {currentUser ? (
           <List>
             <a href="/account">
-              <ListItem key={"Account"} disablePadding>
+              <ListItem key={"Account"}>
                 <ListItemButton>Account</ListItemButton>
               </ListItem>
             </a>
@@ -86,7 +97,7 @@ export default function Sidebar({ show }) {
         ) : (
           <List>
             <a href="/account">
-              <ListItem key={"Log In"} disablePadding>
+              <ListItem key={"Log In"}>
                 <ListItemButton>Log In</ListItemButton>
               </ListItem>
             </a>
@@ -143,7 +154,7 @@ export default function Sidebar({ show }) {
 const Wrapper = styled.main`
   font-size: 1rem;
   /* margin-top: 1rem; */
-  padding: 0 1.5rem;
+  padding: 0 10px;
 
   a {
     color: black;

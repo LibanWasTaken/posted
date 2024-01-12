@@ -5,7 +5,7 @@ import { Spinner3 } from "../../components/Spinner";
 import { scrollToBottom } from "../../functions/functions";
 
 import Viewer from "../../components/Editor/Viewer";
-import Diary from "../../components/Diaries/DiaryMui";
+import Diary from "../../components/Diaries/DiaryList";
 import { useUserContext } from "../../context/UserContext";
 import DeletePost from "../../components/modals/DeletePost";
 import Comments from "../../components/Comments";

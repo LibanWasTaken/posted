@@ -105,10 +105,10 @@ const HomePage = () => {
             <h1>
               Send messages to the <span className="pop"> future.</span>
             </h1>
-            <h3>
+            <h1>
               Make your <span className="pop">mark.</span> Your{" "}
               <span className="pop">Legacy.</span>{" "}
-            </h3>
+            </h1>
             <p>
               Lorem ipsum dolor sit amet consectetur adipisicing elit. Culpa
               libero error consectetur, magni officia similique voluptate ut
@@ -251,15 +251,18 @@ const HomePage = () => {
         <Fade>
           <div className="other">
             <h3>
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nostrum
-              rem, porro adipisci quis corporis voluptatem.
+              Explore the boundless possibilities where your messages create a
+              timeless legacy, echoing through the corridors of the future.
             </h3>
-            <h3>Lorem ipsum dolor sit amet.</h3>
+            <h3>
+              Dive into the world where every word holds the power to transcend
+              time.
+            </h3>
             <p>
-              Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quasi,
-              ducimus? Officiis veniam molestiae aliquid perferendis laudantium
-              suscipit porro perspiciatis snsequuntur, quam debitis sit incidunt
-              vitae est asperiores obcaecati atque animi placeat.
+              Uncover the richness of communication with "Posted." Seamlessly
+              share, connect, and curate your digital legacy with a platform
+              designed for moments that echo across generations; the canvas for
+              your thoughts.
             </p>
           </div>
         </Fade>
@@ -510,10 +513,13 @@ const Wrapper = styled.main`
     .text {
       padding: 0 2rem;
       color: #ccc;
-
       font-size: 2rem;
       /* font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif; */
       text-transform: uppercase;
+      h1 {
+        padding: 0;
+        margin: 0;
+      }
     }
     .pop {
       color: #fff;
@@ -534,6 +540,7 @@ const Wrapper = styled.main`
       padding: 0;
       font-size: 1rem;
       max-width: 50rem;
+      margin-top: 1rem;
     }
   }
 
@@ -651,6 +658,7 @@ const Wrapper = styled.main`
     letter-spacing: 2px;
     gap: 3rem;
     text-transform: uppercase;
+    margin-left: 2rem;
     h1 {
       text-align: left;
       font-size: 4rem;
@@ -676,6 +684,18 @@ const Wrapper = styled.main`
       /* padding: 2rem; */
       border-radius: 50%;
       /* box-shadow: rgb(255, 255, 255) 0px 8px 24px; */
+    }
+
+    .clock:before {
+      content: "";
+      display: block;
+      position: absolute;
+      padding: 5rem;
+      background-color: red;
+      height: 5rem;
+      width: 5rem;
+      top: 0;
+      left: 0;
     }
 
     h1 {
@@ -790,7 +810,7 @@ const Wrapper = styled.main`
       text-align: right;
       max-width: 35rem;
       h1 {
-        font-size: 3.5rem;
+        font-size: 4rem;
         padding: 0;
         margin: 0;
       }
@@ -910,6 +930,24 @@ const Wrapper = styled.main`
     .section6 {
       h1 {
         font-size: 1rem;
+      }
+    }
+    .section8 {
+      .clock {
+        display: none;
+      }
+    }
+    .section9 {
+      height: 200vh;
+      .line {
+        position: absolute;
+        right: 0;
+        top: 150vh;
+      }
+
+      .text {
+        bottom: 10rem;
+        right: 10rem;
       }
     }
   }

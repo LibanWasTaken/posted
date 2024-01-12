@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { countries } from "../context/UserOptions";
 import { Link } from "react-router-dom";
 import { getAuth, updateProfile } from "firebase/auth";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 
 import {
   getDoc,
@@ -91,6 +91,7 @@ function Settings({ userID }) {
   const [changeState, setChangeState] = useState(false);
   const [followingTab, setFollowingTab] = useState(true);
   const location = useLocation();
+  const { whichInfo } = useParams();
 
   // TODO: fix this + nav bar wrap the whole "show all notif" in the Link tag
   useEffect(() => {
@@ -358,6 +359,7 @@ function Settings({ userID }) {
                     m: 3,
                     boxShadow: "rgba(0, 0, 0, 0.18) 0px 2px 4px",
                   }}
+                  // expanded={true}
                 >
                   <AccordionSummary
                     sx={{ backgroundColor: "whitesmoke" }}
@@ -925,13 +927,14 @@ const Wrapper = styled.section`
     .display {
       flex-direction: row;
       height: 10rem;
-      width: 50vw;
+      width: 100vw;
       align-items: center;
-      justify-content: space-around;
+      justify-content: center;
+      gap: 2rem;
 
-      .info {
+      /* .info {
         width: 50%;
-      }
+      } */
 
       .background {
         height: 100%;

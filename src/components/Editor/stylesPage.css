@@ -13,7 +13,6 @@
 
 .editor-container {
   margin: 20px auto 20px auto;
-  border-radius: 2px;
   min-width: 600px;
   /* width: 80vw; */
   color: #000;
@@ -21,12 +20,13 @@
   line-height: 20px;
   font-weight: 400;
   text-align: left;
-  border-radius: 10px;
+  /* border-radius: 10px; */
+  /* border: 1px solid rgba(0, 0, 0, 0.05); */
 
   /* me */
   padding: 1px;
-  /* box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px; */
-  box-shadow: rgba(0, 0, 0, 0.15) 0 0 3px;
+
+  /* box-shadow: rgba(0, 0, 0, 0.25) 0 0 3px; */
 
   background-color: white;
   /* border: 1px solid rgba(149, 157, 165, 0.2); */
@@ -54,25 +54,26 @@
 }
 
 /* @media screen and (max-width: 1550px) {
-  .editor-container {
-    width: 70vw;
+    .editor-container {
+      width: 70vw;
+    }
   }
-}
-@media screen and (max-width: 1000px) {
-  .editor-container {
-    width: 90vw;
-  }
-} */
+  @media screen and (max-width: 1000px) {
+    .editor-container {
+      width: 90vw;
+    }
+  } */
 
 .editor-inner {
   position: relative;
-  border-radius: 10px;
+  /* border-radius: 10px; */
   background: #fff;
+  /* background-image: url("https://i.pinimg.com/474x/1e/02/7a/1e027a0fab8b022e1b6771c7c65b2219.jpg"); */
+  /* background-size: 1rem; */
 }
 .editor-input {
   /* min-height: 150px; */
-  min-height: 350px;
-  max-height: 90vh;
+  height: 60vh;
   overflow-x: hidden;
   overflow-y: scroll;
   resize: none;
@@ -82,7 +83,7 @@
   tab-size: 1;
   outline: 0;
   padding: 15px;
-  border-radius: 10px;
+  /* border-radius: 10px; */
   caret-color: #444;
 }
 
@@ -357,10 +358,10 @@ pre::-webkit-scrollbar-thumb {
 .toolbar {
   display: flex;
   margin-bottom: 1px;
-  background: #fff;
+  background: #f5f5f5;
   padding: 4px;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
+  /* border-top-left-radius: 10px; */
+  /* border-top-right-radius: 10px; */
   vertical-align: middle;
 }
 

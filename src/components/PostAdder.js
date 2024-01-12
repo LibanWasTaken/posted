@@ -78,8 +78,9 @@ export default function PostAdder({ open, handleClose, info }) {
   };
 
   const handleDateChange = (date) => {
-    console.log(dayjs(date.toDate()).utc());
-    console.log(dayjs(date.toDate()).utc().format());
+    // console.log(dayjs(date.toDate()).utc());
+    // console.log(dayjs(date.toDate()).utc().format());
+    console.log(date);
     setSelectedDate(date);
   };
 

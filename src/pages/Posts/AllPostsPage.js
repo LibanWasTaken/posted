@@ -123,7 +123,7 @@ export default function AllProductPage() {
 
   function generateCards(posts) {
     return Object.values(posts).map((post) => {
-      if (true) {
+      if (post) {
         // TODO: change true -> post.public
         return (
           <Card
@@ -183,24 +183,88 @@ export default function AllProductPage() {
         {loading ? (
           <Spinner3 />
         ) : (
-          <section>
+          <section className="page">
+            <h2 className="heading">
+              {sortType == "desc" ? "Latest" : "Oldest"} Posts
+            </h2>
             {filtering && <div className="loadingBar"></div>}
 
-            {collapse ? (
-              <div
-                className="unCollapseBtn"
-                onClick={() => {
-                  setCollapse(false);
-                }}
-              >
-                Filter
-              </div>
-            ) : (
-              <Grow in={!collapse}>
-                <div className="filter">
-                  <div className="heading">
-                    <h2>Filter</h2>
+            {/* <div className="divider"></div> */}
+            <section className="allPostsSection">
+              {collapse ? (
+                <div
+                  className="unCollapseBtn"
+                  onClick={() => {
+                    setCollapse(false);
+                  }}
+                >
+                  Filter
+                </div>
+              ) : (
+                <Grow in={!collapse}>
+                  <div className="filter">
+                    <div className="heading">
+                      <h2>Filter</h2>
+                      <Tooltip
+                        title={`Sort by ${
+                          sortType == "asc" ? "Newest First" : "Oldest First"
+                        }`}
+                        placement="top"
+                        arrow
+                      >
+                        <div className="sort" onClick={handleSort}>
+                          <span className="material-symbols-outlined">
+                            sort
+                          </span>
+                        </div>
+                      </Tooltip>
+                    </div>
+                    <p>Search</p>
+                    <TextField
+                      label="Posts Count"
+                      variant="standard"
+                      type="number"
+                      sx={{
+                        m: 1,
+                        width: "10ch",
+                        marginBottom: 3,
+                      }}
+                      defaultValue={countPosts}
+                      inputProps={{
+                        min: 4,
+                        max: 500,
+                      }}
+                      onChange={(e) => {
+                        const count = e.target.value;
+                        if (count && count > 3 && count < 501) {
+                          setCountPosts(Math.round(count));
+                        }
+                      }}
+                    />
+                    <DatePicker
+                      label="From"
+                      // minDate={tomorrow}
+                      value={selectedDate1 ? dayjs(selectedDate1) : null}
+                      onChange={handleDateChange1}
+                      onError={handleError}
+                      sx={{ margin: "0.5rem 0", width: "20ch" }}
+                      views={["year", "month", "day"]}
+                    />
+                    <DatePicker
+                      label="To"
+                      // minDate={tomorrow}
+                      value={selectedDate2 ? dayjs(selectedDate2) : null}
+                      onChange={handleDateChange2}
+                      onError={handleError}
+                      sx={{ margin: "0.5rem 0", width: "20ch" }}
+                      views={["year", "month", "day"]}
+                    />
+                    <Box>
+                      <Button onClick={handleRangeToday}>Today</Button>
+                      <Button onClick={handleResetRange}>Reset</Button>
+                    </Box>
                     <Tooltip
+                      className="smallView"
                       title={`Sort by ${
                         sortType == "asc" ? "Newest First" : "Oldest First"
                       }`}
@@ -211,107 +275,43 @@ export default function AllProductPage() {
                         <span className="material-symbols-outlined">sort</span>
                       </div>
                     </Tooltip>
-                  </div>
-                  <p>Search</p>
-                  <TextField
-                    label="Posts Count"
-                    variant="standard"
-                    type="number"
-                    sx={{
-                      m: 1,
-                      width: "10ch",
-                      marginBottom: 3,
-                    }}
-                    defaultValue={countPosts}
-                    inputProps={{
-                      min: 4,
-                      max: 500,
-                    }}
-                    onChange={(e) => {
-                      const count = e.target.value;
-                      if (count && count > 3 && count < 501) {
-                        setCountPosts(Math.round(count));
-                      }
-                    }}
-                  />
-                  <DatePicker
-                    label="From"
-                    // minDate={tomorrow}
-                    value={selectedDate1 ? dayjs(selectedDate1) : null}
-                    onChange={handleDateChange1}
-                    onError={handleError}
-                    sx={{ margin: "0.5rem 0", width: "20ch" }}
-                    views={["year", "month", "day"]}
-                  />
-                  <DatePicker
-                    label="To"
-                    // minDate={tomorrow}
-                    value={selectedDate2 ? dayjs(selectedDate2) : null}
-                    onChange={handleDateChange2}
-                    onError={handleError}
-                    sx={{ margin: "0.5rem 0", width: "20ch" }}
-                    views={["year", "month", "day"]}
-                  />
-                  <Box>
-                    <Button onClick={handleRangeToday}>Today</Button>
-                    <Button onClick={handleResetRange}>Reset</Button>
-                  </Box>
-                  <Tooltip
-                    className="smallView"
-                    title={`Sort by ${
-                      sortType == "asc" ? "Newest First" : "Oldest First"
-                    }`}
-                    placement="top"
-                    arrow
-                  >
-                    <div className="sort" onClick={handleSort}>
-                      <span className="material-symbols-outlined">sort</span>
-                    </div>
-                  </Tooltip>
 
-                  <span
-                    className="collapseBtn smallView"
-                    onClick={() => {
-                      setCollapse(true);
-                    }}
-                  >
-                    <CloseIcon />
-                  </span>
-                </div>
-              </Grow>
-            )}
-            {posts && (
-              <div className="posts">
-                {/* <Skeleton
-              // sx={{ bgcolor: "black" }}
-              variant="rectangular"
-              width={280}
-              height={360}
-              animation="wave"
-            />*/}
-
-                {/* {generateCards(posts)} */}
-                {generateCards(posts)}
-                {posts.length && (
-                  <div
-                    style={{
-                      width: "100%",
-                      display: "flex",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <div
-                      className={`classicBtn loadMorBtn ${
-                        loadingMore && "disabledClassicBtn"
-                      }`}
-                      onClick={handleLoadMore}
+                    <span
+                      className="collapseBtn smallView"
+                      onClick={() => {
+                        setCollapse(true);
+                      }}
                     >
-                      {loadingMore ? "Loading More.." : "Load More.."}
-                    </div>
+                      <CloseIcon />
+                    </span>
                   </div>
-                )}
-              </div>
-            )}
+                </Grow>
+              )}
+              {posts && (
+                <div className="posts">
+                  {generateCards(posts)}
+                  {posts.length > 0 && (
+                    <div
+                      style={{
+                        width: "100%",
+                        display: "flex",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <div
+                        className={`classicBtn loadMorBtn ${
+                          loadingMore && "disabledClassicBtn"
+                        }`}
+                        onClick={handleLoadMore}
+                      >
+                        {loadingMore ? "Loading More.." : "Load More.."}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </section>
+            <div className="divider"></div>
           </section>
         )}
       </Wrapper>
@@ -327,13 +327,13 @@ const Wrapper = styled.main`
   min-height: 100vh;
   background-color: whitesmoke;
 
-  section {
+  .allPostsSection {
     display: flex;
-    /* align-items: center; */
     justify-content: center;
     gap: 5rem;
     flex-direction: row-reverse;
-    /* overflow: hidden; */
+    /* border: 2px solid #ddd; */
+    padding: 1.5rem;
   }
 
   .loadingBar {
@@ -368,13 +368,19 @@ const Wrapper = styled.main`
     }
   }
 
+  .page {
+    .heading {
+      margin-left: 15rem;
+    }
+  }
+
   .filter {
     display: flex;
     align-items: start;
     justify-content: start;
     flex-direction: column;
     padding: 2rem;
-    height: 50vh;
+    height: fit-content;
     background-color: white;
     box-shadow: 0 0 1px gray;
     width: 15rem;
@@ -415,6 +421,12 @@ const Wrapper = styled.main`
       background-color: #ddd;
       transition: 0.3s;
     }
+  }
+  .divider {
+    background-color: rgba(124, 124, 124, 0.73);
+    padding: 0.5px 0;
+    /* background-color: red; */
+    width: 100vw;
   }
 
   .posts {

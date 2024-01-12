@@ -219,7 +219,13 @@ const Navbar = () => {
 
         <div className="icons">
           {windowWidth < 930 ? (
-            <Sidebar />
+            <Sidebar
+              notifications={
+                notifications &&
+                notifications.length > 0 &&
+                generateNotifications(notifications)
+              }
+            />
           ) : (
             <div
               style={{

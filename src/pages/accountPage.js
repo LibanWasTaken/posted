@@ -264,113 +264,6 @@ export function AccPage() {
               </button>
             </section>
           ) : (
-            // <section className="section ">
-            //   {/* Tab Buttons */}
-            //   <div className="btn-container">
-            //     <button
-            //       className={`tabBtn ${value === 0 && "active-btn"}`}
-            //       onClick={() => setValue(0)}
-            //     >
-            //       LOGIN
-            //     </button>
-            //     <button
-            //       className={`tabBtn ${value === 1 && "active-btn"}`}
-            //       onClick={() => setValue(1)}
-            //     >
-            //       REGISTER
-            //     </button>
-            //     <button className={`tabBtn `} onClick={loginGmail}>
-            //       GMAIL
-            //     </button>
-            //   </div>
-            //   {value === 0 ? (
-            //     // Sign in tab
-            //     <div className="containers">
-            //       <div className="inputs">
-            //         <TextField
-            //           className="fields"
-            //           label="Email"
-            //           type="email"
-            //           variant="standard"
-            //           value={loginEmail}
-            //           onChange={(event) => setLoginEmail(event.target.value)}
-            //         />
-            //         <TextField
-            //           className="fields"
-            //           label="Password"
-            //           type="password"
-            //           variant="standard"
-            //           value={loginPassword}
-            //           onChange={(event) => setLoginPassword(event.target.value)}
-            //         />
-            //       </div>
-            //       <p
-            //         style={{ textDecoration: "underline", cursor: "pointer" }}
-            //         onClick={handlePasswordResetOpen}
-            //       >
-            //         Forgot your password?
-            //       </p>
-            //       <button
-            //         className={`classicBtn ${
-            //           btnLoading && "loadingClassicBtn disabledClassicBtn"
-            //         }`}
-            //         style={{ marginTop: "4rem" }}
-            //         onClick={login}
-            //       >
-            //         SIGN IN
-            //       </button>
-            //       <div className="errMsg">{errMsg !== "" && errMsg}</div>
-            //       <PasswordReset
-            //         open={passwordResetOpen}
-            //         handleClose={handlePasswordResetClose}
-            //         userMail={loginEmail} // TODO: check if mail
-            //         // userID={currentUser.uid}
-            //       />
-            //     </div>
-            //   ) : (
-            //     // Register tab
-            //     <div className="containers">
-            //       <div className="inputs">
-            //         <TextField
-            //           className="fields"
-            //           label="User Name"
-            //           variant="filled"
-            //           value={userName}
-            //           onChange={(event) => setUserName(event.target.value)}
-            //         />
-            //         <TextField
-            //           className="fields"
-            //           label="Email"
-            //           type="email"
-            //           variant="filled"
-            //           value={registerEmail}
-            //           onChange={(event) => setRegisterEmail(event.target.value)}
-            //         />
-            //         <TextField
-            //           className="fields"
-            //           label="Password"
-            //           type="password"
-            //           variant="filled"
-            //           value={registerPassword}
-            //           onChange={(event) =>
-            //             setRegisterPassword(event.target.value)
-            //           }
-            //         />
-            //       </div>
-            //       <button
-            //         className={`classicBtn ${
-            //           btnLoading && "loadingClassicBtn disabledClassicBtn"
-            //         }`}
-            //         style={{ marginTop: "4rem" }}
-            //         onClick={register}
-            //       >
-            //         SIGN UP
-            //       </button>
-            //       <div className="errMsg">{errMsg !== "" && errMsg}</div>
-            //     </div>
-            //   )}
-            //   {/* <div className="errMsg">{errMsg !== "" && errMsg}</div> */}
-            // </section>
             <div className="log">
               <section className="design">
                 <Grow in={HALO_video}>
@@ -642,7 +535,8 @@ const Wrapper = styled.main`
   flex-direction: column; */
   /* padding: 5rem; */
   background-color: #fafafa;
-  height: 100vh;
+  min-height: 100vh;
+  height: 100%;
   .scrollMore:hover {
     transition: 300ms;
     transform: translateX(5px);
@@ -684,6 +578,7 @@ const Wrapper = styled.main`
       flex-direction: column;
       width: 50%;
       height: 100%;
+      padding-bottom: 3rem;
       .inputs {
         /* border-radius: 10px;
       border: 1px solid #ddd;

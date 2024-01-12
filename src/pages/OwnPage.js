@@ -14,7 +14,9 @@ import { getDocs, collection } from "firebase/firestore";
 import { db as FSdb } from "../services/firebase-config";
 import { useUserContext } from "../context/UserContext";
 
-import { Link as LinkAnchor } from "@mui/material";
+import { Link as LinkAnchor, Fade, CircularProgress } from "@mui/material";
+import { getTimeDifferenceShort } from "../functions/functions";
+import InfoRedirect from "../components/InfoRedirect";
 
 function generatePostLinks(posts, whereTo) {
   return posts.map((post) => (
@@ -74,6 +76,7 @@ const OwnPage = () => {
       <Wrapper>
         <span className="stylishBg">
           {/* <div></div> */}
+          {/* <Fade in={ExamSVG}> */}
           <img
             src={ExamSVG}
             alt="ExamSVG"
@@ -82,7 +85,8 @@ const OwnPage = () => {
               e.target.classList.add("imgLoaded");
             }}
           />
-
+          {/* </Fade> */}
+          {/* <Fade in={ScreenTimeSVG} className="ScreenTimeSVG"> */}
           <img
             src={ScreenTimeSVG}
             alt="ScreenTimeSVG"
@@ -91,10 +95,18 @@ const OwnPage = () => {
               e.target.classList.add("imgLoaded");
             }}
           />
+          {/* </Fade> */}
         </span>
         {userPosts ? (
           <section className="postSection">
-            <p className="header">Your Posts</p>
+            <p className="header">
+              Your Posts{" "}
+              <InfoRedirect
+                hash={10.1}
+                states={{ tabIndex: 3 }}
+                coloring="white"
+              />
+            </p>
             <div className="posts">
               {generatePostLinks(userPosts, "me/post")}
               {/* change to posted */}
@@ -111,7 +123,7 @@ const OwnPage = () => {
                 </div>
               )} */}
               {userPosts.length < 3 && (
-                <div className="post" onClick={OpenPostAdder}>
+                <div className="post addPost" onClick={OpenPostAdder}>
                   <span className="material-symbols-outlined addPostBtn">
                     add
                   </span>
@@ -144,7 +156,8 @@ const OwnPage = () => {
                 </a>
               </div>
             ) : (
-              <Spinner2 />
+              // <Spinner2 />
+              <CircularProgress size={"4rem"} sx={{ color: "white" }} />
             )}
           </section>
         )}
@@ -187,6 +200,7 @@ const Wrapper = styled.main`
   color: white;
   position: relative;
   padding-bottom: 2rem;
+  overflow: hidden;
   .postSection {
     text-align: left;
     padding-top: 1rem;
@@ -247,7 +261,8 @@ const Wrapper = styled.main`
     gap: 2rem;
     min-width: 50rem;
     max-width: 90vw;
-    overflow-x: scroll;
+    /* overflow-x: scroll; */
+    flex-wrap: wrap;
     padding-bottom: 2rem;
   }
 
@@ -406,7 +421,8 @@ const Wrapper = styled.main`
 
   @media screen and (max-width: 1200px) {
     .semiHeroText {
-      padding-top: 1rem;
+      /* padding-top: 1rem; */
+      margin-top: 4rem;
       flex-direction: column;
     }
     img {
@@ -414,21 +430,37 @@ const Wrapper = styled.main`
     }
   }
 
-  @media screen and (max-width: 880px) {
+  @media screen and (max-width: 1000px) {
     .posts {
       gap: 1rem;
+      /* max-width: 80vw; */
+      min-width: 90vw;
+
+      width: 10vw;
+      flex-wrap: wrap;
     }
+
+    .postSection {
+      padding: 2rem;
+    }
+
     .post {
-      width: 10em;
-      height: 12rem;
+      width: 15em;
+      height: 5rem;
+      display: flex;
       justify-content: left;
       align-items: start;
       padding: 1rem;
+      /* align-items: center;
+      justify-content: center; */
       p {
         margin: 0.5rem;
       }
       .heading {
         font-size: 1.25rem;
+        width: max-content;
+        max-width: 90%;
+        text-align: left;
       }
       .timing {
         letter-spacing: 0;
@@ -436,22 +468,21 @@ const Wrapper = styled.main`
       }
     }
 
-    .stylishBg {
-      height: 15rem;
-    }
-  }
-
-  @media screen and (max-width: 610px) {
-    .posts {
-      grid-template-columns: 1fr;
-    }
-    .post {
-      width: 15em;
-      height: 5rem;
+    .addPost {
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .stylishBg {
-      height: 15rem;
+      height: 20rem;
+    }
+
+    .semiHeroText {
+      section {
+        width: auto;
+        margin: 0 2rem;
+      }
     }
   }
 `;

@@ -3,17 +3,19 @@ import styled from "styled-components";
 import { useParams, Link } from "react-router-dom";
 import { useUserContext } from "../../context/UserContext";
 
-import DiaryMui from "../../components/Diaries/DiaryMui";
+import Diary from "../../components/Diaries/DiaryList";
 import Editor from "../../components/Editor/Editor";
 import LinkAdder from "../../components/modals/LinkAdder";
 import CountDown from "../../components/CountDown";
 import { Spinner3 } from "../../components/Spinner";
 import DeletePost from "../../components/modals/DeletePost";
 import DisablePost from "../../components/modals/DisablePost";
+import InfoRedirect from "../../components/InfoRedirect";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 
 import { DATE_OPTIONS } from "../../context/UserOptions";
+import { InfoRedirectLink } from "../../functions/functions";
 
 // mui
 import PropTypes from "prop-types";
@@ -47,6 +49,7 @@ import PrintIcon from "@mui/icons-material/Print";
 import ShareIcon from "@mui/icons-material/Share";
 import EditIcon from "@mui/icons-material/Edit";
 import CloseIcon from "@mui/icons-material/Close";
+import SwitchLeftIcon from "@mui/icons-material/SwitchLeft";
 
 // mui x
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -75,6 +78,7 @@ const theme = createTheme({
       main: "#fff",
     },
   },
+  // shadows: 0,
 });
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -130,6 +134,7 @@ const OwnPostPage = () => {
     day: datesOptions[0].value,
   });
   const [openEditDial, setOpenEditDial] = useState(false);
+  const [showFinalButtons, setShowFinalButtons] = useState(true);
   const handleOpenEditDial = () => setOpenEditDial(true);
   const handleCloseEditDial = () => setOpenEditDial(false);
 
@@ -186,9 +191,6 @@ const OwnPostPage = () => {
   useEffect(() => {
     if (currentUser) {
       verifyUserAndGetPost(currentUser.uid, id);
-      console.log(currentUser);
-      console.log(currentUser.displayName);
-      console.log(currentUser.photoUrl);
     }
     if (!loading && !currentUser) {
       setValidUser(false);
@@ -256,7 +258,7 @@ const OwnPostPage = () => {
   };
 
   function handleSave() {
-    // Update displayName
+    // Update user displayName
     if (postData.displayName !== currentUser.displayName) {
       updatedObj.displayName = currentUser.displayName;
     }
@@ -271,6 +273,7 @@ const OwnPostPage = () => {
   }
 
   function handleCancel() {
+    console.log("click");
     if (!editDisabled) {
       console.log("disabled");
     } else {
@@ -282,7 +285,6 @@ const OwnPostPage = () => {
   function handleEdit() {
     if (!editDisabled) {
       setEditDisabled(true);
-      console.log("edit");
     }
   }
 
@@ -301,6 +303,7 @@ const OwnPostPage = () => {
       setDatesOptions(DATE_OPTIONS);
     } else if (preset.timePeriod === "Week") {
       setDatesOptions(DATE_OPTIONS.slice(0, 7));
+      // TODO: make it Sun -> Sat instead of numbers
     }
     if (preset.timePeriod === "Week" && preset.day > 7) {
       setPreset((prevState) => ({
@@ -373,11 +376,60 @@ const OwnPostPage = () => {
         >
           Edit Info
         </button>
+        <div
+          className="closeBtn"
+          onClick={() => {
+            setShowFinalButtons(false);
+          }}
+        >
+          <CloseIcon />
+        </div>
       </div>
     );
   }
+  function EditSpeedDial() {
+    // FIXME: rerenders if hover over
 
-  function EditDrawer() {}
+    return (
+      <SpeedDial
+        ariaLabel="SpeedDial controlled open example"
+        sx={{
+          position: "absolute",
+          bottom: 24,
+          right: 24,
+        }}
+        icon={<EditIcon onClick={handleEdit} />}
+        onClose={handleCloseEditDial}
+        onOpen={handleOpenEditDial}
+        open={openEditDial}
+
+        // direction={"down"}
+      >
+        <SpeedDialAction
+          key="Change"
+          icon={<SwitchLeftIcon />}
+          tooltipTitle="Change"
+          onClick={() => {
+            setShowFinalButtons(true);
+          }}
+        />
+        <SpeedDialAction
+          key="Cancel"
+          icon={<CloseIcon />}
+          tooltipTitle="Cancel"
+          disabled={!editDisabled}
+          onClick={handleCancel}
+        />
+        <SpeedDialAction
+          key="Save"
+          icon={<SaveIcon />}
+          tooltipTitle="Save"
+          disabled={!editDisabled}
+          onClick={handleSave}
+        />
+      </SpeedDial>
+    );
+  }
 
   const [diaryOpenMUI, setDiaryOpenMUI] = useState(false);
   const [linkAdderOpen, setLinkAdderOpen] = useState(false);
@@ -399,8 +451,6 @@ const OwnPostPage = () => {
         minHeight: "100vh",
         height: "100%",
         overflow: "hidden",
-        // border: "5px dashed red",
-        // padding: "0 0 5rem 0",
       }}
     >
       {loading2 ? (
@@ -479,37 +529,6 @@ const OwnPostPage = () => {
               </Tabs>
               <h2>{postData.title ? postData.title : "Title"}</h2>
             </div>
-            {tabValue !== 0 && (
-              <SpeedDial
-                ariaLabel="SpeedDial controlled open example"
-                sx={{
-                  position: "absolute",
-                  bottom: 16,
-                  right: "7rem",
-                }}
-                icon={<EditIcon />}
-                onClose={handleCloseEditDial}
-                onOpen={handleOpenEditDial}
-                open={openEditDial}
-                onClick={handleEdit}
-              >
-                <SpeedDialAction
-                  key="Cancel"
-                  icon={<CloseIcon />}
-                  tooltipTitle="Cancel"
-                  disabled={!editDisabled}
-                  onClick={handleCancel}
-                />
-                <SpeedDialAction
-                  key="Save"
-                  icon={<SaveIcon />}
-                  tooltipTitle="Save"
-                  disabled={!editDisabled}
-                  onClick={handleCloseEditDial}
-                />
-              </SpeedDial>
-            )}
-            {/* TODO: add a button to change between the other layouts, frick it save it in the preference in the local storage */}
             <div className="textEditor">
               <CustomTabPanel value={tabValue} index={0}>
                 <Editor initialConfig={{ editable: true }} />
@@ -521,7 +540,7 @@ const OwnPostPage = () => {
                 <Box
                   sx={{
                     padding: 8,
-                    paddingBottom: 0,
+                    // paddingBottom: 4,
                     textAlign: "left",
                   }}
                 >
@@ -627,7 +646,53 @@ const OwnPostPage = () => {
                   />
                 </Box>
                 {/* TODO: nsfw switch */}
-                <FinalButtons />
+                {showFinalButtons ? (
+                  <FinalButtons />
+                ) : (
+                  <SpeedDial
+                    ariaLabel="SpeedDial controlled open example"
+                    sx={{
+                      position: "absolute",
+                      bottom: 24,
+                      right: 24,
+                    }}
+                    onClick={handleEdit}
+                    icon={
+                      <EditIcon
+                        sx={{ borderRadius: "50%" }}
+                        // onClick={handleEdit}
+                      />
+                    }
+                    onClose={handleCloseEditDial}
+                    onOpen={handleOpenEditDial}
+                    open={openEditDial}
+
+                    // direction={"down"}
+                  >
+                    <SpeedDialAction
+                      key="Change"
+                      icon={<SwitchLeftIcon />}
+                      tooltipTitle="Change"
+                      onClick={() => {
+                        setShowFinalButtons(true);
+                      }}
+                    />
+                    <SpeedDialAction
+                      key="Cancel"
+                      icon={<CloseIcon />}
+                      tooltipTitle="Cancel"
+                      disabled={!editDisabled}
+                      onClick={handleCancel}
+                    />
+                    <SpeedDialAction
+                      key="Save"
+                      icon={<SaveIcon />}
+                      tooltipTitle="Save"
+                      disabled={saveDisabled}
+                      onClick={handleSave}
+                    />
+                  </SpeedDial>
+                )}
               </CustomTabPanel>
             </div>
 
@@ -691,7 +756,20 @@ const OwnPostPage = () => {
                         sx={{ marginBottom: 2 }}
                         disabled={!editDisabled}
                       >
-                        <FormLabel>Type</FormLabel>
+                        <FormLabel
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "3px",
+                          }}
+                        >
+                          Type
+                          <InfoRedirect
+                            states={{ tabIndex: 3, pageIndex: 3 }}
+                          />
+                        </FormLabel>
+                        {/* https://reactrouter.com/en/main/components/link#state */}
+
                         <RadioGroup
                           defaultValue={postData.scheduleFormat || "Specified"}
                           row
@@ -872,9 +950,8 @@ const OwnPostPage = () => {
                       />
                     </RadioGroup>
                   </FormControl>
-
-                  <FinalButtons />
                 </Box>
+                {showFinalButtons && <FinalButtons />}
               </CustomTabPanel>
             </div>
             <div className="postForm">
@@ -933,7 +1010,7 @@ const OwnPostPage = () => {
 
                   {/* <Typography variant="body1">Enter post ID: {id}</Typography> */}
                 </Box>
-                <FinalButtons />
+                {showFinalButtons && <FinalButtons />}
               </CustomTabPanel>
             </div>
             <LinkAdder
@@ -941,7 +1018,7 @@ const OwnPostPage = () => {
               handleClose={handleLinkAdderClose}
               info={id}
             />
-            <DiaryMui
+            <Diary
               open={diaryOpenMUI}
               handleClose={handleDiaryCloseMUI}
               info={id}
@@ -1156,14 +1233,16 @@ const Wrapper = styled.main`
     background-color: white;
     border-radius: 10px;
     /* margin-top: 2rem; */
+    position: relative;
   }
 
   .buttons {
-    background-color: #eee;
-
-    border-radius: 10px;
-    margin: 5rem;
+    background-color: rgba(150, 150, 150, 0.06);
+    /* border-radius: 10px; */
+    /* border: 1px solid #eee; */
+    margin: 2rem;
     text-align: center;
+    position: relative;
     .classicBtn {
       margin: 1rem;
     }
@@ -1171,6 +1250,12 @@ const Wrapper = styled.main`
       margin: 1rem;
       letter-spacing: 2px;
       padding: 1.5rem 2.5rem;
+    }
+    .closeBtn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      cursor: pointer;
     }
   }
 

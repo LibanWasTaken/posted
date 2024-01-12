@@ -336,14 +336,23 @@ const Messages = () => {
 
     return chats.map((chat) => {
       const isUser = uid === chat.uid;
-      const positionStyle = isUser ? { left: "-3.5rem" } : { right: "-3.5rem" };
+      const positionStyleTs = isUser
+        ? { left: "-3.5rem" }
+        : { right: "-3.5rem" };
+      const positionStyleDate = isUser ? { left: "-8rem" } : { right: "-8rem" };
       // console.log(chat.id);
       // console.log(chat);
       return (
         <div key={chat.id} className={`msg ${isUser ? "user" : "sender"}`}>
           {chat.msg}
-          <span style={{ ...timestampStyle, ...positionStyle }}>
+          <span style={{ ...timestampStyle, ...positionStyleTs }}>
             {dayjs(chat.ts).format("h:mm a")}
+          </span>
+          <span
+            style={{ ...timestampStyle, ...positionStyleDate }}
+            className="msgDate"
+          >
+            {dayjs(chat.ts).format("DD/MM/YYYY")}
           </span>
         </div>
       );
@@ -368,19 +377,20 @@ const Messages = () => {
           </ListItemAvatar> */}
             <ListItemText
               primary={chat.name}
-              secondary={
-                <React.Fragment>
-                  <Typography
-                    sx={{ display: "inline" }}
-                    component="span"
-                    variant="body2"
-                    color="text.primary"
-                  >
-                    {getTimeDifferenceShort(chat.lastTs)}
-                  </Typography>
-                  {` — ${chat.lastTxt}`}
-                </React.Fragment>
-              }
+              sx={{ p: 1 }}
+              // secondary={
+              //   <React.Fragment>
+              //     <Typography
+              //       sx={{ display: "inline" }}
+              //       component="span"
+              //       variant="body2"
+              //       color="text.primary"
+              //     >
+              //       {getTimeDifferenceShort(chat.lastTs)}
+              //     </Typography>
+              //     {` — ${chat.lastTxt}`}
+              //   </React.Fragment>
+              // }
             />
           </ListItemButton>
           <Divider component="li" />
@@ -444,6 +454,27 @@ const Messages = () => {
                 >
                   Chats
                 </h3>
+                {/* <TextField
+                  id="outlined-multiline-flexible"
+                  label="Search"
+                  // placeholder="Search"
+                  type="text"
+                  variant="standard"
+                  // value={chatMsgValue}
+                  // onChange={(event) => {
+                  //   const { id, value } = event.target;
+                  //   setChatMsgValue(value);
+                  // }}
+                  // onKeyDown={(event) => {
+                  //   const { key } = event;
+                  //   if (key === "Enter") {
+                  //     handleSubmit();
+                  //   }
+                  // }}
+                  sx={{ margin: "0 1rem 1rem 1rem" }}
+                  inputProps={{ maxLength: 30 }}
+                  fullWidth
+                /> */}
                 <List
                   sx={
                     {
@@ -712,6 +743,14 @@ const Wrapper = styled.main`
           max-width: 80%;
           position: relative;
           line-height: 1.25rem;
+          .msgDate {
+            opacity: 0;
+          }
+        }
+        .msg:hover {
+          .msgDate {
+            opacity: 1;
+          }
         }
         .sender {
           align-self: flex;

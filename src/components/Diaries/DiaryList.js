@@ -191,9 +191,10 @@ export default function Diary({ open, handleClose, info, editable = true }) {
   const [loading, setLoading] = useState(false);
   const [diaryPages, setDiaryPages] = useState(false);
   const [pageInfo, setPageInfo] = useState(null);
-  const [sortDesc, setSortDesc] = useState(false);
+  const [sortDesc, setSortDesc] = useState(true);
   // const { info } = useParams();
-  console.log(info);
+  // console.log(info);
+  // FIXME: re renders
 
   const handlePageAdderOpen = () => {
     if (!loading) {
@@ -232,7 +233,7 @@ export default function Diary({ open, handleClose, info, editable = true }) {
       id: doc.id,
     }));
     setDiaryPages(diaryDocs);
-    // setLastPost(querySnapshot.docs[querySnapshot.docs.length - 1]);\
+    // setLastPost(querySnapshot.docs[querySnapshot.docs.length - 1]);
     setLoading(false);
   }
 

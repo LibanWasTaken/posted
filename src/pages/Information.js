@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+import { useParams, useLocation } from "react-router-dom";
 
 import MouseTrail from "../components/MouseTrail/MouseTrail";
 import BlobCursor from "../components/BlobTracer/BlobCursor";
@@ -16,6 +17,7 @@ import {
   Link as LinkMui,
   TextField,
   Button,
+  Pagination,
 } from "@mui/material/";
 import PropTypes from "prop-types";
 
@@ -31,7 +33,7 @@ function TabPanel(props) {
       {...other}
     >
       {value === index && (
-        <Box sx={{ p: 3, marginLeft: 10 }}>
+        <Box sx={{ p: 3, marginLeft: 7 }}>
           <Typography>{children}</Typography>
         </Box>
       )}
@@ -85,10 +87,26 @@ const FadingImage = ({ src, alt }) => {
   );
 };
 
-const HowToPostPage = () => {
+const PostedGuidePage = () => {
   const [tabValue, setTabValue] = useState(0);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [commentValue, setCommentValue] = useState();
+  const { infoNav } = useParams();
+  let { state } = useLocation();
+  const [infoPage, setInfoPage] = useState(1);
+  const handleInfoPageChange = (event, value) => {
+    setInfoPage(value);
+  };
+  useEffect(() => {
+    if (state) {
+      if (state.tabIndex) {
+        setTabValue(state.tabIndex);
+      }
+      if (state.pageIndex) {
+        setInfoPage(state.pageIndex);
+      }
+    }
+  }, [state]);
 
   const handleInputChange = (event) => {
     const { id, value } = event.target;
@@ -235,15 +253,117 @@ const HowToPostPage = () => {
       ),
     },
     {
-      title: "Creating Multiple Posts",
+      title: "Posts Features",
       tab: "Posts",
       content: (
         <div>
-          <p className="paragraph">
-            With "Posted," you can create and schedule multiple posts. This
-            means you can plan messages for various occasions, ensuring that
-            your messages are delivered at the right time to the right people.
-          </p>
+          {infoPage == 1 && (
+            <div className="infoTab">
+              <div className="info">
+                <h3>1.1 Post containers</h3>
+                <p className="paragraph">
+                  With "Posted," you can create and schedule multiple posts.
+                </p>
+                <p>
+                  This means you can plan messages for various occasions,
+                  ensuring that your messages are delivered at the right time to
+                  the right people.
+                </p>
+              </div>
+            </div>
+          )}
+          {infoPage == 2 && (
+            <div className="infoTab">
+              <div className="info">
+                <h3>2.1 Letter</h3>
+                <p>
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Magni
+                  inventore eum saepe voluptas rerum placeat dolor fugiat, harum
+                  esse velit dignissimos praesentium facere veniam suscipit?
+                  Vitae nobis officiis dolorem deserunt.
+                </p>
+                <p>For prem you get Lorem ipsum dolor sit amet.</p>
+                <h4>2.1.1 Title</h4>
+                <p>
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                  Tempora, quaerat.
+                </p>
+              </div>
+              <div className="info">
+                <h3 id="1.2">2.2 Diaries</h3>
+                <p>
+                  Lorem ipsualsjdlakj sdljalsdjlakjs llkjdlakfkuueqo cncoasunc
+                  asnls linl jm deserunt.
+                </p>
+                <p>Only one a day</p>
+                <p>
+                  Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+                  Exercitationem ipsam vel sequi facere ex est. <br /> Lorem
+                  ipsum dolor sit amet consectetur adipisicing elit. Deserunt
+                  voluptatem veritatis ex quisquam consequatur aspernatur
+                  distinctio porro, accusamus totam quasi id suscipit eligendi
+                  illo adipisci.
+                </p>
+              </div>
+              <div className="info">
+                <h3 id="1.2">2.3 Links</h3>
+                <p>
+                  Lorem ipsualsjdlakj sdljalsdjlakjs llkjdlakfkuueqo cncoasunc
+                  asnls linl jm deserunt. Lorem, ipsum dolor sit amet
+                  consectetur adipisicing elit. Natus ducimus culpa repudiandae!
+                </p>
+                <p>Only one a day</p>
+                <p>Lorem ipllore Lorem ipsum dolor sit amet.</p>
+              </div>
+            </div>
+          )}
+          {infoPage == 3 && (
+            <div className="infoTab">
+              <div className="info">
+                <h2>3.1 Post Release</h2>
+                <h3>3.1.1 Schedule</h3>
+                <p>
+                  <strong>One Time: </strong>saepe voluptas rerum placeat dolor
+                  fugiat, harum esse velit dignissimos prLorem ipsum dolor sit
+                  amet consectetur adipisicing elit. Magni inventore
+                  eumaesentium facere veniam suscipit? Vitae nobis officiis
+                  dolorem deserunt.
+                </p>
+                <p>For prem you get Lorem ipsum dolor sit amet.</p>
+                <p>
+                  <strong>Recurring: </strong>Lorem ipsum dolor sit amet
+                  consectetur adipisicing elit. Sunt fugit dolorum mollitia ut
+                  placeat, numquam iste nihil reprehenderit voluptate
+                  voluptates, nemo natus a!
+                </p>
+                <h3>3.1.2 Type</h3>
+                <p>
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                  Tempora, quaerat.
+                </p>
+              </div>
+              <div className="info">
+                <h3 id="1.2">2.2 Diaries</h3>
+                <p>
+                  Lorem ipsualsjdlakj sdljalsdjlakjs llkjdlakfkuueqo cncoasunc
+                  asnls linl jm deserunt.
+                </p>
+                <p>Only one a day</p>
+                <p>
+                  Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+                  Exercitationem icusamus totam quasi id suscipit eligendi illo
+                  adipisci.
+                </p>
+              </div>
+            </div>
+          )}
+
+          <Pagination
+            sx={{ m: 5 }}
+            count={8}
+            page={infoPage}
+            onChange={handleInfoPageChange}
+          />
         </div>
       ),
     },
@@ -381,7 +501,13 @@ const HowToPostPage = () => {
             cosectetur adipisicing elit. Cum,sit amet cosit amet co architecto
             earum corrupti dolsit amet coor numquam sit.
           </p>
-          <p style={{ display: "flex", alignItems: "center", gap: "3px" }}>
+          <span
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "3px",
+            }}
+          >
             You can{" "}
             <p style={{ textDecoration: "line-through" }}>talk sh!t to</p>
             contact me via the{" "}
@@ -395,7 +521,7 @@ const HowToPostPage = () => {
               {"feedback page"}
             </LinkMui>{" "}
             or email <LinkMui>{"somepeopledoingstuffs@gmail.com"}</LinkMui>
-          </p>
+          </span>
         </div>
       ),
     },
@@ -497,7 +623,8 @@ const HowToPostPage = () => {
 
           {sections2.map((section, index) => (
             <TabPanel key={index} value={tabValue} index={index}>
-              <Fade in={section.content}>{section.content}</Fade>
+              {/* <Fade in={section.content}>{section.content}</Fade> */}
+              {section.content}
             </TabPanel>
           ))}
         </Box>
@@ -515,6 +642,7 @@ const Wrapper = styled.section`
   flex-direction: column; */
   /* width: 70vw; */
 
+  overflow-x: hidden;
   .page {
     width: 90vw;
   }
@@ -553,6 +681,14 @@ const Wrapper = styled.section`
     gap: 1rem;
   }
 
+  .infoTab {
+    .info {
+      h4 {
+        margin: 0;
+      }
+    }
+  }
+
   .section {
     margin-top: 20px;
   }
@@ -567,4 +703,4 @@ const Wrapper = styled.section`
   }
 `;
 
-export default HowToPostPage;
+export default PostedGuidePage;
