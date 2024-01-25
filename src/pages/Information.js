@@ -2,8 +2,15 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useParams, useLocation } from "react-router-dom";
 
+import { scrollToBottom } from "../functions/functions";
+import { useUserContext } from "../context/UserContext";
+import { db } from "../services/firebase-config";
+import { setDoc, doc } from "firebase/firestore";
 import MouseTrail from "../components/MouseTrail/MouseTrail";
 import BlobCursor from "../components/BlobTracer/BlobCursor";
+
+import ReCAPTCHA from "react-google-recaptcha";
+import dayjs from "dayjs";
 
 import {
   Tabs,
@@ -88,9 +95,16 @@ const FadingImage = ({ src, alt }) => {
 };
 
 const PostedGuidePage = () => {
+  const { user: currentUser, loading } = useUserContext();
   const [tabValue, setTabValue] = useState(0);
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [commentValue, setCommentValue] = useState();
+  const [feedbackValues, setFeedbackValues] = useState({
+    name: "",
+    email: "",
+    comment: "",
+  });
+  const [captchaSuccess, setCaptchaSuccess] = useState(false);
+  const [sendingFeedback, setSendingFeedback] = useState(false);
   const { infoNav } = useParams();
   let { state } = useLocation();
   const [infoPage, setInfoPage] = useState(1);
@@ -99,6 +113,8 @@ const PostedGuidePage = () => {
   };
   useEffect(() => {
     if (state) {
+      scrollToBottom(150);
+
       if (state.tabIndex) {
         setTabValue(state.tabIndex);
       }
@@ -108,10 +124,24 @@ const PostedGuidePage = () => {
     }
   }, [state]);
 
+  useEffect(() => {
+    if (currentUser && !(feedbackValues.email && feedbackValues.name)) {
+      setFeedbackValues((prevCommentValue) => ({
+        ...prevCommentValue,
+        email: currentUser.email,
+        name: currentUser.displayName,
+      }));
+    }
+  }, [currentUser]);
+
   const handleInputChange = (event) => {
     const { id, value } = event.target;
-    console.log(id, value);
-    setCommentValue(value);
+    // console.log(id, value);
+
+    setFeedbackValues((prevCommentValue) => ({
+      ...prevCommentValue,
+      [id]: value,
+    }));
   };
 
   const handleImageLoad = () => {
@@ -121,10 +151,41 @@ const PostedGuidePage = () => {
     setTabValue(newValue);
   };
 
+  function captchaCheck(value) {
+    // console.log("Captcha value:", value);
+
+    // Check if the value indicates a successful verification
+    if (value) {
+      console.log("User passed reCAPTCHA!");
+      setCaptchaSuccess(true);
+    } else {
+      console.log("User did not pass reCAPTCHA.");
+      setCaptchaSuccess(false);
+    }
+  }
+
+  async function handleSubmitFeedback() {
+    setSendingFeedback(true);
+    try {
+      const timestamp = String(dayjs().valueOf());
+      const feedbackObj = {
+        ...feedbackValues,
+        ts: timestamp,
+      };
+      await setDoc(doc(db, "feedback", timestamp), feedbackObj);
+      console.log(feedbackObj);
+    } catch (error) {
+      console.log(error);
+      alert("Error sending critic");
+    }
+    setSendingFeedback(false);
+    setTabValue(0);
+  }
+
   const sections2 = [
     {
       title: "What is Posted?",
-      tab: "Posted?",
+      tab: "Posted",
       content: (
         <div>
           <p className="paragraph">
@@ -133,6 +194,7 @@ const PostedGuidePage = () => {
             sharing your thoughts, memories, and important information with
             others, even beyond your lifetime.
           </p>
+          <p>Fast, reliable, safe, lightweight</p>
           <p>
             Lorem ipsum dolor, sit amet consectetur adipisicing elit. Iste,
             corrupti explicabo. Repellendus, hic est fugiat praesentium sunt
@@ -262,12 +324,35 @@ const PostedGuidePage = () => {
               <div className="info">
                 <h3>1.1 Post containers</h3>
                 <p className="paragraph">
-                  With "Posted," you can create and schedule multiple posts.
+                  With Posted, you can create and schedule multiple posts.
                 </p>
                 <p>
                   This means you can plan messages for various occasions,
                   ensuring that your messages are delivered at the right time to
-                  the right people.
+                  the right people. <br />
+                  Begin your Posted journey with, at max, three meaningful
+                  posts, creating your digital footprint. Elevate your
+                  experience with Posted Premium, unlocking the potential for up
+                  to ten cherished messages that define your unique legacy.
+                </p>
+                <h4>1.1.1 Titles</h4>
+                <p>
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                  Molestias fugit iure labore dolorem voluptatem!
+                </p>
+
+                <h4>1.1.2 Release Date</h4>
+                <p>
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                  Aliquid ducimus non nulla saepe? Expedita similique ipsam at?
+                  Fuga placeat blanditiis atque sed! Ipsam veritatis impedit
+                  exercitationem.
+                </p>
+                <h3>1.2 Others</h3>
+                <p>
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                  Cupiditate laboriosam corporis amet velit cum? Velit quis unde
+                  dolorum possimus perferendis omnis, iste est
                 </p>
               </div>
             </div>
@@ -320,10 +405,21 @@ const PostedGuidePage = () => {
           {infoPage == 3 && (
             <div className="infoTab">
               <div className="info">
-                <h2>3.1 Post Release</h2>
+                <h2>3.1 Release Formats</h2>
                 <h3>3.1.1 Schedule</h3>
                 <p>
-                  <strong>One Time: </strong>saepe voluptas rerum placeat dolor
+                  <strong>One Time: </strong>The Post will be released at
+                  specified date, it cannot be delayed but can be disabled. The
+                  user will get warned as wanted.
+                </p>
+                <p>
+                  <strong>Recurring: </strong>The Post will be released at
+                  specified intervals unless intervened, it can be delayed for a
+                  defined time period or disabled.
+                </p>
+                <h3>3.1.2 Type</h3>
+                <p>
+                  <strong>Specified: </strong>saepe voluptas rerum placeat dolor
                   fugiat, harum esse velit dignissimos prLorem ipsum dolor sit
                   amet consectetur adipisicing elit. Magni inventore
                   eumaesentium facere veniam suscipit? Vitae nobis officiis
@@ -331,15 +427,23 @@ const PostedGuidePage = () => {
                 </p>
                 <p>For prem you get Lorem ipsum dolor sit amet.</p>
                 <p>
-                  <strong>Recurring: </strong>Lorem ipsum dolor sit amet
+                  <strong>Preset: </strong>Lorem ipsum dolor sit amet
                   consectetur adipisicing elit. Sunt fugit dolorum mollitia ut
                   placeat, numquam iste nihil reprehenderit voluptate
                   voluptates, nemo natus a!
                 </p>
-                <h3>3.1.2 Type</h3>
+                <h2>3.2 Delays</h2>
                 <p>
                   Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Tempora, quaerat.
+                  Voluptatem ea, dicta quasi tempora et alias officiis, iste sed
+                  ratione esse, tenetur totam
+                </p>
+                <h2>3.2 Warnings</h2>
+                <p>
+                  Lorem ipsum dolor, sit amet consectetur adipisicing elit.
+                  Accusantium voluptatibus maxime pariatur veniam deleniti
+                  mollitia iusto dolores? Similique fuga beatae eaque ratione
+                  maxime?
                 </p>
               </div>
               <div className="info">
@@ -368,7 +472,7 @@ const PostedGuidePage = () => {
       ),
     },
     {
-      title: "High Customizability and Flexibility",
+      title: "Customizing",
       content: (
         <div>
           <p className="paragraph">
@@ -407,7 +511,7 @@ const PostedGuidePage = () => {
     },
     {
       title: "Built-in Chat System",
-      tab: "Chat",
+      tab: "Messaging",
       content: (
         <div>
           <div>
@@ -485,7 +589,7 @@ const PostedGuidePage = () => {
     },
 
     {
-      title: "Who's running this?",
+      title: "Me",
       content: (
         <div>
           <p>
@@ -541,35 +645,87 @@ const PostedGuidePage = () => {
             <TextField
               sx={{
                 m: 1,
-                width: "50rem",
+                width: "50ch",
               }}
-              id="title"
+              id="comment"
               // label={!userData ? "Log in to comment" : "Comment"} // Fix
-              placeholder="What's wrong..?"
+              placeholder="What's wrong..?*"
               type="text"
               variant="filled"
-              value={commentValue}
-              inputProps={{ maxLength: 1000 }}
+              inputProps={{ maxLength: 500 }}
               fullWidth
               multiline
-              rows={10}
+              required
+              rows={5}
               onChange={handleInputChange}
-              // disabled={!userData || disableComment}
-              // focused={commentValue}
+              disabled={sendingFeedback}
             />
-            <Button
+            <Box sx={{ width: "100%" }}>
+              <TextField
+                sx={{
+                  m: 1,
+                  width: "40%",
+                  marginBottom: 2,
+                }}
+                id="name"
+                placeholder="Name (optional)"
+                type="text"
+                variant="outlined"
+                defaultValue={feedbackValues.name}
+                inputProps={{ maxLength: 20 }}
+                onChange={handleInputChange}
+                disabled={sendingFeedback}
+              />
+              <TextField
+                sx={{
+                  m: 1,
+                  width: "50%",
+                  marginBottom: 2,
+                }}
+                id="email"
+                placeholder="Email*"
+                type="email"
+                variant="outlined"
+                required
+                defaultValue={feedbackValues.email}
+                inputProps={{ maxLength: 50 }}
+                onChange={handleInputChange}
+                disabled={sendingFeedback}
+              />
+            </Box>
+            <Box
               sx={{
-                letterSpacing: 1,
-                fontWeight: 400,
-                backgroundColor: "#eee",
-                width: "fit-content",
-                p: 2,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-around",
+                width: "100%",
               }}
-              // disabled={!commentValue}
-              // onClick={handleSubmit}
             >
-              Submit
-            </Button>
+              <ReCAPTCHA
+                sitekey="6Ldc4VspAAAAAFzMSR02QEvXimxAnXECuVoHKgJo" // TODO: hide?
+                onChange={captchaCheck}
+                // https://www.google.com/recaptcha/admin/site/693887324/setup
+              />
+              <Button
+                sx={{
+                  letterSpacing: 1,
+                  fontWeight: 400,
+                  backgroundColor: "#eee",
+                  width: "fit-content",
+                  p: 2,
+                }}
+                className={sendingFeedback && "loadingClassicBtn"}
+                disabled={
+                  !feedbackValues.comment ||
+                  !feedbackValues.email ||
+                  !captchaSuccess ||
+                  sendingFeedback
+                }
+                onClick={handleSubmitFeedback}
+              >
+                Submit
+              </Button>
+            </Box>
           </p>
         </div>
       ),
@@ -600,8 +756,8 @@ const PostedGuidePage = () => {
             sx={{
               borderRight: 1,
               borderColor: "divider",
-              width: 250,
-              minWidth: 250,
+              width: 200,
+              minWidth: 200,
               // marginRight: 10,
             }}
           >
@@ -641,7 +797,7 @@ const Wrapper = styled.section`
   justify-content: center;
   flex-direction: column; */
   /* width: 70vw; */
-
+  min-height: 100vh;
   overflow-x: hidden;
   .page {
     width: 90vw;
@@ -658,7 +814,8 @@ const Wrapper = styled.section`
     /* position: relative; */
     margin: 2rem;
     font-size: 5rem;
-    opacity: 0.1;
+    /* opacity: 0.2; */
+    color: #eee;
 
     /* right: 5rem; */
   }

@@ -48,17 +48,21 @@ const OwnPage = () => {
 
   async function getFSData() {
     const userID = currentUser.uid;
-    // TODO: also get from users/posted
-    await getDocs(collection(FSdb, `/users/${userID}/posts`)).then(
-      (querySnapshot) => {
-        const postsData = querySnapshot.docs.map((doc) => ({
-          ...doc.data(),
-          id: doc.id,
-        }));
-        setUserPosts(postsData);
-        scrollToBottom(105);
-      }
-    );
+    try {
+      // TODO: also get from users/posted
+      await getDocs(collection(FSdb, `/users/${userID}/posts`)).then(
+        (querySnapshot) => {
+          const postsData = querySnapshot.docs.map((doc) => ({
+            ...doc.data(),
+            id: doc.id,
+          }));
+          setUserPosts(postsData);
+          scrollToBottom(105);
+        }
+      );
+    } catch (error) {
+      alert("Error getting data");
+    }
   }
 
   useEffect(() => {

@@ -102,7 +102,6 @@ const Comments = ({ postID, postAdminUID }) => {
       if (userDataReceived == undefined) {
         setLoading(false);
       } else {
-        console.log(userDataReceived);
         setUserData(userDataReceived);
       }
     } catch (error) {

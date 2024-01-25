@@ -12,8 +12,8 @@ const Footer = () => {
               <div className="item">
                 <img className="logoPng" src={logoPng} alt="" />
               </div>
-              <div className="item">MORTEM</div>
-              <div className="item">POSTED © 2023. All rights reserved.</div>
+              <div className="item">This is in beta.</div>
+              <div className="item">POSTED © 2023. All rights reserved?</div>
             </div>
           </footer>
         </Wrapper>

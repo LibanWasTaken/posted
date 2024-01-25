@@ -53,7 +53,13 @@ const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function Diary({ open, handleClose, info, editable = true }) {
+export default function Diary({
+  open,
+  handleClose,
+  info,
+  editable = true,
+  viewer = false,
+}) {
   const arrExample = [
     {
       primary: "09 Dec, 2021",
@@ -233,6 +239,7 @@ export default function Diary({ open, handleClose, info, editable = true }) {
       id: doc.id,
     }));
     setDiaryPages(diaryDocs);
+    // console.log(diaryDocs);
     // setLastPost(querySnapshot.docs[querySnapshot.docs.length - 1]);
     setLoading(false);
   }
@@ -247,6 +254,7 @@ export default function Diary({ open, handleClose, info, editable = true }) {
         <ListItem
           button
           onClick={() => {
+            console.log(item);
             setPageInfo(item);
             setPageAdderOpen(true);
           }}
@@ -284,7 +292,7 @@ export default function Diary({ open, handleClose, info, editable = true }) {
             </div>
             <div style={{ gap: "2rem" }}>
               <span
-                className=" material-symbols-outlined"
+                className="btnIconSort material-symbols-outlined"
                 onClick={() => {
                   setSortDesc(!sortDesc);
                 }}
@@ -338,6 +346,7 @@ export default function Diary({ open, handleClose, info, editable = true }) {
         getFSData={getFSData}
         pageInfo={pageInfo}
         editable={editable}
+        viewer={viewer}
       />
     </ThemeProvider>
   );
@@ -371,18 +380,30 @@ const Wrapper = styled.main`
       font-size: 2rem;
       user-select: none;
       padding: 2px;
+      border-radius: 50%;
     }
     .btnIcon:hover {
       cursor: pointer;
       transition: 0.3s;
       background-color: rgba(255, 255, 255, 0.25);
-      border-radius: 50%;
       transform: rotate(90deg);
+    }
+    .btnIconSort {
+      font-size: 2rem;
+      user-select: none;
+      border-radius: 50%;
+      padding: 2px;
+    }
+    .btnIconSort:hover {
+      cursor: pointer;
+      transition: 0.3s;
+      background-color: rgba(255, 255, 255, 0.25);
+      /* transform: scaleY(-1); */
     }
   }
 
   .list {
-    padding: 1rem 2rem;
+    padding: 1rem;
     /* border: 1px solid red; */
     overflow: scroll;
   }
@@ -399,7 +420,7 @@ const Wrapper = styled.main`
     position: absolute;
     bottom: 0;
     right: 5rem;
-    opacity: 0.1;
+    opacity: 0.05;
     height: 100vh;
     pointer-events: none;
   }

@@ -28,6 +28,7 @@ import {
   List,
   Divider,
   CircularProgress,
+  LinearProgress,
   Box,
   Tabs,
   Tab,
@@ -94,6 +95,8 @@ const Messages = () => {
   const [checkingIDs, setCheckingIDs] = useState(true); // TODO: double renders
 
   const { chatID } = useParams();
+  console.log(useParams());
+
   const [tabValue, setTabValue] = useState(0);
   const [chat, setChat] = useState();
   const [userChatsList, setUserChatsList] = useState([]);
@@ -101,6 +104,7 @@ const Messages = () => {
   const [chatUserIDs, setChatUserIDS] = useState("Uhh");
   const [chatIDsValidity, setChatIDsValidity] = useState();
   const [chatMsgValue, setChatMsgValue] = useState();
+  const [chatName, setChatName] = useState();
 
   const [openDeletionModal, setOpenDeletionModal] = useState(false);
   const handleClickOpenDeletionModal = () => {
@@ -166,6 +170,7 @@ const Messages = () => {
 
   async function getChatHistory(id) {
     setLoadingChat(true);
+    console.log("start");
     const queryRecieved = query(
       collection(db, "messages", id, "chat"),
       orderBy("ts", "asc")
@@ -179,6 +184,7 @@ const Messages = () => {
     // console.log(chatDocs);
     setChat(chatDocs);
     setLoadingChat(false);
+    console.log("end");
   }
 
   async function deleteCollection(db, collectionPath, batchSize) {
@@ -361,10 +367,15 @@ const Messages = () => {
 
   function renderChatList(chats) {
     return chats.map((chat) => {
-      // chat
       return (
         <Link
-          to={`/messages/${chat.id}`}
+          onClick={() => {
+            setChatName(chat.name);
+          }}
+          to={{
+            pathname: `/messages/${chat.id}`,
+            state: { chatName: chat.name },
+          }}
           style={{ color: "black", textDecoration: "none" }}
           key={chat.id}
         >
@@ -378,22 +389,22 @@ const Messages = () => {
             <ListItemText
               primary={chat.name}
               sx={{ p: 1 }}
-              // secondary={
-              //   <React.Fragment>
-              //     <Typography
-              //       sx={{ display: "inline" }}
-              //       component="span"
-              //       variant="body2"
-              //       color="text.primary"
-              //     >
-              //       {getTimeDifferenceShort(chat.lastTs)}
-              //     </Typography>
-              //     {` — ${chat.lastTxt}`}
-              //   </React.Fragment>
-              // }
+              secondary={
+                <React.Fragment>
+                  <Typography
+                    sx={{ display: "inline" }}
+                    component="span"
+                    variant="body2"
+                    color="text.primary"
+                  >
+                    {getTimeDifferenceShort(chat.lastTs)}
+                  </Typography>
+                  {` — ${chat.lastTxt}`}
+                </React.Fragment>
+              }
             />
           </ListItemButton>
-          <Divider component="li" />
+          {/* <Divider component="li" /> */}
         </Link>
       );
     });
@@ -430,7 +441,9 @@ const Messages = () => {
   return (
     <Wrapper>
       {/* <h1>Messages</h1> */}
-      {loadingUser || checkingIDs ? (
+      {/* TODO: fix this: the checkingIDs causes the whole page spinner thing when switching chats, also the chatList reloads when switching (maybe its okay) */}
+      {/* {loadingUser || checkingIDs ? ( */}
+      {loadingUser ? (
         <CircularProgress sx={{ fontSize: "5rem" }} />
       ) : currentUser && chatIDsValidity ? (
         <>
@@ -449,7 +462,8 @@ const Messages = () => {
                 <h3
                   style={{
                     padding: "0.25rem 0rem 1rem 1rem",
-                    borderBottom: "1px solid gray",
+                    borderBottom: "1px solid #eee",
+                    marginBottom: 0,
                   }}
                 >
                   Chats
@@ -516,8 +530,9 @@ const Messages = () => {
                         href={`/user/${currentUser.uid}`}
                         underline="hover"
                       >
-                        {chatUserIDs &&
-                          createChatName(chatUserIDs, currentUser.uid)}
+                        {chatName ||
+                          (chatUserIDs &&
+                            createChatName(chatUserIDs, currentUser.uid))}
                       </LinkMUI>
                     </span>
                     <IconButton
@@ -610,6 +625,20 @@ const Messages = () => {
                   </div>
                   <div className="chat">
                     {/* <Grow on={chat}>{renderChat(chat, currentUser.uid)}</Grow> */}
+                    {/* {true ? (
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          paddingTop: "5rem",
+                        }}
+                      >
+                        <CircularProgress sx={{ fontSize: "5rem" }} />
+                      </div>
+                    ) : (
+                      renderChat(chat, currentUser.uid)
+                    )} */}
                     {renderChat(chat, currentUser.uid)}
                     <div ref={messagesRef} style={{ margin: 0 }} />
                   </div>
@@ -789,10 +818,19 @@ const Wrapper = styled.main`
     }
   }
 
-  /* @media screen and (max-width: 1000px) {
+  @media screen and (max-width: 1200px) {
+    .tab {
+      width: 95vw;
+    }
+  }
+  @media screen and (max-width: 700px) {
     .tab {
       flex-direction: column-reverse;
       align-items: normal;
+    }
+
+    .chat {
+      overflow-x: hidden;
     }
 
     .list {
@@ -806,7 +844,7 @@ const Wrapper = styled.main`
       padding: 0;
       overflow-y: hidden;
     }
-  } */
+  }
 `;
 
 export default Messages;

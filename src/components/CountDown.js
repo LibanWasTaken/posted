@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 
@@ -14,37 +14,90 @@ dayjs.extend(utc);
 dayjs.extend(duration);
 
 const CountDown = (props) => {
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [newerDate, setNewerDate] = useState();
   const [delaying, setDelaying] = useState(false);
   const [warn, setWarn] = useState(false);
-  const postID = props.info.postID;
-  const releaseDate = props.info.releaseDate;
-  const disabled = props.info.disabled;
-  const preset = props.info.preset;
-  const warnDuration = props.info.warnDuration;
-  const navigate = useNavigate();
+  const {
+    postID,
+    releaseDate,
+    disabled,
+    warnDuration,
+    preset,
+    delayDuration,
+    scheduleFormat,
+    scheduleType,
+  } = props.info;
+  const targetDate = dayjs(releaseDate);
+  const newDate = dayjs(releaseDate).add(1, "month");
+
+  const obj = {
+    postID: "tHW6houShrlbw9NoT9CK",
+    disabled: undefined,
+    preset: { timePeriod: "Month", day: 1 },
+    releaseDate: 1714123080000,
+    delayDuration: "Week",
+    scheduleFormat: "Preset",
+    scheduleType: "Recurring",
+    warnDuration: undefined, // back end, if null = 3days
+  };
+
+  if (scheduleType == "Recurring") {
+    if (scheduleFormat == "Preset") {
+      if (preset.timePeriod == "Week") {
+        // delay to the the preset.day of that week
+      }
+      if (preset.timePeriod == "Month") {
+        if (preset.day > 28) {
+          // if prest.day is like 31, check if the next month has it, if not delay to the last day of that month, or the preset.day of that month - https://day.js.org/docs/en/manipulate/end-of
+        } else {
+          const nextMonthFirstDay = dayjs()
+            .add(1, "month")
+            .startOf("month")
+            .add(0, "day")
+            .format("DD/MM/YYYY");
+          // setNewerDate(nextMonthFirstDay);
+        }
+      }
+    } else {
+      // specified
+      return;
+      // delay by preset.delayDuration
+    }
+  } else {
+    return;
+    // normal one time release TODO: change Delay button to disable. if time already passed and then its enables, keep the inital release dat as a secondary date? or make it so that it cannot be enabled unless date is extended
+  }
 
   function redirect() {
     navigate(`/me`);
   }
 
-  const targetDate = dayjs(releaseDate);
-  const newDate = dayjs(releaseDate).add(1, "month");
-
   async function handleDelay() {
-    setDelaying(true);
-    try {
-      const postRef = doc(db, "posts", postID);
-      await updateDoc(postRef, { releaseDate: newDate.valueOf() });
-      console.log("Document successfully updated");
-
-      window.location.reload();
-    } catch (error) {
-      alert("Error Delaying");
-      console.error("Error updating document:", error);
-      setDelaying(false);
-    }
+    console.log("Old date:", dayjs(releaseDate).format("DD/MM/YYYY"));
+    console.log("New date:", dayjs(newDate).format("DD/MM/YYYY"));
+    const blabla = dayjs()
+      .add(1, "month")
+      .startOf("month")
+      .add(0, "day")
+      .format("DD/MM/YYYY");
+    console.log(blabla);
   }
+  // async function handleDelay() {
+  //   setDelaying(true);
+  //   try {
+  //     const postRef = doc(db, "posts", postID);
+  //     await updateDoc(postRef, { releaseDate: newDate.valueOf() });
+  //     console.log("Document successfully updated");
+
+  //     window.location.reload();
+  //   } catch (error) {
+  //     alert("Error Delaying");
+  //     console.error("Error updating document:", error);
+  //     setDelaying(false);
+  //   }
+  // }
 
   function handleClose() {
     setOpen(false);
@@ -102,6 +155,7 @@ const CountDown = (props) => {
       </Tooltip>
     );
   }
+
   return (
     <Wrapper>
       {open ? (
@@ -225,6 +279,7 @@ const Wrapper = styled.main`
   section {
     background-color: #eee;
     box-shadow: rgba(0, 0, 0, 0.15) 0 0 3px;
+    transition: 0.3s;
   }
 
   .full {

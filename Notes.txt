@@ -1,5 +1,4 @@
 https://github.com/Steveeeie/react-page-transition
-https://react-scroll-parallax.damnthat.tv/docs/
 https://zapier.com/app/dashboard
 https://www.npmjs.com/package/clsx
 
@@ -19,12 +18,10 @@ TODO:
 
 add a whitelist array. to ban/temp ban people. then almost everywhere if(userid == thatId0 dont do it), no need to delete. in case unbanning
 
-https://mui.com/material-ui/react-menu/ -> all post page
-
-npm install smooth-scrollbar
-
 https://support.google.com/firebase/answer/7000714?authuser=0
 custom domain in mail for pass restting / verification
+custom password reset page, with confirm password etc. pass reset once per month max.
+
 
 whatsapp: https://www.youtube.com/watch?v=c0PuGJW2yz8
 https://www.youtube.com/watch?v=S9VXgFIY73I
@@ -44,6 +41,11 @@ set userName as userID?
 
 maybe be able to switch out the diary and letter? like switch the modal with the, yeah
 
+add the corener notification thing with the linear loading bar but in reverse, set it like 1 sec to go form 100 to 0, for autosaving. have a "no"/cancel button
+
+store the letter recieved, and store the last letter saved, when the user leaves check wheter they're the same, if not, to the alert thing
+(i do it diary)
+
 premium:
 
 4000 letter comments:
@@ -58,8 +60,27 @@ edit diary pages (prev days, but it'll say edited)
 post rn instead of tomorrow
 archive posts
 displayName (infinite changes)
-
+at the dairy, make the prev pages editable but show whats been edited (crossed out texts or something)
 
 https://www.npmjs.com/package/react-responsive
 
+
+********
+
+Add a scoring system:
+
+the longer the post takes to release, the more points it gets
+
+it can be a subtle thing: 
+color (invert, or use colors)
+maybe the post cards? like a loading bar. in respect to the post with the LARGEST period? 
+
+also a way to sort them - shortest time period to longest
+search them with specific periods - like age of 1 yr or 1 month
+
+if prem/or not, add a post type feature:
+
+could be a small badge in corner, skull = dead, diary = book emoji, maybe it can be a rounded img iwth a circular background which can represent the scoring system, like a pie chart or color
+
+*********
 

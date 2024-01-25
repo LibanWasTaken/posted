@@ -82,7 +82,7 @@ export default function PasswordReset({
         <DialogTitle>Password Reset</DialogTitle>
         <DialogContent sx={{ m: 5, overflow: "hidden" }}>
           <DialogContentText sx={{ marginBottom: 0 }}>
-            Send password resetting mail?
+            Send password resetting mail to {userMail}?
           </DialogContentText>
         </DialogContent>
         <DialogActions>

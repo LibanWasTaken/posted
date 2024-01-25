@@ -54,13 +54,14 @@ const editorConfig = {
 
 export default function Viewer(state) {
   const [incoming, setIncoming] = useState(true);
-  const [editorState, setEditorState] = useState(state.state);
-
+  // const [editorState, setEditorState] = useState(state.state);
+  const editorState = state.state;
   const UpdatePlugin = () => {
     const [editor] = useLexicalComposerContext();
 
     useEffect(() => {
       if (editorState) {
+        // console.log(editorState);
         const newEditorState = editor.parseEditorState(editorState);
         editor.setEditorState(newEditorState);
         setIncoming(false);

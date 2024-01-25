@@ -54,6 +54,8 @@ import SwitchLeftIcon from "@mui/icons-material/SwitchLeft";
 // mui x
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { MobileTimePicker } from "@mui/x-date-pickers/MobileTimePicker";
+import { DesktopTimePicker } from "@mui/x-date-pickers/DesktopTimePicker";
+import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 
 import {
   doc,
@@ -342,7 +344,7 @@ const OwnPostPage = () => {
             handleDateChange(date);
           }}
         />
-        <MobileTimePicker
+        <TimePicker
           disabled={!editDisabled}
           value={releaseDate || null}
           onChange={(date) => {
@@ -463,9 +465,12 @@ const OwnPostPage = () => {
             <CountDown
               info={{
                 postID: id,
-                releaseDate: postData.releaseDate,
                 disabled: postData.disabled,
                 preset: postData.preset,
+                releaseDate: postData.releaseDate,
+                delayDuration: postData.delayDuration,
+                scheduleFormat: postData.scheduleFormat,
+                scheduleType: postData.scheduleType,
                 warnDuration: postData.warnDuration,
               }}
             />
@@ -619,7 +624,6 @@ const OwnPostPage = () => {
                       label="Public"
                       labelPlacement="start"
                       onChange={(event) => {
-                        console.log(event.target.checked);
                         setUpdatedObj((prevObj) => ({
                           ...prevObj,
                           public: event.target.checked,
@@ -695,7 +699,6 @@ const OwnPostPage = () => {
                 )}
               </CustomTabPanel>
             </div>
-
             <div className="postForm">
               <CustomTabPanel value={tabValue} index={2}>
                 <Box
@@ -708,7 +711,16 @@ const OwnPostPage = () => {
                     sx={{ marginBottom: 5 }}
                     disabled={!editDisabled}
                   >
-                    <FormLabel>Schedule</FormLabel>
+                    <FormLabel
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "4px",
+                      }}
+                    >
+                      Schedule
+                      <InfoRedirect states={{ tabIndex: 3, pageIndex: 3 }} />
+                    </FormLabel>
                     <RadioGroup
                       defaultValue={postData.scheduleType || "One Time"}
                       row
@@ -756,18 +768,7 @@ const OwnPostPage = () => {
                         sx={{ marginBottom: 2 }}
                         disabled={!editDisabled}
                       >
-                        <FormLabel
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "3px",
-                          }}
-                        >
-                          Type
-                          <InfoRedirect
-                            states={{ tabIndex: 3, pageIndex: 3 }}
-                          />
-                        </FormLabel>
+                        <FormLabel>Type</FormLabel>
                         {/* https://reactrouter.com/en/main/components/link#state */}
 
                         <RadioGroup
@@ -1121,6 +1122,12 @@ const Wrapper = styled.main`
       }
     }
 
+    .otherPosts {
+      /* max-height: 30rem;
+      overflow-y: scroll;
+      overflow-x: hidden; */
+    }
+
     .title {
       letter-spacing: 1px;
       text-align: left;
@@ -1179,6 +1186,7 @@ const Wrapper = styled.main`
 
       .otherPosts {
         max-width: 50vw;
+        overflow-y: hidden;
         overflow-x: scroll;
       }
 
@@ -1234,6 +1242,7 @@ const Wrapper = styled.main`
     border-radius: 10px;
     /* margin-top: 2rem; */
     position: relative;
+    /* margin-bottom: 1rem; */
   }
 
   .buttons {

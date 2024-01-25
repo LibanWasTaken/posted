@@ -96,6 +96,8 @@ export default function SinglePostPage() {
         setLoading(false);
       } else {
         setPostData(postDataReceived);
+        console.log(postDataReceived);
+        log;
         !userData && getUserData(postDataReceived.user);
       }
     } catch (error) {
@@ -109,7 +111,7 @@ export default function SinglePostPage() {
       const docRef = doc(db, "users", uid);
       const docSnap = await getDoc(docRef);
       const userDataReceived = docSnap.data();
-      console.log(userDataReceived);
+      // console.log(userDataReceived);
       if (userDataReceived == undefined) {
         setInValidPost(true);
         setLoading(false);
@@ -258,12 +260,14 @@ export default function SinglePostPage() {
               </div>
 
               <div className="buttons">
-                <span
-                  className="buttonIcon material-symbols-outlined"
-                  onClick={handleDiaryOpenMUI}
-                >
-                  book_5
-                </span>
+                {postData.diary && (
+                  <span
+                    className="buttonIcon material-symbols-outlined"
+                    onClick={handleDiaryOpenMUI}
+                  >
+                    book_5
+                  </span>
+                )}
                 {/* {currentUser && postData && ( */}
                 <Tooltip
                   title={currentUser ? likesCount : "Log in"}
@@ -302,13 +306,14 @@ export default function SinglePostPage() {
             </section>
             <Comments postID={id} postAdminUID={postData.user} />
 
-            {true && (
+            {postData.diary && (
               // FIXME: {postData.diary && }
               <Diary
                 open={diaryOpenMUI}
                 handleClose={handleDiaryCloseMUI}
                 info={id}
                 editable={false}
+                viewer={true}
               />
             )}
           </div>

@@ -537,6 +537,7 @@ const Wrapper = styled.main`
   background-color: #fafafa;
   min-height: 100vh;
   height: 100%;
+  overflow-x: hidden;
   .scrollMore:hover {
     transition: 300ms;
     transform: translateX(5px);

@@ -27,6 +27,7 @@ import CodeHighlightPlugin from "./plugins/CodeHighlightPlugin";
 import AutoLinkPlugin from "./plugins/AutoLinkPlugin";
 
 import "./styles.css";
+// import "./stylesPage.css";
 
 // me:
 import { useParams } from "react-router-dom";
@@ -63,25 +64,13 @@ export function DiaryEditor({ chooseMessage, text }) {
   };
 
   const [editorState, setEditorState] = useState();
-  const [editorValue, setEditorValue] = useState(emptyState);
-  const [editorValueReceivedFS, setEditorValueReceivedFS] = useState();
-  const [description, setDescription] = useState();
-  const [saving, setSaving] = useState(false);
-  const [incoming, setIncoming] = useState(true);
-  const [changed, setChanged] = useState(false);
-  const { id } = useParams();
 
   const [valueApplied, setValueApplied] = useState(false);
-  const { user: currentUser, loading } = useUserContext();
-  // useEffect(() => {
-  //   if (currentUser) {
-  //     getFSData();
-  //   }
-  // }, [currentUser]);
+  // }, [text]);
+
   useEffect(() => {
-    text && setEditorValueReceivedFS(text);
-    console.log(text);
-  }, [text]);
+    setValueApplied(false);
+  }, []);
 
   const editorConfig = {
     theme: ExampleTheme,
@@ -106,24 +95,10 @@ export function DiaryEditor({ chooseMessage, text }) {
     // editable: !incoming,
   };
 
-  async function getFSData() {
-    const docRef = doc(FSdb, "posts", id);
-    const docSnap = await getDoc(docRef);
-    const userInfo = docSnap.data();
-    userInfo.letter && setEditorValueReceivedFS(userInfo.letter);
-    userInfo.letter && console.log(userInfo.letter);
-
-    userInfo.description && setDescription(userInfo.description);
-    setIncoming(false);
-  }
-
   function OnChangePlugin({ onChange }) {
     const [editor] = useLexicalComposerContext();
     useEffect(() => {
-      !changed && setChanged(true); //FIXME: changed when loads
-      setEditorValue(JSON.stringify(editor.getEditorState()));
       chooseMessage(JSON.stringify(editor.getEditorState()));
-      // console.log(JSON.stringify(editor.getEditorState()));
       return editor.registerUpdateListener((editorState) => {
         onChange(editorState);
       });
@@ -134,49 +109,31 @@ export function DiaryEditor({ chooseMessage, text }) {
     const [editor] = useLexicalComposerContext();
 
     useEffect(() => {
-      if (editorValueReceivedFS && !valueApplied) {
-        const newEditorState = editor.parseEditorState(editorValueReceivedFS);
-        editor.setEditorState(newEditorState);
-        setValueApplied(true);
+      // console.log("🟩");
+      console.log(text);
+      if (!valueApplied) {
+        // console.log("🟩");
+        console.log(text);
+        try {
+          const newEditorState = editor.parseEditorState(text);
+          editor.setEditorState(newEditorState);
+          setValueApplied(true);
+        } catch (error) {
+          editor.setEditorState(editor.parseEditorState(emptyState));
+          setValueApplied(true);
+          console.error(error);
+        }
       }
-    }, [editor, valueApplied]);
+    }, [editor, valueApplied, text]);
 
     return null;
   };
 
-  async function updateUserData() {
-    setSaving(true);
-    try {
-      const postRef = doc(FSdb, "posts", id);
-      if (description) {
-        await updateDoc(postRef, {
-          letter: editorValue,
-          description: description,
-        });
-      } else {
-        await updateDoc(postRef, {
-          letter: editorValue,
-        });
-      }
-      console.log("Document successfully updated");
-      setSaving(false);
-    } catch (error) {
-      console.error("Error updating document: ", error);
-      setSaving(false);
-    }
-  }
-
   function Placeholder() {
     return (
       <div className="editor-placeholder">
-        {incoming ? (
-          <>Loading..</>
-        ) : (
-          <>
-            Leave your legacy or thoughts for posterity... <br />I want
-            https://playground.lexical.dev/ here and this for diaries
-          </>
-        )}
+        {/* {incoming ? <>Loading..</> : <>Leave your thoughts for posterity..</>} */}
+        <>Leave your thoughts for posterity..</>
       </div>
     );
   }
@@ -215,14 +172,6 @@ export function DiaryEditor({ chooseMessage, text }) {
               }
             />
           </div>
-          {/* <span
-            onClick={updateUserData}
-            className={`material-symbols-outlined ${
-              !editorState && "disabled"
-            } ${saving && "loadingClassicBtn"}`}
-          >
-            save
-          </span> */}
         </div>
       </LexicalComposer>
     </>

@@ -19,7 +19,8 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <>
     {/* <React.StrictMode> */}
-    {isMobile ? ( // Check if the user is on a mobile device
+    {false ? (
+      // {isMobile ? (
       <div>
         <h2 style={{ padding: "15px" }}>Phones not supported, dummy</h2>
         <h3 style={{ padding: "5px 15px" }}>Comming soon..</h3>

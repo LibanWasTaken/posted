@@ -22,11 +22,13 @@ import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import Tooltip from "@mui/material/Tooltip";
+
 import PersonAdd from "@mui/icons-material/PersonAdd";
 import Settings from "@mui/icons-material/Settings";
 import Logout from "@mui/icons-material/Logout";
 import Login from "@mui/icons-material/Login";
 import ChatIcon from "@mui/icons-material/Chat";
+import FeedIcon from "@mui/icons-material/Feed";
 
 import { getDocs, collection, query, orderBy, limit } from "firebase/firestore";
 import { db as FSdb, auth } from "../services/firebase-config";
@@ -284,8 +286,8 @@ const Navbar = () => {
                     color: "black",
                   }}
                 >
-                  <MenuItem onClick={handleClose}>
-                    <Avatar /> My account
+                  <MenuItem onClick={handleClose} disabled={!currentUser}>
+                    <Avatar /> My Account
                   </MenuItem>
                 </Link>
                 <Link
@@ -300,6 +302,20 @@ const Navbar = () => {
                       <ChatIcon />
                     </ListItemIcon>
                     My Messages
+                  </MenuItem>
+                </Link>
+                <Link
+                  to="/me"
+                  style={{
+                    textDecoration: "none",
+                    color: "black",
+                  }}
+                >
+                  <MenuItem onClick={handleClose} disabled={!currentUser}>
+                    <ListItemIcon>
+                      <FeedIcon />
+                    </ListItemIcon>
+                    My Posts
                   </MenuItem>
                 </Link>
                 <Divider sx={{ marginTop: 1 }} />
@@ -324,12 +340,12 @@ const Navbar = () => {
                     <Divider />
                   </Box>
                 )}
-                <MenuItem onClick={handleClose}>
+                {/* <MenuItem onClick={handleClose}>
                   <ListItemIcon>
                     <PersonAdd fontSize="small" />
                   </ListItemIcon>
                   Add another account
-                </MenuItem>
+                </MenuItem> */}
                 {currentUser && (
                   <MenuItem onClick={handleClose}>
                     <ListItemIcon>
