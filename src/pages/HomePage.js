@@ -531,6 +531,7 @@ const Wrapper = styled.main`
     height: 90vh;
     img {
       height: 60vh;
+      min-width: 20rem;
       filter: saturate(0);
 
       /* transform: scaleX(-1); */

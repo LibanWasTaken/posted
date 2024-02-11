@@ -24,6 +24,7 @@ import {
   Link as LinkMui,
   TextField,
   Button,
+  CircularProgress,
   Pagination,
 } from "@mui/material/";
 import PropTypes from "prop-types";
@@ -612,9 +613,7 @@ const PostedGuidePage = () => {
               gap: "3px",
             }}
           >
-            You can{" "}
-            <p style={{ textDecoration: "line-through" }}>talk sh!t to</p>
-            contact me via the{" "}
+            You can talk shi- You can contact me via the
             <LinkMui
               // underline="always"
               href="#"
@@ -699,13 +698,19 @@ const PostedGuidePage = () => {
                 alignItems: "center",
                 justifyContent: "space-around",
                 width: "100%",
+                position: "relative",
               }}
             >
-              <ReCAPTCHA
-                sitekey="6Ldc4VspAAAAAFzMSR02QEvXimxAnXECuVoHKgJo" // TODO: hide?
-                onChange={captchaCheck}
-                // https://www.google.com/recaptcha/admin/site/693887324/setup
+              <CircularProgress
+                sx={{ position: "absolute", left: "25%", zIndex: 0 }}
               />
+              <Box sx={{ zIndex: 1, minWidth: 300, minHeight: 80 }}>
+                <ReCAPTCHA
+                  sitekey="6Ldc4VspAAAAAFzMSR02QEvXimxAnXECuVoHKgJo" // TODO: hide?
+                  onChange={captchaCheck}
+                  // https://www.google.com/recaptcha/admin/site/693887324/setup
+                />
+              </Box>
               <Button
                 sx={{
                   letterSpacing: 1,
@@ -736,6 +741,12 @@ const PostedGuidePage = () => {
     <Wrapper>
       <ThemeProvider theme={theme}>
         <h1 className="title"> {sections2[tabValue].title}</h1>
+        <img
+          src="https://www.svgrepo.com/show/355324/top-corner.svg"
+          alt=""
+          srcset=""
+          className="cornerImg"
+        />
 
         <Box
           sx={{
@@ -808,14 +819,22 @@ const Wrapper = styled.section`
     padding: 0;
   }
 
+  .cornerImg {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    transform: rotate(180deg);
+    width: 10rem;
+    pointer-events: none;
+  }
+
   .title {
-    color: #333;
     font-size: 2rem;
     /* position: relative; */
     margin: 2rem;
     font-size: 5rem;
     /* opacity: 0.2; */
-    color: #eee;
+    color: #000000;
 
     /* right: 5rem; */
   }

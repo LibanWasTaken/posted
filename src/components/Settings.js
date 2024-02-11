@@ -206,21 +206,23 @@ function Settings({ userID }) {
   }
   // TODO: better error handling, maybe trrow the error in the checkData so that it gets cathced in the handleSave before the db updates
   async function updateUserData() {
-    try {
-      if (updatedObj.hasOwnProperty("displayName")) {
-        updatedObj.dnLastChange = Number(dayjs().valueOf());
-        setUpdatedObj(updatedObj);
-      }
+    if (!saveDisabled) {
+      try {
+        if (updatedObj.hasOwnProperty("displayName")) {
+          updatedObj.dnLastChange = Number(dayjs().valueOf());
+          setUpdatedObj(updatedObj);
+        }
 
-      const postRef = doc(db, "users", userID);
-      checkData();
-      await updateDoc(postRef, updatedObj);
-      console.log("Document successfully updated", updatedObj);
-      setSaveDisabled(true);
-      window.location.reload();
-    } catch (error) {
-      console.error("Error updating document: ", error);
-      setSaveDisabled(false);
+        const postRef = doc(db, "users", userID);
+        checkData();
+        await updateDoc(postRef, updatedObj);
+        console.log("Document successfully updated", updatedObj);
+        setSaveDisabled(true);
+        window.location.reload();
+      } catch (error) {
+        console.error("Error updating document: ", error);
+        setSaveDisabled(false);
+      }
     }
   }
 
@@ -231,6 +233,19 @@ function Settings({ userID }) {
       [fieldName]: value,
     }));
     saveDisabled && setSaveDisabled(false);
+  };
+
+  const handleDisplayNameChange = (event) => {
+    const value = event.target.value;
+    // TODO: dsisable submit if not okay/emopty fix it.
+    const filteredValue = value.replace(/[^a-zA-Z0-9_.]/g, "");
+    console.log(filteredValue);
+    if (filteredValue || filteredValue != " ") {
+      updateValueOf("displayName")({ target: { value: filteredValue } });
+    } else {
+      console.log("empty");
+      setSaveDisabled(true);
+    }
   };
 
   function handleSave() {
@@ -430,9 +445,10 @@ function Settings({ userID }) {
                         label="Display Name"
                         variant="outlined"
                         defaultValue={user.displayName || ""}
-                        onChange={updateValueOf("displayName")}
+                        // onChange={updateValueOf("displayName")}
+                        onChange={handleDisplayNameChange}
                         inputProps={{
-                          maxLength: 25,
+                          maxLength: 20,
                         }}
                       />
                     ) : (

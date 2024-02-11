@@ -101,18 +101,14 @@ export default function LinkAdder({ open, handleClose, info }) {
       setTitleValue("");
       setUrlValue("");
 
-      // Check if 'links' field already exists in Firestore document
       if (userData.links) {
-        // If it exists, update the 'links' array with the new link
         await updateDoc(docRef, {
           links: arrayUnion(newLink),
         });
       } else {
-        // If it doesn't exist, create the 'links' field with the new link
         await setDoc(docRef, { links: [newLink] }, { merge: true });
       }
 
-      // Fetch the updated data after adding or updating the link
       fetchData();
     } catch (error) {
       console.error("Error adding/updating link:", error);

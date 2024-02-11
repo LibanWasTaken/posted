@@ -184,9 +184,9 @@ export default function AllProductPage() {
           <Spinner3 />
         ) : (
           <section className="page">
-            <h2 className="heading">
+            {/* <h2 className="heading">
               {sortType == "desc" ? "Latest" : "Oldest"} Posts
-            </h2>
+            </h2> */}
             {filtering && <div className="loadingBar"></div>}
 
             {/* <div className="divider"></div> */}
@@ -327,13 +327,13 @@ const Wrapper = styled.main`
   min-height: 100vh;
   background-color: whitesmoke;
 
-  .allPostsSection {
+  section {
     display: flex;
+    /* align-items: center; */
     justify-content: center;
     gap: 5rem;
     flex-direction: row-reverse;
-    /* border: 2px solid #ddd; */
-    padding: 1.5rem;
+    /* overflow: hidden; */
   }
 
   .loadingBar {
@@ -370,7 +370,7 @@ const Wrapper = styled.main`
 
   .page {
     .heading {
-      margin-left: 15rem;
+      /* margin-left: 15rem; */
     }
   }
 
@@ -426,7 +426,7 @@ const Wrapper = styled.main`
     background-color: rgba(124, 124, 124, 0.73);
     padding: 0.5px 0;
     /* background-color: red; */
-    width: 100vw;
+    /* width: 100vw; */
   }
 
   .posts {
@@ -438,6 +438,8 @@ const Wrapper = styled.main`
     gap: 1rem;
 
     /* width: 80vw; */
+    border: 1px solid red;
+    padding: 2rem;
   }
   .loadMorBtn {
     width: 10rem;

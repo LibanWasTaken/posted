@@ -11,7 +11,7 @@ import MuiAlert from "@mui/material/Alert";
 import { LinearProgress, Box } from "@mui/material";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+  return <MuiAlert elevation={3} ref={ref} variant="filled" {...props} />;
 });
 
 const Playground = () => {
@@ -77,17 +77,28 @@ const Playground = () => {
           This is a success message!
         </Alert>
       </Snackbar>
-      <Snackbar open={openS2} autoHideDuration={3000} onClose={handleCloseS2}>
+      <Snackbar open={openS2} onClose={handleCloseS2}>
         <Box>
           <Alert
             onClose={handleCloseS2}
             variant="contained"
             severity="success"
-            sx={{ width: "100%" }}
+            sx={{ width: "100%", position: "relative" }}
           >
             Auto-saving post
+            <LinearProgress
+              variant="query"
+              sx={{
+                width: "100%",
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+                borderTopLeftRadius: 10,
+                borderTopRightRadius: 10,
+              }}
+            />
           </Alert>
-          <LinearProgress variant="query" sx={{ width: "111%" }} />
+          {/* <LinearProgress variant="query" sx={{ width: "115%" }} /> */}
         </Box>
       </Snackbar>
     </Wrapper>

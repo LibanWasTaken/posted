@@ -12,6 +12,8 @@ import { NAV_OPTIONS } from "../context/UserOptions";
 import SearchTwoToneIcon from "@mui/icons-material/SearchTwoTone";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
+
 import Badge from "@mui/material/Badge";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
@@ -280,16 +282,20 @@ const Navbar = () => {
                   <Avatar /> Profile
                 </MenuItem> */}
                 <Link
-                  to="/account"
+                  to="/me"
                   style={{
                     textDecoration: "none",
                     color: "black",
                   }}
                 >
                   <MenuItem onClick={handleClose} disabled={!currentUser}>
-                    <Avatar /> My Account
+                    <ListItemIcon>
+                      <GridViewRoundedIcon />
+                    </ListItemIcon>
+                    My Posts
                   </MenuItem>
                 </Link>
+
                 <Link
                   to="/messages"
                   style={{
@@ -305,17 +311,18 @@ const Navbar = () => {
                   </MenuItem>
                 </Link>
                 <Link
-                  to="/me"
+                  to="/account"
                   style={{
                     textDecoration: "none",
                     color: "black",
                   }}
                 >
                   <MenuItem onClick={handleClose} disabled={!currentUser}>
+                    {/* <Avatar /> */}
                     <ListItemIcon>
                       <FeedIcon />
-                    </ListItemIcon>
-                    My Posts
+                    </ListItemIcon>{" "}
+                    My Page
                   </MenuItem>
                 </Link>
                 <Divider sx={{ marginTop: 1 }} />
@@ -347,12 +354,20 @@ const Navbar = () => {
                   Add another account
                 </MenuItem> */}
                 {currentUser && (
-                  <MenuItem onClick={handleClose}>
-                    <ListItemIcon>
-                      <Settings fontSize="small" />
-                    </ListItemIcon>
-                    Settings
-                  </MenuItem>
+                  <Link
+                    to="/account"
+                    style={{
+                      textDecoration: "none",
+                      color: "black",
+                    }}
+                  >
+                    <MenuItem onClick={handleClose} sx={{ marginTop: 1 }}>
+                      <ListItemIcon>
+                        <Settings fontSize="small" />
+                      </ListItemIcon>
+                      Settings
+                    </MenuItem>
+                  </Link>
                 )}
                 {currentUser ? (
                   <MenuItem onClick={handleLogout}>

@@ -97,7 +97,6 @@ export default function SinglePostPage() {
       } else {
         setPostData(postDataReceived);
         console.log(postDataReceived);
-        log;
         !userData && getUserData(postDataReceived.user);
       }
     } catch (error) {
@@ -148,6 +147,7 @@ export default function SinglePostPage() {
       const docRef = doc(db, "posts", id); // TODO: change to posted
       const docSnap = await getDoc(docRef);
       const postDataReceived = docSnap.data();
+      console.log(postDataReceived);
       let postDataLikes = postDataReceived.likes || [];
       const uid = currentUser.uid;
 
@@ -260,14 +260,15 @@ export default function SinglePostPage() {
               </div>
 
               <div className="buttons">
-                {postData.diary && (
-                  <span
-                    className="buttonIcon material-symbols-outlined"
-                    onClick={handleDiaryOpenMUI}
-                  >
-                    book_5
-                  </span>
-                )}
+                {postData.diary ||
+                  (true && (
+                    <span
+                      className="buttonIcon material-symbols-outlined"
+                      onClick={handleDiaryOpenMUI}
+                    >
+                      book_5
+                    </span>
+                  ))}
                 {/* {currentUser && postData && ( */}
                 <Tooltip
                   title={currentUser ? likesCount : "Log in"}
@@ -306,16 +307,17 @@ export default function SinglePostPage() {
             </section>
             <Comments postID={id} postAdminUID={postData.user} />
 
-            {postData.diary && (
-              // FIXME: {postData.diary && }
-              <Diary
-                open={diaryOpenMUI}
-                handleClose={handleDiaryCloseMUI}
-                info={id}
-                editable={false}
-                viewer={true}
-              />
-            )}
+            {postData.diary ||
+              (true && (
+                // FIXME: {postData.diary && }
+                <Diary
+                  open={diaryOpenMUI}
+                  handleClose={handleDiaryCloseMUI}
+                  info={id}
+                  editable={false}
+                  viewer={true}
+                />
+              ))}
           </div>
 
           {settingsEnabled && (
@@ -406,7 +408,7 @@ const Wrapper = styled.main`
           transform: rotate(60deg);
         }
         .heart {
-          background-color: white;
+          background-color: whitesmoke;
           cursor: pointer;
           border-radius: 50%;
           fill: black;
@@ -421,7 +423,7 @@ const Wrapper = styled.main`
           color: white;
         }
         .liking {
-          background-color: #eee;
+          background-color: #ddd;
           pointer-events: none;
         }
       }

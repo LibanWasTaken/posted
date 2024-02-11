@@ -1158,7 +1158,8 @@ const Wrapper = styled.main`
 
   @media screen and (max-width: 1000px) {
     padding-left: 0;
-    padding-top: 7rem;
+    /* padding-top: 7rem; */
+    padding-top: 4rem;
 
     .sidebar {
       align-items: center;

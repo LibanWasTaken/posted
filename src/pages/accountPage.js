@@ -26,6 +26,7 @@ import Settings from "../components/Settings";
 import PasswordReset from "../components/modals/PasswordReset";
 
 import HALO_video from "./../assets/halo.mp4";
+import ReCAPTCHA from "react-google-recaptcha";
 
 import Grow from "@mui/material/Grow";
 import Box from "@mui/material/Box";
@@ -38,15 +39,14 @@ import BottomNavigationAction from "@mui/material/BottomNavigationAction";
 import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
 import GoogleIcon from "@mui/icons-material/Google";
-
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-
 import PhoneIcon from "@mui/icons-material/Phone";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import AppleIcon from "@mui/icons-material/Apple";
 import MicrosoftIcon from "@mui/icons-material/Microsoft";
+
 const theme = createTheme({
   palette: {
     primary: {
@@ -63,12 +63,14 @@ export function AccPage() {
   const [value, setValue] = useState(0);
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
+  const [confirmRegisterPassword, setConfirmRegisterPassword] = useState("");
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [userName, setUserName] = useState("");
   const [errMsg, setErrMsg] = useState("");
   const [btnLoading, setBtnLoading] = useState(false);
   const [loginMethods, setLoginMethods] = useState(1);
+  const [captchaSuccess, setCaptchaSuccess] = useState(false);
   const navigate = useNavigate();
 
   const [passwordResetOpen, setPasswordResetOpen] = useState(false);
@@ -126,25 +128,51 @@ export function AccPage() {
   };
 
   const register = async () => {
-    try {
-      setBtnLoading(true);
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        registerEmail,
-        registerPassword
+    let success = true;
+    function errDetected(msg) {
+      success = false;
+      setErrMsg(msg);
+    }
+
+    if (!userName) {
+      errDetected(`Registration error: Provide an User Name`);
+    } else if (!/^[a-zA-Z0-9_.]+$/.test(userName)) {
+      errDetected(
+        `Registration error: User Name can only contain letters, numbers, underscores, and periods`
       );
-      const newUser = userCredential.user;
-      await updateProfile(newUser, { displayName: userName });
-      addAccToFireStore(newUser);
+    } else if (userName.length < 3) {
+      errDetected(`Registration error: Provide a longer User Name`);
+    } else if (!registerEmail) {
+      errDetected(`Registration error: Provide an email`);
+    } else if (registerPassword.length < 5) {
+      errDetected(`Registration error: Thats.. your password?`);
+    } else if (registerPassword !== confirmRegisterPassword) {
+      errDetected(`Registration error: Passwords did not match`);
+    } else if (!captchaSuccess) {
+      errDetected(`Registration error: Captcha incomplete`);
+    }
 
-      verifyEmailAndRedirect(newUser);
-    } catch (error) {
-      setBtnLoading(false);
+    if (success) {
+      try {
+        setBtnLoading(true);
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          registerEmail,
+          registerPassword
+        );
+        const newUser = userCredential.user;
+        await updateProfile(newUser, { displayName: userName });
+        addAccToFireStore(newUser);
 
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.log(`Registration error [${errorCode}]: ${errorMessage}`);
-      setErrMsg(`Registration error: ${formatErr(errorMessage)}`);
+        verifyEmailAndRedirect(newUser);
+      } catch (error) {
+        setBtnLoading(false);
+
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(`Registration error [${errorCode}]: ${errorMessage}`);
+        setErrMsg(`Registration error: ${formatErr(errorMessage)}`);
+      }
     }
   };
 
@@ -193,6 +221,16 @@ export function AccPage() {
         setValue(0);
       });
   };
+
+  function captchaCheck(value) {
+    if (value) {
+      console.log("User passed reCAPTCHA!");
+      setCaptchaSuccess(true);
+    } else {
+      console.log("User did not pass reCAPTCHA.");
+      setCaptchaSuccess(false);
+    }
+  }
 
   // useEffect(() => {
   //   loginGmail();
@@ -275,7 +313,7 @@ export function AccPage() {
               </section>
               <section className="form">
                 {value == 0 && (
-                  <Grow in={value == 0}>
+                  <Fade in={value == 0}>
                     <div className="inputs">
                       <h1>Log In</h1>
                       <Box
@@ -335,10 +373,10 @@ export function AccPage() {
                         // userID={currentUser.uid}
                       />
                     </div>
-                  </Grow>
+                  </Fade>
                 )}
                 {value == 1 && (
-                  <Grow in={value == 1}>
+                  <Fade in={value == 1}>
                     <div className="inputs">
                       <h1>Register</h1>
                       <Box
@@ -356,6 +394,9 @@ export function AccPage() {
                           className="fields"
                           label="User Name"
                           variant="filled"
+                          inputProps={{
+                            maxLength: 25,
+                          }}
                           value={userName}
                           onChange={(event) => setUserName(event.target.value)}
                         />
@@ -365,6 +406,9 @@ export function AccPage() {
                           label="Email"
                           type="email"
                           variant="filled"
+                          inputProps={{
+                            maxLength: 150,
+                          }}
                           value={registerEmail}
                           onChange={(event) =>
                             setRegisterEmail(event.target.value)
@@ -376,6 +420,9 @@ export function AccPage() {
                           label="Password"
                           type="password"
                           variant="filled"
+                          inputProps={{
+                            maxLength: 75,
+                          }}
                           value={registerPassword}
                           onChange={(event) =>
                             setRegisterPassword(event.target.value)
@@ -387,9 +434,39 @@ export function AccPage() {
                           label="Confirm Password"
                           type="password"
                           variant="filled"
-                          // value={registerPassword}
-                          // onChange={(event) => setRegisterPassword(event.target.value)}
+                          inputProps={{
+                            maxLength: 75,
+                          }}
+                          value={confirmRegisterPassword}
+                          onChange={(event) =>
+                            setConfirmRegisterPassword(event.target.value)
+                          }
                         />
+                      </Box>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-around",
+                          width: "100%",
+                          position: "relative",
+                          marginTop: 4,
+                        }}
+                      >
+                        <CircularProgress
+                          sx={{
+                            position: "absolute",
+                            left: "45%",
+                            zIndex: 0,
+                          }}
+                        />
+                        <Box sx={{ zIndex: 1, minWidth: 300, minHeight: 80 }}>
+                          <ReCAPTCHA
+                            sitekey="6Ldc4VspAAAAAFzMSR02QEvXimxAnXECuVoHKgJo" // TODO: hide?
+                            onChange={captchaCheck}
+                            // https://www.google.com/recaptcha/admin/site/693887324/setup
+                          />
+                        </Box>
                       </Box>
                       <button
                         className={`classicBtn ${
@@ -401,7 +478,7 @@ export function AccPage() {
                         SIGN UP
                       </button>
                     </div>
-                  </Grow>
+                  </Fade>
                 )}
                 {value == 2 && (
                   // <Grow in={value == 2}>
@@ -411,6 +488,8 @@ export function AccPage() {
                   // </Grow>
                 )}
                 <Box sx={{ width: 500 }}>
+                  <div className="errMsg">{errMsg} </div>
+
                   <BottomNavigation
                     showLabels
                     sx={{
@@ -426,6 +505,7 @@ export function AccPage() {
                       <Fade in={loginMethods == 1}>
                         <BottomNavigationAction
                           label="Log In"
+                          className="bottomNavBtn"
                           icon={<LoginIcon />}
                         />
                       </Fade>
@@ -434,6 +514,7 @@ export function AccPage() {
                       <Fade in={loginMethods == 1}>
                         <BottomNavigationAction
                           label="Sign Up"
+                          className="bottomNavBtn"
                           icon={<LogoutIcon />}
                         />
                       </Fade>
@@ -442,6 +523,7 @@ export function AccPage() {
                       <Fade in={loginMethods == 1}>
                         <BottomNavigationAction
                           label=""
+                          className="bottomNavBtn"
                           icon={<GoogleIcon />}
                           onClick={loginGmail}
                         />
@@ -451,6 +533,7 @@ export function AccPage() {
                       <Fade in={loginMethods == 2}>
                         <BottomNavigationAction
                           label="Phone"
+                          className="bottomNavBtn"
                           disabled
                           icon={<PhoneIcon sx={{ opacity: 0.5 }} />}
                         />
@@ -460,6 +543,7 @@ export function AccPage() {
                       <Fade in={loginMethods == 2}>
                         <BottomNavigationAction
                           label="Facebook"
+                          className="bottomNavBtn"
                           disabled
                           icon={<FacebookIcon sx={{ opacity: 0.5 }} />}
                         />
@@ -469,6 +553,7 @@ export function AccPage() {
                       <Fade in={loginMethods == 2}>
                         <BottomNavigationAction
                           label="Github"
+                          className="bottomNavBtn"
                           disabled
                           icon={<GitHubIcon sx={{ opacity: 0.5 }} />}
                         />
@@ -478,6 +563,7 @@ export function AccPage() {
                       <Fade in={loginMethods == 3}>
                         <BottomNavigationAction
                           label="Twitter"
+                          className="bottomNavBtn"
                           disabled
                           icon={<TwitterIcon sx={{ opacity: 0.5 }} />}
                         />
@@ -487,6 +573,7 @@ export function AccPage() {
                       <Fade in={loginMethods == 3}>
                         <BottomNavigationAction
                           label="Apple"
+                          className="bottomNavBtn"
                           disabled
                           icon={<AppleIcon sx={{ opacity: 0.5 }} />}
                         />
@@ -496,6 +583,7 @@ export function AccPage() {
                       <Fade in={loginMethods == 3}>
                         <BottomNavigationAction
                           label="Microsoft"
+                          className="bottomNavBtn"
                           disabled
                           icon={<MicrosoftIcon sx={{ opacity: 0.5 }} />}
                         />
@@ -515,9 +603,7 @@ export function AccPage() {
                     />
                   </BottomNavigation>
                 </Box>
-                {errMsg !== "" && (
-                  <div className="errMsg">{errMsg !== "" && errMsg}</div>
-                )}
+                <div></div>
               </section>
             </div>
           )}
@@ -569,7 +655,7 @@ const Wrapper = styled.main`
     }
     .design:hover {
       transition: 1s;
-      filter: invert(1);
+      /* filter: invert(1); */
     }
 
     .form {
@@ -579,7 +665,7 @@ const Wrapper = styled.main`
       flex-direction: column;
       width: 50%;
       height: 100%;
-      padding-bottom: 3rem;
+      /* padding-bottom: 3rem; */
       .inputs {
         /* border-radius: 10px;
       border: 1px solid #ddd;
@@ -596,6 +682,14 @@ const Wrapper = styled.main`
         justify-content: space-around;
         flex-direction: column;
       }
+    }
+    .bottomNavBtn {
+      border-radius: 10px;
+    }
+    .bottomNavBtn:hover {
+      transition: 1s;
+      /* transform: translateY(-2px); */
+      background-color: #eeeeee;
     }
     @media screen and (max-width: 1370px) {
       .design {
@@ -670,8 +764,9 @@ const Wrapper = styled.main`
   }
 
   .errMsg {
-    /* margin: 3rem; */
+    margin-bottom: 3rem;
     text-align: center;
+    height: 1rem;
     color: red;
   }
 
