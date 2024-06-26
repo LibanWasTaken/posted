@@ -129,42 +129,45 @@ function Card({
   return (
     <Wrapper>
       <Link
-        to={postID}
+        to={`/posts/${postID}`}
         style={{
           textDecoration: "none",
           transform: `rotate(${randomTilt}deg)`,
         }}
       >
         {/* <Parallax translateX={["-10%", 0]}> */}
-        <div className="card2" style={{}}>
-          <div className="group group">
-            <p className="title">{postTitle || "title"}</p>
-            <p className="release">{formattedDate}</p>
-          </div>
-          <div className="group group2">
-            <h4 className="description">
-              {/* {description || getRandomSentence()} */}
-              {description}
-            </h4>
-            {anonymity == "Anonymous" ? (
-              <p className="userName">- Anonymous </p>
-            ) : (
-              <div className="userNameContainer">
-                <Link
-                  to={`/user/${uid}`}
-                  style={{
-                    textDecoration: "none",
-                    // display: "flex",
-                    // alignItems: "center",
-                    // justifyContent: "end",
-                  }}
-                >
-                  <p className="userName"> - {displayName || uid} </p>
-                </Link>
-              </div>
-            )}
+        <div className="container">
+          <div className="card2">
+            <div className="group group">
+              <p className="title">{postTitle || "title"}</p>
+              <p className="release">{formattedDate}</p>
+            </div>
+            <div className="group group2">
+              <h4 className="description">
+                {/* {description || getRandomSentence()} */}
+                {description}
+              </h4>
+              {anonymity == "Anonymous" ? (
+                <p className="userName">- Anonymous </p>
+              ) : (
+                <div className="userNameContainer">
+                  <Link
+                    to={`/user/${uid}`}
+                    style={{
+                      textDecoration: "none",
+                      // display: "flex",
+                      // alignItems: "center",
+                      // justifyContent: "end",
+                    }}
+                  >
+                    <p className="userName"> - {displayName || uid} </p>
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
         </div>
+
         {/* </Parallax> */}
       </Link>
     </Wrapper>
@@ -172,19 +175,29 @@ function Card({
 }
 const Wrapper = styled.section`
   /* filter: invert(1); */
+  .filtered {
+    border: 1px solid red;
+  }
+  .container {
+    display: block;
+    padding: 20px;
+    background-color: black;
+  }
   .card2 {
     color: white;
     width: 15rem;
     height: 20rem;
 
     /* max-height: 20rem; */
-    background-color: black;
-    padding: 20px;
+    /* background-color: black; */
     /* box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px; */
     text-decoration: none;
     position: relative;
-    /* border-radius: 10px; */
     margin: 0;
+    /* border-radius: 10px; */
+
+    /* color: black;
+    background-color: whitesmoke; */
   }
   .title {
     font-weight: 600;
@@ -216,9 +229,7 @@ const Wrapper = styled.section`
     color: white;
   }
 
-  .card2:hover {
-    /* background-color: whitesmoke;
-    color: black; */
+  .container:hover {
     background-color: #222;
 
     cursor: pointer;

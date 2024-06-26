@@ -46,6 +46,9 @@ add the corener notification thing with the linear loading bar but in reverse, s
 store the letter recieved, and store the last letter saved, when the user leaves check wheter they're the same, if not, to the alert thing
 (i do it diary)
 
+at every db interaction, increase a countdown stored in local storage maybe?, maybe do a ratio of interaction/timeSpentOnApp, if it feels spammy, send a notification to the user from admin (bold red) that "Too many requests sent form this account, calm down."
+if it continues, set an additinal date only on that browser of 3 days cooldown.
+
 premium:
 
 4000 letter comments:

@@ -203,7 +203,7 @@ const Wrapper = styled.main`
   height: 100%;
   color: white;
   position: relative;
-  padding-bottom: 2rem;
+  /* padding-bottom: 2rem; */
   overflow: hidden;
   .postSection {
     text-align: left;
@@ -262,10 +262,13 @@ const Wrapper = styled.main`
   .posts {
     display: flex;
     /* grid-template-columns: 1fr 1fr 1fr; */
+    align-items: center;
+    /* justify-content: center; */
     gap: 2rem;
     min-width: 50rem;
     max-width: 90vw;
-    /* overflow-x: scroll; */
+    overflow-y: scroll;
+    max-height: 20rem;
     flex-wrap: wrap;
     padding-bottom: 2rem;
   }

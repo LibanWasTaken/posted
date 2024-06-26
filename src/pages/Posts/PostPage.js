@@ -3,8 +3,10 @@ import styled from "styled-components";
 import { useParams, Link } from "react-router-dom";
 import { useUserContext } from "../../context/UserContext";
 
+// import Editor from "../../components/Editor/Editor";
+import LexicalEditor from "components/Lexical/App";
+
 import Diary from "../../components/Diaries/DiaryList";
-import Editor from "../../components/Editor/Editor";
 import LinkAdder from "../../components/modals/LinkAdder";
 import CountDown from "../../components/CountDown";
 import { Spinner3 } from "../../components/Spinner";
@@ -12,7 +14,6 @@ import DeletePost from "../../components/modals/DeletePost";
 import DisablePost from "../../components/modals/DisablePost";
 import InfoRedirect from "../../components/InfoRedirect";
 import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
 
 import { DATE_OPTIONS } from "../../context/UserOptions";
 import { InfoRedirectLink } from "../../functions/functions";
@@ -38,6 +39,10 @@ import {
   Switch,
   Select,
   Button,
+  LinearProgress,
+  Snackbar,
+  Alert,
+  Divider,
 } from "@mui/material";
 
 import SpeedDial from "@mui/material/SpeedDial";
@@ -65,6 +70,20 @@ import {
   collection,
 } from "firebase/firestore";
 import { db } from "../../services/firebase-config";
+
+// LEXICAL:
+
+import Editor from "components/Lexical/Editor";
+import "components/Lexical/index.css";
+import { LexicalComposer } from "@lexical/react/LexicalComposer";
+import {
+  SettingsContext,
+  useSettings,
+} from "components/Lexical/context/SettingsContext";
+import PlaygroundNodes from "components/Lexical/nodes/PlaygroundNodes";
+import PlaygroundEditorTheme from "components/Lexical/themes/PlaygroundEditorTheme";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import Settings from "components/Lexical/Settings";
 
 const theme = createTheme({
   typography: {
@@ -131,6 +150,40 @@ const OwnPostPage = () => {
   const [scheduleTypeValue, setScheduleTypeValue] = useState("Specified");
   const [releaseDate, setReleaseDate] = useState();
   const [datesOptions, setDatesOptions] = useState(DATE_OPTIONS);
+
+  // Letter
+
+  const [openAutoSaveAlert, setOpenAutoSaveAlert] = useState(false);
+
+  // const [editorStateReceived, setEditorStateReceived] = useState(null);
+  const [editorStateValue, setEditorStateValue] = useState();
+  const [letterDescription, setLetterDescription] = useState();
+  // const [letterDescriptionReceived, setLetterDescriptionReceived] = useState();
+  const [adminText, setAdminText] = useState();
+  const [autoSaveMS, setAutoSaveMS] = useState();
+  const [progress, setProgress] = useState(0);
+  const [savingLetter, setSavingLetter] = useState(false);
+  const [lastLetterSaved, setLastLetterSaved] = useState();
+  const emptyRoot = JSON.stringify({
+    root: {
+      children: [
+        {
+          children: [],
+          direction: null,
+          format: "",
+          indent: 0,
+          type: "paragraph",
+          version: 1,
+        },
+      ],
+      direction: null,
+      format: "",
+      indent: 0,
+      type: "root",
+      version: 1,
+    },
+  });
+
   const [preset, setPreset] = useState({
     timePeriod: "Month",
     day: datesOptions[0].value,
@@ -139,6 +192,16 @@ const OwnPostPage = () => {
   const [showFinalButtons, setShowFinalButtons] = useState(true);
   const handleOpenEditDial = () => setOpenEditDial(true);
   const handleCloseEditDial = () => setOpenEditDial(false);
+
+  const handleOpenAutoSaveAlert = () => {
+    setOpenAutoSaveAlert(true);
+  };
+  const handleCloseAutoSaveAlert = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenAutoSaveAlert(false);
+  };
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
@@ -167,6 +230,8 @@ const OwnPostPage = () => {
   }
 
   const verifyUserAndGetPost = async (uid, postID) => {
+    setLoading2(true);
+
     try {
       const docRef = doc(db, "posts", postID);
       const docSnap = await getDoc(docRef);
@@ -175,19 +240,31 @@ const OwnPostPage = () => {
       if (postDataReceived == undefined) {
         setInValidPost(true);
         setValidUser(false);
-        setLoading2(false);
       } else if (uid === postDataReceived.user) {
         setValidUser(true);
         setPostData(postDataReceived);
-        setLoading2(false);
+        if (
+          postDataReceived.autoSaveMS &&
+          postDataReceived.autoSaveMS > 59000
+        ) {
+          setAutoSaveMS(postDataReceived.autoSaveMS);
+        }
+        // if (postDataReceived.hasOwnProperty('autoSave')) {
+        //   console.log('obj has key1');
+        // } else {
+        //   console.log('obj does not have key1');
+        // }
+        // postDataReceived.letter && setEditorStateValue(postDataReceived.letter);
+        // postDataReceived.description &&
+        //   setLetterDescriptionReceived(postDataReceived.description);
         getOtherPostsData();
       } else {
         setValidUser(false);
-        setLoading2(false);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
+    setLoading2(false);
   };
 
   useEffect(() => {
@@ -259,8 +336,12 @@ const OwnPostPage = () => {
     // TODO: instead do if newObj = postData or something
   };
 
+  // Log updates:
+  useEffect(() => {
+    updatedObj && console.log(updatedObj);
+  }, [updatedObj]);
+
   function handleSave() {
-    // Update user displayName
     if (postData.displayName !== currentUser.displayName) {
       updatedObj.displayName = currentUser.displayName;
     }
@@ -290,6 +371,263 @@ const OwnPostPage = () => {
     }
   }
 
+  // LEXICAL:
+
+  const {
+    settings: { isCollab, emptyEditor, measureTypingPerf },
+  } = useSettings();
+
+  const initialConfig = {
+    editorState: isCollab
+      ? null
+      : emptyEditor
+      ? undefined
+      : // : prepopulatedRichText,
+        null,
+    namespace: "Playground",
+    nodes: [...PlaygroundNodes],
+    onError: (error) => {
+      throw error;
+    },
+    theme: PlaygroundEditorTheme,
+  };
+
+  async function handleSaveEditor() {
+    // TODO: https://lexical.dev/docs/concepts/editor-state#:~:text=LexicalOnChangePlugin
+    console.log({
+      letter: editorStateValue,
+      description: letterDescription,
+    });
+    setSavingLetter(true);
+    try {
+      const postRef = doc(db, "posts", id);
+      if (letterDescription && letterDescription != postData.description) {
+        await updateDoc(postRef, {
+          letter: editorStateValue,
+          description: letterDescription,
+        });
+      } else if (editorStateValue == postData.letter) {
+        return;
+      } else {
+        await updateDoc(postRef, {
+          letter: editorStateValue,
+        });
+      }
+      console.log("Document successfully updated");
+    } catch (error) {
+      console.error(error);
+    }
+    setSavingLetter(false);
+  }
+
+  // State to manage autoUpdate
+  // const MINUTE_MS = 1500;
+
+  async function handleAutoSave() {
+    console.log(autoSaveMS && true);
+    console.log(postData && true);
+    console.log(validUser && true);
+    console.log(!saving && true);
+    console.log(JSON.stringify(editorStateValue) == postData.letter);
+    console.log(
+      lastLetterSaved && editorStateValue !== lastLetterSaved && true
+    );
+    console.log(editorStateValue);
+    console.log(postData.letter);
+    // FIXME:  what check if postData.letter empty?
+    if (
+      autoSaveMS &&
+      postData &&
+      validUser &&
+      !saving &&
+      editorStateValue &&
+      editorStateValue !== postData.letter &&
+      lastLetterSaved &&
+      editorStateValue !== lastLetterSaved
+    ) {
+      console.log(autoSaveMS && postData && validUser);
+      setLastLetterSaved(editorStateValue);
+      handleOpenAutoSaveAlert();
+      console.log("saving started");
+      // await handleSaveEditor();
+      console.log("saving ended");
+      handleCloseAutoSaveAlert();
+    } else {
+      console.log("somethings not right");
+    }
+  }
+
+  useEffect(() => {
+    console.log(autoSaveMS);
+    if (autoSaveMS && autoSaveMS > 59000) {
+      console.log("as enabled");
+      console.log(autoSaveMS);
+
+      const interval = setInterval(() => {
+        console.log("running");
+        handleAutoSave();
+      }, 5000);
+
+      return () => clearInterval(interval);
+    } else {
+      console.log("as disabled");
+    }
+    // }, [autoSaveMS, postData, validUser, editorStateValue]);
+  }, [autoSaveMS, postData, validUser]);
+
+  function roughSizeOfObject(object) {
+    const objectList = [];
+    const stack = [object];
+    let bytes = 0;
+
+    while (stack.length) {
+      const value = stack.pop();
+
+      switch (typeof value) {
+        case "boolean":
+          bytes += 4;
+          break;
+        case "string":
+          bytes += value.length * 2;
+          break;
+        case "number":
+          bytes += 8;
+          break;
+        case "object":
+          if (!objectList.includes(value)) {
+            objectList.push(value);
+            for (const prop in value) {
+              if (value.hasOwnProperty(prop)) {
+                stack.push(value[prop]);
+              }
+            }
+          }
+          break;
+      }
+    }
+    // console.log(`${bytes / 1000}kb`);
+    // console.log(`${((bytes / 1000 / 1000) * 100).toFixed(2)}%`);
+  }
+  function estimateObjectSizeInKB(obj) {
+    const jsonString = JSON.stringify(obj);
+    // console.log(jsonString);
+    const bytes = new Blob([jsonString]).size;
+    const kilobytes = bytes / 1024;
+    const megabytes = kilobytes / 1024;
+    const percentage = Number(kilobytes / 500) * 100;
+    // console.log(kilobytes.toFixed(2), megabytes.toFixed(2));
+    // console.log(percentage);
+    setProgress(percentage);
+    // if (percentage < 100) {
+    //   setProgress(percentage);
+    // } else {
+    //   setProgress(100);
+    // }
+  }
+
+  function addAdminText(textState, text) {
+    const objState = JSON.parse(textState);
+    const textObj = {
+      children: [
+        {
+          detail: 0,
+          format: 0,
+          mode: "normal",
+          style: "background-color: #ffdfdf;color: #d0021b;",
+          text: `Error: ${text}`,
+          type: "text",
+          version: 1,
+        },
+        {
+          detail: 0,
+          format: 0,
+          mode: "normal",
+          style: "",
+          text: " ",
+          type: "text",
+          version: 1,
+        },
+      ],
+      direction: "ltr",
+      format: "",
+      indent: 0,
+      type: "paragraph",
+      version: 1,
+    };
+    if (!objState || !objState.root || !objState.root.children) {
+      console.log("Invalid objState or missing 'root' or 'children' key.");
+      return objState;
+    }
+
+    objState.root.children.push(textObj);
+    console.log(objState);
+    return JSON.stringify(objState);
+  }
+
+  function OnChangePlugin({ onChange }) {
+    const [editor] = useLexicalComposerContext();
+
+    useEffect(() => {
+      // !changed && setChanged(true); //FIXME: changed when loads
+      // setEditorValue(JSON.stringify(editor.getEditorState()));
+      return editor.registerUpdateListener((editorState) => {
+        // TODO: logging
+        // console.log(JSON.stringify(editorState.editorState));
+        // roughSizeOfObject(JSON.stringify(editorState.editorState));
+        estimateObjectSizeInKB(editorState.editorState);
+        setEditorStateValue(JSON.stringify(editorState.editorState));
+        onChange(editorState);
+      });
+    }, [editor, onChange]);
+  }
+
+  // This activates every time theres a change
+  const UpdatePlugin = () => {
+    const [editor] = useLexicalComposerContext();
+    useEffect(() => {
+      if (postData.letter && !editorStateValue) {
+        editor.setEditorState(editor.parseEditorState(postData.letter));
+
+        // setEditorStateValue(postData.letter);
+        estimateObjectSizeInKB(postData.letter);
+      }
+    }, [postData]);
+
+    if (adminText && editorStateValue) {
+      editor.setEditorState(
+        editor.parseEditorState(addAdminText(editorStateValue, adminText))
+      );
+      setAdminText(null);
+    }
+  };
+
+  const LoadingSnackbar = (
+    <Snackbar open={openAutoSaveAlert} onClose={handleCloseAutoSaveAlert}>
+      <Box>
+        <Alert
+          onClose={handleCloseAutoSaveAlert}
+          variant="contained"
+          severity="success"
+          elevation={2}
+          sx={{ width: "100%", position: "relative", bgcolor: "white" }}
+        >
+          Auto-saving post
+          <LinearProgress
+            variant="query"
+            sx={{
+              width: "100%",
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              borderTopLeftRadius: 10,
+              borderTopRightRadius: 10,
+            }}
+          />
+        </Alert>
+      </Box>
+    </Snackbar>
+  );
+
   // Timings
   useEffect(() => {
     if (postData) {
@@ -301,22 +639,25 @@ const OwnPostPage = () => {
   }, [postData]);
 
   useEffect(() => {
-    if (preset.timePeriod === "Month") {
-      setDatesOptions(DATE_OPTIONS);
-    } else if (preset.timePeriod === "Week") {
-      setDatesOptions(DATE_OPTIONS.slice(0, 7));
-      // TODO: make it Sun -> Sat instead of numbers
-    }
-    if (preset.timePeriod === "Week" && preset.day > 7) {
-      setPreset((prevState) => ({
-        ...prevState,
-        day: datesOptions[6].value,
+    if (editDisabled) {
+      console.log("here?");
+      if (preset.timePeriod === "Month") {
+        setDatesOptions(DATE_OPTIONS);
+      } else if (preset.timePeriod === "Week") {
+        setDatesOptions(DATE_OPTIONS.slice(0, 7));
+        // TODO: make it Sun -> Sat instead of numbers
+      }
+      if (preset.timePeriod === "Week" && preset.day > 7) {
+        setPreset((prevState) => ({
+          ...prevState,
+          day: datesOptions[6].value,
+        }));
+      }
+      setUpdatedObj((prevObj) => ({
+        ...prevObj,
+        preset,
       }));
     }
-    setUpdatedObj((prevObj) => ({
-      ...prevObj,
-      preset,
-    }));
     // console.log(preset.timePeriod, preset.day);
   }, [preset.timePeriod, preset.day]);
 
@@ -536,7 +877,82 @@ const OwnPostPage = () => {
             </div>
             <div className="textEditor">
               <CustomTabPanel value={tabValue} index={0}>
-                <Editor initialConfig={{ editable: true }} />
+                {LoadingSnackbar}
+                <Box sx={{ display: "flex", gap: "1rem" }}>
+                  <TextField
+                    sx={{
+                      marginTop: 0,
+                      bgcolor: "white",
+                      "& fieldset": { border: "none" },
+                      border: "1px solid #eee",
+                    }}
+                    fullWidth
+                    label="Description"
+                    variant="outlined"
+                    id="outlined-controlled"
+                    type="text"
+                    placeholder="Keep it short"
+                    value={letterDescription}
+                    defaultValue={postData.description}
+                    inputProps={{ maxLength: 100 }}
+                    disabled={saving}
+                    onChange={(e) => {
+                      // !changed && setChanged(true);
+                      setLetterDescription(e.target.value);
+                    }}
+                  />
+                  <Button
+                    sx={{
+                      bgcolor: "white",
+                      borderColor: "whitesmoke",
+                      letterSpacing: 1,
+                      padding: "0 1rem",
+                    }}
+                    // disabled={!changed || incoming || saving}
+                    disabled={
+                      savingLetter ||
+                      progress > 99.99 ||
+                      !editorStateValue ||
+                      (postData &&
+                        editorStateValue &&
+                        postData.letter == editorStateValue)
+                    }
+                    className={`${savingLetter && "loadingClassicBtn"}`}
+                    onClick={handleSaveEditor}
+                    variant="text"
+                  >
+                    save
+                  </Button>
+                </Box>
+                <div className="lexical">
+                  <SettingsContext>
+                    <LexicalComposer initialConfig={initialConfig}>
+                      <div className="editor-shell">
+                        <Editor editableEditor />
+                        <LinearProgress
+                          sx={{
+                            width: "100%",
+                            borderRadius: "10px",
+                            marginTop: 1,
+                            bgcolor: "#ccc",
+                            opacity: 0.5,
+                          }}
+                          variant={
+                            progress < 100 ? "determinate" : "indeterminate"
+                          }
+                          color={progress < 95 ? "primary" : "error"}
+                          value={progress}
+                        />
+
+                        <UpdatePlugin />
+                        <OnChangePlugin onChange={(editorState) => null} />
+                      </div>
+                      {/* <Settings /> */}
+                    </LexicalComposer>
+                  </SettingsContext>
+                </div>
+                {/* <LexicalEditor /> */}
+                {/* <Editor initialConfig={{ editable: true }} /> */}
               </CustomTabPanel>
             </div>
 
@@ -608,7 +1024,7 @@ const OwnPostPage = () => {
                       label="Short Message"
                       inputProps={{ maxLength: 100 }}
                       variant="standard"
-                      defaultValue="Posting (post ID): Uj3Klev3JDCH74u73Rkf"
+                      defaultValue={`Posting (post ID): ${id}`}
                     />
                   </Box>
                   <Tooltip
@@ -632,22 +1048,31 @@ const OwnPostPage = () => {
                       }}
                     />
                   </Tooltip>
-                  <FormControlLabel
-                    sx={{ marginTop: 2 }}
-                    disabled={!editDisabled}
-                    value="start"
-                    control={<Switch defaultChecked={postData.anonymity} />}
-                    label="Anonymous"
-                    labelPlacement="start"
-                    onChange={(event) => {
-                      console.log(event.target.checked);
-                      setUpdatedObj((prevObj) => ({
-                        ...prevObj,
-                        anonymity: event.target.checked,
-                      }));
-                      saveDisabled && setSaveDisabled(false);
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
                     }}
-                  />
+                  >
+                    <InfoRedirect states={{ tabIndex: 3, pageIndex: 3 }} />
+
+                    <FormControlLabel
+                      sx={{ marginTop: 2 }}
+                      disabled={!editDisabled}
+                      value="start"
+                      control={<Switch defaultChecked={postData.anonymity} />}
+                      label="Anonymous"
+                      labelPlacement="start"
+                      onChange={(event) => {
+                        console.log(event.target.checked);
+                        setUpdatedObj((prevObj) => ({
+                          ...prevObj,
+                          anonymity: event.target.checked,
+                        }));
+                        saveDisabled && setSaveDisabled(false);
+                      }}
+                    />
+                  </Box>
                 </Box>
                 {/* TODO: nsfw switch */}
                 {showFinalButtons ? (
@@ -977,6 +1402,137 @@ const OwnPostPage = () => {
                       onChange={updateValueOf("title")}
                     />
                   </Box>
+                  <Divider sx={{ m: 2 }} />
+                  <Box
+                    sx={{
+                      minWidth: 120,
+                      margin: "2rem 0",
+                    }}
+                  >
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 5 }}>
+                      <FormControlLabel
+                        // sx={{ marginRight: 2 }}
+                        disabled={!editDisabled}
+                        value="start"
+                        control={
+                          <Switch defaultChecked={postData.autoSaveMS} />
+                        }
+                        label="Auto Update"
+                        labelPlacement="start"
+                        onChange={(event) => {
+                          const selection = event.target.checked;
+                          // TODO: do nothing if its the same as the one in postData?
+                          if (selection) {
+                            setUpdatedObj((prevObj) => ({
+                              ...prevObj,
+                              autoSaveMS: 120000,
+                            }));
+                          } else {
+                            setUpdatedObj((prevObj) => ({
+                              ...prevObj,
+                              autoSaveMS: 0,
+                            }));
+                          }
+                          saveDisabled && setSaveDisabled(false);
+                        }}
+                      />
+                      <FormControl
+                        // disabled={!editDisabled || !updatedObj.autoSaveMS}
+                        disabled
+                      >
+                        <InputLabel id="demo-simple-select-label">
+                          Every
+                        </InputLabel>
+                        <Select
+                          labelId="demo-simple-select-label"
+                          id="demo-simple-select"
+                          value={120000}
+                          label="Every"
+                          // onChange={(event) => {
+                          //   setUpdatedObj((prevObj) => ({
+                          //     ...prevObj,
+                          //     autoSaveMS: event.target.value,
+                          //   }));
+                          //   saveDisabled && setSaveDisabled(false);
+                          // }}
+                          onChange={updateValueOf("autoSaveMS")}
+                        >
+                          <MenuItem value={30000} disabled>
+                            30 second
+                          </MenuItem>
+                          <MenuItem value={60000} disabled>
+                            1 minute
+                          </MenuItem>
+                          <MenuItem value={120000}>2 minute</MenuItem>
+                          <MenuItem value={300000}>5 minute</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </Box>
+                    <FormControlLabel
+                      sx={{ marginRight: 2 }}
+                      disabled
+                      value="start"
+                      control={<Switch defaultChecked={false} />}
+                      label="Live Update"
+                      labelPlacement="start"
+                    />
+                  </Box>
+
+                  <Divider sx={{ m: 2 }} />
+                  <FormControl
+                    sx={{ m: 1, marginLeft: 2 }}
+                    disabled={!editDisabled}
+                  >
+                    <FormLabel
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "4px",
+                      }}
+                    >
+                      Post Type
+                      <InfoRedirect states={{ tabIndex: 3, pageIndex: 3 }} />
+                    </FormLabel>
+                    <RadioGroup
+                      defaultValue={postData.scheduleType || "One Time"}
+                      row
+                      name="row-radio-buttons-group"
+                      value={scheduleValue}
+                      onChange={(event) => {
+                        setScheduleValue(event.target.value);
+                        updateValueOf("scheduleType")(event);
+                      }}
+                    >
+                      <Tooltip
+                        title="The
+                        Post will be released at specified date, it cannot be
+                        delayed but can be disabled."
+                        placement="top"
+                        arrow
+                      >
+                        <FormControlLabel
+                          value="One Time"
+                          control={<Radio />}
+                          label="One Time"
+                        />
+                      </Tooltip>
+                      <Tooltip
+                        title="The
+                        Post will be released at specified intervals unless
+                        intervened, it can be delayed for a defined time period or
+                        disabled."
+                        placement="top"
+                        arrow
+                      >
+                        <FormControlLabel
+                          value="Recurring"
+                          control={<Radio />}
+                          label="Recurring"
+                        />
+                      </Tooltip>
+                    </RadioGroup>
+                  </FormControl>
+                  <Divider sx={{ m: 2 }} />
                   <div
                     className={`changeStateBtns ${
                       !editDisabled && "changeStateBtnsDiasbled"
@@ -1058,6 +1614,7 @@ const Wrapper = styled.main`
 
   .textEditor {
     width: 90%;
+    text-align: start;
     /* background-color: red; */
   }
 
@@ -1158,8 +1715,7 @@ const Wrapper = styled.main`
 
   @media screen and (max-width: 1000px) {
     padding-left: 0;
-    /* padding-top: 7rem; */
-    padding-top: 4rem;
+    padding-top: 6rem;
 
     .sidebar {
       align-items: center;
@@ -1228,7 +1784,7 @@ const Wrapper = styled.main`
   }
 
   .tabs {
-    margin-top: 2rem;
+    margin-top: 1rem;
     display: flex;
     align-items: center;
     justify-content: space-between;

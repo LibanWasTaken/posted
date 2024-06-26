@@ -119,8 +119,9 @@ export function AccPage() {
     try {
       await sendEmailVerification(user);
       console.log("Verification email sent");
-      const customH1Message = "Password reset email sent";
+      const customH1Message = "Verification email sent";
       // TODO: verify if valid mail + if there even a acc in this mail + security q.
+      // TODO: redirect custom states
       navigate(`/message`, { state: { customH1Message } });
     } catch (error) {
       console.error("Email verification error:", error);
@@ -186,6 +187,7 @@ export function AccPage() {
       );
       const loggedInUser = userCredential.user;
       setBtnLoading(false);
+      navigate("/me");
     } catch (error) {
       setBtnLoading(false);
       const errorCode = error.code;
@@ -205,19 +207,17 @@ export function AccPage() {
         const user = result.user;
         // IdP data available using getAdditionalUserInfo(result)
         addAccToFireStore(user);
+        navigate("/me");
+
         // ...
       })
       .catch((error) => {
-        // Handle Errors here.
-        const errorCode = error.code;
         const errorMessage = error.message;
-        // The email of the user's account used.
-        const email = error.customData.email;
-        // The AuthCredential type that was used.
-        const credential = GoogleAuthProvider.credentialFromError(error);
+        // const errorCode = error.code;
+        // const email = error.customData.email;
+        // const credential = GoogleAuthProvider.credentialFromError(error);
         console.log(errorMessage);
         setErrMsg(formatErr(errorMessage));
-        // setErrMsg(errorCode);
         setValue(0);
       });
   };

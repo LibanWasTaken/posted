@@ -12,6 +12,7 @@ import Divergence from "react-divergence-meter";
 import { Parallax } from "react-scroll-parallax";
 import Sitting from "./../assets/undraw_wandering_mind_re_x2a3.svg";
 import typefaceanimator from "./../assets/STG_flash.mp4";
+import ss1 from "./../assets/Screenshot 2024-03-21 211730.png";
 
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
@@ -25,18 +26,25 @@ const HomePage = () => {
   const { user: currentUser, loading } = useUserContext();
   const currentDate = dayjs.utc();
   const formattedDate = currentDate.format("DD.MM.YY");
-  const [value, setValue] = useState(formattedDate);
+  const [dateValue, setDateValue] = useState(formattedDate);
   const handleMouseEnter = () => {
-    setValue("xx.xx.xx");
+    setDateValue("xx.xx.xx");
   };
   const handleMouseLeave = () => {
-    setValue(formattedDate);
+    setTimeout(() => {
+      setDateValue(`${formattedDate.slice(0, 2)}.xx.xx`);
+    }, 0);
+
+    setTimeout(() => {
+      setDateValue(`${formattedDate.slice(0, 5)}.xx`);
+    }, 1000);
+
+    setTimeout(() => {
+      setDateValue(formattedDate);
+    }, 1600);
   };
 
-  // lenis.on("scroll", (e) => {
-  //   console.log(e);
-  // });
-
+  // Scroll effect
   useEffect(() => {
     const lenis = new Lenis();
     function raf(time) {
@@ -50,6 +58,7 @@ const HomePage = () => {
     };
   }, []);
 
+  // log scroll
   useEffect(() => {
     function handleScroll() {
       console.log(window.pageYOffset);
@@ -84,7 +93,7 @@ const HomePage = () => {
           startScroll={100}
         >
           <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-            <Divergence value={value} />
+            <Divergence value={dateValue} />
           </div>
         </Parallax>
         <Link to={currentUser ? "/me" : "/account"}>
@@ -103,6 +112,12 @@ const HomePage = () => {
             startScroll={0}
           >
             <h1>
+              Send messages
+              <br /> to the future
+            </h1>
+          </Parallax>
+          <p>Make your legacy. Your mark.</p>
+          {/* <h1>
               Send messages to the <span className="pop"> future.</span>
             </h1>
             <h1>
@@ -113,8 +128,7 @@ const HomePage = () => {
               Lorem ipsum dolor sit amet consectetur adipisicing elit. Culpa
               libero error consectetur, magni officia similique voluptate ut
               obcaecati sit architecto?
-            </p>
-          </Parallax>
+            </p> */}
         </div>
         <Parallax
           opacity={[0, 1]}
@@ -123,8 +137,16 @@ const HomePage = () => {
           endScroll={800}
           startScroll={0}
         >
-          <img
+          {/* <img
             src="https://www.washingtonpost.com/graphics/entertainment/golden-age-of-hip-hop/img/Future.png"
+            alt=""
+            className="imgLoad"
+            onLoad={(e) => {
+              e.target.classList.add("imgLoaded");
+            }}
+          /> */}
+          <img
+            src={ss1}
             alt=""
             className="imgLoad"
             onLoad={(e) => {
@@ -147,9 +169,10 @@ const HomePage = () => {
           </Parallax>
         </div>
         <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic dolorum
-          adipisci facilis repellendus explicabo, praesentium qui a porro cumque
-          nesciunt.
+          Express your deepest emotions with precision using our robust text
+          editor. With a plethora of features and customization options,
+          "Posted" empowers you to articulate your feelings exactly as you
+          envision, ensuring that every message reflects your true essence.
         </p>
       </section>
       <section className="section4">
@@ -165,9 +188,11 @@ const HomePage = () => {
           <h1>SET</h1>
         </Parallax>
         <p>
-          Lorem ipsum dolor sit amet. Lorem ipsum dolor sit, amet consectetur
-          adipisicing elit. Neque, hic! Lorem ipsum dolor sit amet consectetur
-          adipisicing elit. Ut doloremque rerum illum debitis assumenda iure!
+          Take full control of your message delivery with extensive
+          customization options. Tailor each message to your exact
+          specifications, deciding who receives it, when it's delivered, and
+          even the level of privacy it maintains. Your communication,{" "}
+          <b>your rules.</b>
         </p>
       </section>
       {/* <section className="section6">
@@ -186,14 +211,14 @@ const HomePage = () => {
           startScroll={3200}
           easing="easeInOut"
         >
-          <Fade right>
-            <h1>SEND</h1>
-          </Fade>
+          {/* <Fade right> */}
+          <h1>SEND</h1>
+          {/* </Fade> */}
         </Parallax>
         <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic dolorum
-          adipisci facilis repellendus explicabo, praesentium qui a porro cumque
-          nesciunt.
+          The power to connect knows no bounds. Send your messages to anyone,
+          anywhere, at any time. Ensure your words reach their intended
+          destination, transcending barriers of distance and time.
         </p>
       </section>
       <section className="section7">
@@ -218,36 +243,23 @@ const HomePage = () => {
           className="cloud"
           style={{ bottom: 0, left: 0 }}
         />
-        {/* <Parallax
-          opacity={[0, 1]}
-          // translateY={["40%", 0]}
-          speed={-5}
-          startScroll={4900}
+        <Parallax
+          translateX={["2%", "0%"]}
+          startScroll={4850 - 300}
+          endScroll={5600 - 300}
+        >
+          <h1>Exceptional customizability</h1>
+        </Parallax>
+        <Parallax translateX={["2%", "0%"]} startScroll={4850} endScroll={5600}>
+          <h1>Unparalleled adaptability</h1>
+        </Parallax>
+        <Parallax
+          translateX={["2%", "0%"]}
+          startScroll={4850 + 350}
           endScroll={5600}
-          easing="easeInOutBack"
-        > */}
-        <h1>Exceptional customizability</h1>
-        {/* </Parallax> */}
-        {/* <Parallax
-          opacity={[0, 1]}
-          // translateY={["100%", 0]}
-          speed={-5}
-          startScroll={4850 + 100}
-          endScroll={5600 + 100}
-          easing="easeInOutBack"
-        > */}
-        <h1>Unparalleled adaptability</h1>
-        {/* </Parallax> */}
-        {/* <Parallax
-          opacity={[0, 1]}
-          // translateY={["40%", 0]}
-          speed={-5}
-          startScroll={4850 + 100 + 100}
-          endScroll={5600 + 100 + 100}
-          easing="easeInOutBack"
-        > */}
-        <h1>Unmatched Flexibilty</h1>
-        {/* </Parallax> */}
+        >
+          <h1>Unmatched Flexibilty</h1>
+        </Parallax>
         <Fade>
           <div className="other">
             <h3>
@@ -270,7 +282,6 @@ const HomePage = () => {
         {/* </Parallax> */}
       </section>
       <div className="divider"></div>
-
       <section className="section8">
         {/* <div
           className=""
@@ -314,18 +325,18 @@ const HomePage = () => {
           </Parallax>
         </div>
         <Parallax
-          translateX={["-100%", "-30%"]}
+          translateX={["-100%", "-50%"]}
           // opacity={[0.5, 1]}
-          startScroll={6300}
+          startScroll={6000}
           endScroll={7100}
           easing="easeInOut"
         >
-          <Fade left>
-            <h1>
-              Faultless <br />
-              Punctuality
-            </h1>
-          </Fade>
+          {/* <Fade left> */}
+          <h1>
+            Faultless <br />
+            Punctuality
+          </h1>
+          {/* </Fade> */}
         </Parallax>
         {/* <h3>
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Quia error
@@ -335,8 +346,8 @@ const HomePage = () => {
         <div className="msg">
           <Parallax
             opacity={[0, 1]}
-            translateX={["50%", "20%"]}
-            startScroll={6900}
+            translateX={["40%", "35%"]}
+            startScroll={6700}
             endScroll={7300}
             easing="easeInOut"
           >
@@ -357,8 +368,6 @@ const HomePage = () => {
           </Parallax>
         </div>
       </section>
-      {/* <div className="divider"></div> */}
-
       <section className="section9">
         {/* <Parallax
           rotate={[0, "10deg"]}
@@ -396,11 +405,15 @@ const HomePage = () => {
           />
         </Parallax>
 
-        <div className="line"></div>
+        <Parallax speed={-3}>
+          <div className="line"></div>
+        </Parallax>
         <Fade>
           <div className="text">
-            <h1>CRAFT FUTURE MOMENTS NOW</h1>
-            <h2>SEIZE THE PRESENT</h2>
+            <Parallax speed={3}>
+              <h1>CRAFT FUTURE MOMENTS NOW</h1>
+              <h2>SEIZE THE PRESENT</h2>
+            </Parallax>
           </div>
         </Fade>
       </section>
@@ -512,13 +525,20 @@ const Wrapper = styled.main`
     width: 100vw;
     .text {
       padding: 0 2rem;
-      color: #ccc;
-      font-size: 2rem;
+      color: #fff;
       /* font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif; */
       text-transform: uppercase;
+      max-width: 50vw;
       h1 {
+        font-size: 4rem;
         padding: 0;
         margin: 0;
+      }
+      p {
+        margin: 0;
+        padding: 0;
+        font-size: 2rem;
+        margin-top: 1rem;
       }
     }
     .pop {
@@ -530,18 +550,14 @@ const Wrapper = styled.main`
     background-color: black;
     height: 90vh;
     img {
-      height: 60vh;
+      /* height: 60vh;
       min-width: 20rem;
-      filter: saturate(0);
+      filter: saturate(0); */
 
-      /* transform: scaleX(-1); */
-    }
-    p {
-      margin: 0;
-      padding: 0;
-      font-size: 1rem;
-      max-width: 50rem;
-      margin-top: 1rem;
+      min-width: 5rem;
+      width: 50rem;
+      border-radius: 10px;
+      /* width: 200px; */
     }
   }
 
@@ -907,9 +923,11 @@ const Wrapper = styled.main`
       /* width: 90vw; */
       /* padding: 20rem; */
       flex-direction: column;
-
+      .text {
+        max-width: 100vw;
+      }
       img {
-        width: 20vw;
+        width: 90vw;
         height: auto;
       }
     }

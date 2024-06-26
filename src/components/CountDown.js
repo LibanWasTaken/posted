@@ -9,6 +9,9 @@ import { db } from "../services/firebase-config";
 import { updateDoc, doc } from "firebase/firestore";
 
 import Tooltip from "@mui/material/Tooltip";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import CircularProgress from "@mui/material/CircularProgress";
+import { Button as MuiButton } from "@mui/material";
 
 dayjs.extend(utc);
 dayjs.extend(duration);
@@ -43,38 +46,39 @@ const CountDown = (props) => {
     warnDuration: undefined, // back end, if null = 3days
   };
 
-  if (scheduleType == "Recurring") {
-    if (scheduleFormat == "Preset") {
-      if (preset.timePeriod == "Week") {
-        // delay to the the preset.day of that week
-      }
-      if (preset.timePeriod == "Month") {
-        if (preset.day > 28) {
-          // if prest.day is like 31, check if the next month has it, if not delay to the last day of that month, or the preset.day of that month - https://day.js.org/docs/en/manipulate/end-of
-        } else {
-          const nextMonthFirstDay = dayjs()
-            .add(1, "month")
-            .startOf("month")
-            .add(0, "day")
-            .format("DD/MM/YYYY");
-          // setNewerDate(nextMonthFirstDay);
-        }
-      }
-    } else {
-      // specified
-      return;
-      // delay by preset.delayDuration
-    }
-  } else {
-    return;
-    // normal one time release TODO: change Delay button to disable. if time already passed and then its enables, keep the inital release dat as a secondary date? or make it so that it cannot be enabled unless date is extended
-  }
+  // if (scheduleType == "Recurring") {
+  //   if (scheduleFormat == "Preset") {
+  //     if (preset.timePeriod == "Week") {
+  //       // delay to the the preset.day of that week
+  //     }
+  //     if (preset.timePeriod == "Month") {
+  //       if (preset.day > 28) {
+  //         // if prest.day is like 31, check if the next month has it, if not delay to the last day of that month, or the preset.day of that month - https://day.js.org/docs/en/manipulate/end-of
+  //       } else {
+  //         const nextMonthFirstDay = dayjs()
+  //           .add(1, "month")
+  //           .startOf("month")
+  //           .add(0, "day")
+  //           .format("DD/MM/YYYY");
+  //         // setNewerDate(nextMonthFirstDay);
+  //       }
+  //     }
+  //   } else {
+  //     // specified
+  //     return;
+  //     // delay by preset.delayDuration
+  //   }
+  // } else {
+  //   return;
+  //   // normal one time release TODO: change Delay button to disable. if time already passed and then its enables, keep the inital release dat as a secondary date? or make it so that it cannot be enabled unless date is extended
+  // }
 
   function redirect() {
     navigate(`/me`);
   }
 
   async function handleDelay() {
+    setDelaying(true);
     console.log("Old date:", dayjs(releaseDate).format("DD/MM/YYYY"));
     console.log("New date:", dayjs(newDate).format("DD/MM/YYYY"));
     const blabla = dayjs()
@@ -156,6 +160,7 @@ const CountDown = (props) => {
     );
   }
 
+  // console.log("hellooo?????????");
   return (
     <Wrapper>
       {open ? (
@@ -207,13 +212,34 @@ const CountDown = (props) => {
           <div className="delay">
             <p>{targetDate.format("DD/MM/YYYY")}</p>
             <button
-              className={`classicBtn ${
+              className={`delayBtn classicBtn ${
                 delaying && "disabledClassicBtn loadingClassicBtn "
               }`}
               onClick={handleDelay}
             >
-              Delay To
+              Delay To <ArrowForwardIcon />
             </button>
+            {/* <MuiButton
+              sx={{
+                p: 3,
+                letterSpacing: 1,
+                borderRadius: 0,
+                boxShadow: 0,
+                transition: "gap 1s",
+                // "&:hover": {
+                //   gap: 1,
+                // },
+                // "&:active": {
+                //   bgcolor: "white",
+                // },
+              }}
+              variant="contained"
+              onClick={handleDelay}
+              disabled={delaying}
+              endIcon={delaying ? <CircularProgress /> : <ArrowForwardIcon />}
+            >
+              DELAY TO
+            </MuiButton> */}
             <p>{newDate.format("DD/MM/YYYY")}</p>
           </div>
         </section>
@@ -257,7 +283,21 @@ const Wrapper = styled.main`
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 2rem;
+    /* gap: 2rem; */
+    .delayBtn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+      z-index: 1;
+    }
+    p {
+      background-color: white;
+      padding: 1rem;
+      box-shadow: rgb(204, 219, 232) 3px 3px 6px 0px inset,
+        rgba(255, 255, 255, 0.5) -3px -3px 6px 1px inset;
+    }
   }
 
   .closeBtn {
@@ -307,16 +347,20 @@ const Wrapper = styled.main`
     justify-content: center;
     flex-direction: row;
     margin-bottom: 2rem;
+    gap: 1rem;
     .item {
-      margin: 0.5rem;
-      border-radius: 10px;
+      /* margin: 0.5rem; */
+      /* border-radius: 10px; */
       display: flex;
       flex-direction: column;
+      align-items: center;
+      justify-content: center;
       letter-spacing: 1px;
       background-color: rgba(255, 255, 255, 1);
       /* color: white; */
-      width: 4.5rem;
-      padding: 1rem;
+      width: 7rem;
+      height: 8rem;
+      /* padding: 1rem 1.25rem; */
       .number {
         font-size: 3rem;
         margin-bottom: 10px;

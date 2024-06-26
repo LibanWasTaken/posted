@@ -12,6 +12,8 @@ import { ParallaxProvider } from "react-scroll-parallax";
 
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
+// import "./components/Lexical/index.css";
+
 import {
   Home,
   Error,

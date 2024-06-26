@@ -5,12 +5,15 @@ import { useParams, useLocation } from "react-router-dom";
 import { scrollToBottom } from "../functions/functions";
 import { useUserContext } from "../context/UserContext";
 import { db } from "../services/firebase-config";
-import { setDoc, doc } from "firebase/firestore";
+import { setDoc, addDoc, collection, doc } from "firebase/firestore";
 import MouseTrail from "../components/MouseTrail/MouseTrail";
 import BlobCursor from "../components/BlobTracer/BlobCursor";
+import CornerImg from "assets/top-corner.svg";
 
 import ReCAPTCHA from "react-google-recaptcha";
 import dayjs from "dayjs";
+
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 
 import {
   Tabs,
@@ -75,6 +78,48 @@ const theme = createTheme({
   },
 });
 
+const Container = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  padding: 20px;
+`;
+
+const Card = styled.div`
+  background-color: #f8f8f8;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  transition: transform 0.3s ease-in-out, z-index 0.3s ease-in-out;
+  overflow: hidden;
+  position: relative;
+
+  &:hover {
+    transform: scale(1.1);
+    z-index: 1;
+  }
+
+  &:hover > p {
+    opacity: 1;
+    max-height: 200px; /* Adjust as needed */
+  }
+`;
+
+const CardHeading = styled.h2`
+  margin: 0;
+  font-size: 1.2em;
+  font-weight: bold;
+`;
+
+const CardContent = styled.p`
+  margin: 10px 0 0;
+  font-size: 0.9em;
+  opacity: 0;
+  max-height: 0;
+  transition: opacity 0.3s ease-in-out, max-height 0.3s ease-in-out;
+  overflow: hidden;
+`;
+
 const FadingImage = ({ src, alt }) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
@@ -122,6 +167,8 @@ const PostedGuidePage = () => {
       if (state.pageIndex) {
         setInfoPage(state.pageIndex);
       }
+    } else {
+      scrollToBottom(105);
     }
   }, [state]);
 
@@ -173,8 +220,13 @@ const PostedGuidePage = () => {
         ...feedbackValues,
         ts: timestamp,
       };
-      await setDoc(doc(db, "feedback", timestamp), feedbackObj);
-      console.log(feedbackObj);
+      // await setDoc(docaddDoc ,(db, "feedback", timestamp), feedbackObj);
+
+      const docRef = await addDoc(
+        collection(db, "returns/feedbacks/feedback"),
+        feedbackObj
+      );
+      console.log("Document written with ID: ", docRef.id);
     } catch (error) {
       console.log(error);
       alert("Error sending critic");
@@ -216,65 +268,182 @@ const PostedGuidePage = () => {
       title: "Possible Use Cases",
       tab: "For?",
       content: (
+        // <div>
+        //   <p className="paragraph">
+        //     Posted opens up a world of possibilities for users. Some potential
+        //     use cases include:
+        //   </p>
+        //   <ul className="list">
+        //     <li className="list-item">
+        //       1. <strong>Automated Safety</strong> System Set up a system that
+        //       automatically publishes messages if certain conditions are not
+        //       met, providing a layer of safety.
+        //     </li>
+        //     <li className="list-item">
+        //       2. <strong>Post-Mortem Communication:</strong> Imagine crafting a
+        //       digital legacy that transcends time. With "Posted," you can
+        //       communicate with loved ones, friends, or even the world after
+        //       you've passed away. Leave behind a treasure trove of memories,
+        //       advice, or heartfelt messages, ensuring your voice resonates for
+        //       generations.
+        //     </li>
+
+        //     <li className="list-item">
+        //       3. <strong>Delayed Post Release:</strong> Utilize the power of
+        //       delayed post release to schedule messages for future events,
+        //       birthdays, or special occasions. Whether it's a heartfelt
+        //       congratulation or a nostalgic reflection, "Posted" allows you to
+        //       plan and share your sentiments at the perfect moment.
+        //     </li>
+
+        //     <li className="list-item">
+        //       4. <strong>Privacy Controls:</strong> "Posted" puts you in control
+        //       of your content. Adjust the settings to make posts public or
+        //       private, allowing you to curate who has access to your messages.
+        //       With automatically generated keys, ensure that your shared moments
+        //       remain secure and accessible only to those you choose.
+        //     </li>
+
+        //     <li className="list-item">
+        //       5. <strong>Anonymity:</strong> Explore the freedom of anonymous
+        //       posting on "Posted." Share your thoughts, stories, or advice
+        //       without revealing your identity. This feature enables users to
+        //       express themselves openly and honestly, fostering a space for
+        //       genuine communication.
+        //     </li>
+
+        //     <li className="list-item">
+        //       6. <strong>Post Disablement:</strong> Life is dynamic, and
+        //       circumstances can change. With "Posted," you have the option to
+        //       disable or retract a post, providing flexibility and control over
+        //       your shared content. Adapt to evolving situations while
+        //       maintaining the integrity of your digital legacy.
+        //     </li>
+        //     <li className="list-item">
+        //       6. <strong>Post Disablement:</strong> Life is dynamic, and
+        //       circumstances can change. With "Posted," you have the option to
+        //       disable or retract a post, providing flexibility and control over
+        //       your shared content. Adapt to evolving situations while
+        //       maintaining the integrity of your digital legacy.
+        //     </li>
+        //     <li className="list-item">
+        //       1. <strong>Personal Milestones:</strong> Send future birthday or
+        //       anniversary wishes, words of encouragement, or life advice to
+        //       loved ones.
+        //     </li>
+        //     <li className="list-item">
+        //       2. <strong>Legacy Planning:</strong> Leave important information,
+        //       financial details, or final wishes for family members.
+        //     </li>
+        //     <li className="list-item">
+        //       3. <strong>Time Capsules:</strong> Create digital time capsules
+        //       filled with memories, photos, and videos to be opened on a
+        //       specific date.
+        //     </li>
+        //     <li className="list-item">
+        //       4. <strong>Inspirational Messages:</strong> Share motivational
+        //       quotes, life lessons, or your personal story to inspire future
+        //       generations.
+        //     </li>
+        //     <li className="list-item">
+        //       5. <strong>Event Reminders:</strong> Schedule reminders for
+        //       significant events, anniversaries, or deadlines to ensure they are
+        //       remembered and celebrated.
+        //     </li>
+        //     <li className="list-item">
+        //       6. <strong>Post Disablement:</strong> Life is dynamic, and
+        //       circumstances can change. With "Posted," you have the option to
+        //       disable or retract a post, providing flexibility and control over
+        //       your shared content. Adapt to evolving situations while
+        //       maintaining the integrity of your digital legacy.
+        //     </li>
+        //   </ul>
+        //   <p>
+        //     "Posted" is more than a platform; it's a canvas for your stories, a
+        //     vault for your sentiments, and a conduit for the timeless
+        //     expressions that define you. As you explore these use cases, the
+        //     possibilities are boundless, offering a unique and personal way to
+        //     connect, share, and make an impact that lasts beyond the present
+        //     moment.
+        //   </p>
+        // </div>
         <div>
-          <p className="paragraph">
-            Posted opens up a world of possibilities for users. Some potential
-            use cases include:
-          </p>
-          <ul className="list">
-            <li className="list-item">
-              1. <strong>Automated Safety</strong> System Set up a system that
-              automatically publishes messages if certain conditions are not
-              met, providing a layer of safety.
-            </li>
-            <li className="list-item">
-              2. <strong>Post-Mortem Communication:</strong> Imagine crafting a
-              digital legacy that transcends time. With "Posted," you can
-              communicate with loved ones, friends, or even the world after
-              you've passed away. Leave behind a treasure trove of memories,
-              advice, or heartfelt messages, ensuring your voice resonates for
-              generations.
-            </li>
-
-            <li className="list-item">
-              3. <strong>Delayed Post Release:</strong> Utilize the power of
-              delayed post release to schedule messages for future events,
-              birthdays, or special occasions. Whether it's a heartfelt
-              congratulation or a nostalgic reflection, "Posted" allows you to
-              plan and share your sentiments at the perfect moment.
-            </li>
-
-            <li className="list-item">
-              4. <strong>Privacy Controls:</strong> "Posted" puts you in control
-              of your content. Adjust the settings to make posts public or
-              private, allowing you to curate who has access to your messages.
-              With automatically generated keys, ensure that your shared moments
-              remain secure and accessible only to those you choose.
-            </li>
-
-            <li className="list-item">
-              5. <strong>Anonymity:</strong> Explore the freedom of anonymous
-              posting on "Posted." Share your thoughts, stories, or advice
-              without revealing your identity. This feature enables users to
-              express themselves openly and honestly, fostering a space for
-              genuine communication.
-            </li>
-
-            <li className="list-item">
-              6. <strong>Post Disablement:</strong> Life is dynamic, and
-              circumstances can change. With "Posted," you have the option to
-              disable or retract a post, providing flexibility and control over
-              your shared content. Adapt to evolving situations while
-              maintaining the integrity of your digital legacy.
-            </li>
-          </ul>
+          <h1>Explore the Possibilities with Posted</h1>
           <p>
-            "Posted" is more than a platform; it's a canvas for your stories, a
-            vault for your sentiments, and a conduit for the timeless
-            expressions that define you. As you explore these use cases, the
-            possibilities are boundless, offering a unique and personal way to
-            connect, share, and make an impact that lasts beyond the present
-            moment.
+            Posted opens up a world of possibilities for users. Here are some
+            potential use cases:
+          </p>
+
+          <h2>Automated Safety System</h2>
+          <p>
+            Set up a system that automatically publishes messages if certain
+            conditions are not met, providing an extra layer of safety and
+            assurance.
+          </p>
+
+          <h2>Post-Mortem Communication</h2>
+          <p>
+            Craft a digital legacy that transcends time. Communicate with loved
+            ones, friends, or even the world after you've passed away. Leave
+            behind memories, advice, or heartfelt messages, ensuring your voice
+            resonates for generations.
+          </p>
+
+          <h2>Delayed Post Release</h2>
+          <p>
+            Schedule messages for future events, birthdays, or special
+            occasions. Whether it's a heartfelt congratulation or a nostalgic
+            reflection, Posted allows you to share your sentiments at the
+            perfect moment.
+          </p>
+
+          <h2>Privacy and Control</h2>
+          <p>
+            Posted puts you in control of your content. Adjust settings to make
+            posts public or private, curating who has access to your messages.
+            Additionally, you have the option to disable or retract a post,
+            providing flexibility to adapt to changing circumstances.
+          </p>
+
+          <h2>Anonymity</h2>
+          <p>
+            Enjoy the freedom of anonymous posting. Share your thoughts,
+            stories, or advice without revealing your identity, fostering a
+            space for genuine and honest communication.
+          </p>
+
+          <h2>Personal Milestones</h2>
+          <p>
+            Send future birthday or anniversary wishes, words of encouragement,
+            or life advice to loved ones. Ensure that your messages are received
+            at just the right time.
+          </p>
+
+          <h2>Legacy Planning</h2>
+          <p>
+            Leave important information, financial details, or final wishes for
+            family members. Securely share critical details that will be
+            accessible when needed.
+          </p>
+
+          <h2>Time Capsules</h2>
+          <p>
+            Create digital time capsules filled with memories, photos, and
+            videos to be opened on a specific date. Preserve moments and share
+            them in the future.
+          </p>
+
+          <h2>Inspirational Messages</h2>
+          <p>
+            Share motivational quotes, life lessons, or your personal story to
+            inspire future generations. Use Posted to make a lasting impact with
+            your words.
+          </p>
+
+          <h2>Event Reminders</h2>
+          <p>
+            Schedule reminders for significant events, anniversaries, or
+            deadlines to ensure they are remembered and celebrated.
           </p>
         </div>
       ),
@@ -283,34 +452,45 @@ const PostedGuidePage = () => {
       title: "Types of Information You Can Store",
       tab: "Like what?",
       content: (
-        <div>
-          <p className="paragraph">
-            Posted provides high customizability in terms of the types of
-            messages you can store. Whether it's links, letters, or a diary for
-            each day, you have the flexibility to choose the format that suits
-            your needs.
-          </p>
-          <div
-            className=""
-            style={{
-              display: "flex",
-              alignItems: "center",
-              // justifyContent: "center",
-              flexDirection: "row",
-            }}
-          >
-            <FadingImage
-              src="https://cdn.pixabay.com/photo/2015/10/31/12/00/question-1015308_640.jpg"
-              alt="Image 1"
-            />
-            <FadingImage
-              src="https://www.nameslook.com/names/adasdad-nameslook.png"
-              alt="Image 1"
-            />
-            <FadingImage
-              src="https://media.istockphoto.com/id/1470130937/photo/young-plants-growing-in-a-crack-on-a-concrete-footpath-conquering-adversity-concept.webp?b=1&s=170667a&w=0&k=20&c=IRaA17rmaWOJkmjU_KD29jZo4E6ZtG0niRpIXQN17fc="
-              alt="Image 1"
-            />
+        <div className="expandableCards">
+          <div class="card">
+            <h3>Personal Milestones</h3>
+            <p>
+              Store future birthday or anniversary wishes, words of
+              encouragement, or life advice to be delivered at specific times.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>Legacy Planning</h3>
+            <p>
+              Securely store important information, financial details, or final
+              wishes for access by trusted family members.
+            </p>
+          </div>
+
+          <div class="card active">
+            <h3>Time Capsules</h3>
+            <p>
+              Create digital time capsules filled with memories, photos, and
+              videos to be opened on specific dates or events.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>Inspirational Messages</h3>
+            <p>
+              Share motivational quotes, life lessons, or personal stories to
+              inspire future generations or uplift others.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>Event Reminders</h3>
+            <p>
+              Set reminders for significant events, anniversaries, or deadlines
+              to ensure they are remembered and celebrated.
+            </p>
           </div>
         </div>
       ),
@@ -483,6 +663,37 @@ const PostedGuidePage = () => {
             messages to your preferences and the preferences of your intended
             audience.
           </p>
+          <div>
+            <h2>Customizability in Posted</h2>
+            <p>
+              Posted offers a <strong>high level of customizability</strong>{" "}
+              tailored to meet diverse communication needs. Whether you're
+              sharing personal messages, organizing business communications, or
+              planning future communications, Posted provides robust features to
+              enhance your messaging experience.
+            </p>
+            <p>Key features include:</p>
+            <ul>
+              <li>
+                Add multimedia content such as images, videos, and documents to
+                enrich your messages.
+              </li>
+              <li>
+                Choose specific recipients or groups for targeted communication.
+              </li>
+              <li>Set recurring messages for regular updates or reminders.</li>
+            </ul>
+            <p>
+              This flexibility empowers users to tailor their messages precisely
+              to their preferences and the preferences of their intended
+              audience. Whether you're a business professional, educator, or
+              individual user, Posted adapts to your unique communication needs.
+            </p>
+            <p>
+              Start using Posted today and experience the difference in
+              customizable messaging solutions.
+            </p>
+          </div>
         </div>
       ),
     },
@@ -490,13 +701,47 @@ const PostedGuidePage = () => {
       title: "Privacy Features",
       content: (
         <div>
+          <div className="backgroundIcon">
+            <LockOutlinedIcon sx={{ fontSize: "50vh" }} />
+          </div>
           <p className="paragraph">
             Your privacy is a top priority with Posted. The app ensures that
             your messages are encrypted and securely stored. You have control
             over who receives your messages, providing you with the peace of
             mind that your information is shared only with those you trust.
           </p>
-          <img
+          <div>
+            <h2>Privacy in Posted</h2>
+            <p>
+              Your privacy is a <strong>top priority with Posted</strong>. We
+              understand the importance of keeping your messages secure and
+              confidential. Posted ensures that your messages are encrypted
+              end-to-end and securely stored, giving you peace of mind knowing
+              that your information is protected from unauthorized access.
+            </p>
+            <p>
+              With Posted, you have control over who can view your messages. You
+              can create custom groups or select specific individuals to share
+              your messages with. Whether you're sending personal notes,
+              business updates, or sharing memories with loved ones, Posted
+              allows you to tailor your audience and ensure that your messages
+              are seen only by those you choose.
+            </p>
+            <p>
+              This flexibility extends to every message you send. You can set
+              permissions and manage access rights, ensuring that sensitive
+              information remains confidential and personal communications stay
+              private. Whether it's sharing among family members, collaborating
+              with colleagues, or communicating with clients, Posted offers
+              robust privacy features to meet your needs.
+            </p>
+            <p>
+              Experience the confidence of secure messaging with Posted. Start
+              using our platform today and take control of your privacy while
+              communicating effectively.
+            </p>
+          </div>
+          {/* <img
             src="https://imageio.forbes.com/blogs-images/forbestechcouncil/files/2018/12/canva-photo-editor-3-9.jpg?height=640&width=640&fit=bounds"
             alt=""
           />
@@ -506,7 +751,7 @@ const PostedGuidePage = () => {
               alt=""
               onLoad={handleImageLoad}
             />
-          </Fade>
+          </Fade> */}
         </div>
       ),
     },
@@ -515,76 +760,66 @@ const PostedGuidePage = () => {
       tab: "Messaging",
       content: (
         <div>
-          <div>
-            <p>
-              Welcome to your personal haven within "Posted," where your
-              messages become a digital legacy. Here, every post reflects your
-              unique voice, and you hold the reins of access. Your messages are
-              securely guarded, accessible only with your permission. Embrace
-              the freedom to share thoughts, memories, and moments with trusted
-              recipients, ensuring that your digital presence remains as private
-              or as shared as you desire. Your space, your posts, your
-              legacy—guarded by the assurance of utmost privacy.
-            </p>
-          </div>
+          <h2>Stay Connected Anytime, Anywhere</h2>
+          <p>
+            Our app now features a{" "}
+            <strong>full built-in messaging system</strong> that allows you to
+            stay connected with your friends, family, and colleagues seamlessly.
+            Whether you need to send a quick update, share important
+            information, or just catch up, our messaging system has got you
+            covered.
+          </p>
 
-          <div>
-            <p>
-              Your "Posted" page, a vault for cherished words. Personal posts,
-              shared selectively. Secure, private, and timeless—your digital
-              legacy begins here.
-            </p>
-          </div>
+          <h2>Key Features</h2>
+          <p>
+            Here are some of the <strong>exciting features</strong> of our
+            messaging system:
+          </p>
+          <ul>
+            <li>
+              <strong>Real-Time Messaging:</strong> Enjoy instant communication
+              with real-time messaging capabilities.
+            </li>
+            <li>
+              <strong>Multimedia Support:</strong> Send and receive photos,
+              videos, and documents effortlessly.
+            </li>
+            <li>
+              <strong>Group Chats:</strong> Create group chats to stay connected
+              with multiple people at once.
+            </li>
+            <li>
+              <strong>Message History:</strong> Access your message history to
+              revisit past conversations.
+            </li>
+            <li>
+              <strong>End-to-End Encryption:</strong> Ensure your conversations
+              are private and secure with end-to-end encryption.
+            </li>
+          </ul>
 
-          <div>
-            <p>
-              In your "Posted" sanctuary, messages echo your essence.
-              Safeguarded and selectively shared, each post carries the weight
-              of your digital legacy.
-            </p>
-          </div>
+          <h2>How to Use</h2>
+          <p>Getting started with our messaging system is easy:</p>
+          <ol>
+            <li>
+              <strong>Open the App:</strong> Launch the app and navigate to the
+              messaging section.
+            </li>
+            <li>
+              <strong>Select a Contact:</strong> Choose a contact or create a
+              new group chat.
+            </li>
+            <li>
+              <strong>Start Messaging:</strong> Type your message and hit send.
+              It's that simple!
+            </li>
+          </ol>
 
-          <div>
-            <p>
-              "Posted" goes beyond time capsules—it's a full-fledged messaging
-              app. Connect, converse, and share messages seamlessly, creating
-              meaningful connections that withstand the test of time.
-            </p>
-          </div>
-
-          <div>
-            <p>
-              Welcome to the all-encompassing realm of communication within
-              'Posted'—where timeless messaging meets seamless connection.
-              Beyond the traditional notion of time capsules, 'Posted' unfolds
-              into a fully-fledged messaging app, designed to facilitate
-              meaningful interactions that transcend temporal constraints.
-            </p>
-            <p>
-              Engage in conversations that echo across the years, crafting a
-              digital dialogue that stands as a testament to enduring
-              connections. The platform provides a spectrum of communication
-              options, from sending instant messages to scheduling messages for
-              the future, ensuring that your expressions resonate exactly when
-              intended.
-            </p>
-            <p>
-              The 'Posted' messaging app isn't just a conduit for words; it's a
-              conduit for emotions, memories, and the essence of personal
-              connection. Embrace the versatility to share your thoughts
-              spontaneously or curate messages meticulously for future delivery.
-              Communicate with loved ones, friends, or even yourself in a manner
-              that aligns with the rhythm of your life.
-            </p>
-            <p>
-              Privacy remains paramount. 'Posted' ensures that your
-              conversations are safeguarded, accessible only to those with whom
-              you've chosen to share. Whether it's one-on-one exchanges, group
-              discussions, or solo reflections scheduled for the future, every
-              interaction is a celebration of connection and a tribute to the
-              enduring power of communication.
-            </p>
-          </div>
+          <p>
+            Experience the convenience of having all your communications in one
+            place with our built-in messaging system. Stay connected, stay
+            informed, and enjoy the seamless integration within our app.
+          </p>
         </div>
       ),
     },
@@ -742,10 +977,13 @@ const PostedGuidePage = () => {
       <ThemeProvider theme={theme}>
         <h1 className="title"> {sections2[tabValue].title}</h1>
         <img
-          src="https://www.svgrepo.com/show/355324/top-corner.svg"
+          src={CornerImg}
           alt=""
           srcset=""
           className="cornerImg"
+          onClick={() => {
+            scrollToBottom(0.01);
+          }}
         />
 
         <Box
@@ -825,7 +1063,8 @@ const Wrapper = styled.section`
     right: 0;
     transform: rotate(180deg);
     width: 10rem;
-    pointer-events: none;
+    // pointer-events: none;
+    cursor: pointer;
   }
 
   .title {
@@ -857,6 +1096,18 @@ const Wrapper = styled.section`
     gap: 1rem;
   }
 
+  .backgroundIcon {
+    position: absolute;
+    top: 15rem;
+    right: 10rem;
+    transition: 1s;
+    opacity: 0.05;
+    /* transform: translateX(15rem) rotate(-5deg); */
+    transform: rotate(-5deg);
+    user-select: none;
+    pointer-events: none;
+  }
+
   .infoTab {
     .info {
       h4 {
@@ -876,6 +1127,50 @@ const Wrapper = styled.section`
 
   .list-item {
     margin-bottom: 10px;
+  }
+
+  .expandableCards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    max-width: 55rem;
+    .card {
+      padding: 1rem;
+      height: 100px;
+      width: 150px;
+      background-color: black;
+      color: white;
+      border-radius: 10px;
+      overflow: hidden;
+      h3 {
+        margin-top: 0;
+      }
+      p {
+        opacity: 0;
+      }
+    }
+    .card:hover {
+      transition: 0.3s;
+      /* height: 200px; */
+      height: 250px;
+      width: 200px;
+      p {
+        transition: 0.3s;
+        border-top: 1px solid #333;
+        padding-top: 1rem;
+        opacity: 1;
+      }
+    }
+    /* .active {
+      height: 250px;
+      width: 200px;
+      p {
+        transition: 0.3s;
+        border-top: 1px solid #333;
+        padding-top: 1rem;
+        opacity: 1;
+      }
+    } */
   }
 `;
 

@@ -122,6 +122,7 @@ export default function AllProductPage() {
   // TODO: store the current length of posts. when the post count updates, subtract the new count with the previous count, if its NOT 10 (or whatever is set), then it means it ran out, and hide the load more button / load more when screen at the bottom
 
   function generateCards(posts) {
+    console.log(JSON.stringify(posts));
     return Object.values(posts).map((post) => {
       if (post) {
         // TODO: change true -> post.public
@@ -325,7 +326,7 @@ const Wrapper = styled.main`
   padding: 2rem 0;
   overflow-x: hidden;
   min-height: 100vh;
-  background-color: whitesmoke;
+  /* background-color: whitesmoke; */
 
   section {
     display: flex;
@@ -438,7 +439,7 @@ const Wrapper = styled.main`
     gap: 1rem;
 
     /* width: 80vw; */
-    border: 1px solid red;
+    /* border: 1px solid red; */
     padding: 2rem;
   }
   .loadMorBtn {

@@ -95,6 +95,8 @@ const Comments = ({ postID, postAdminUID }) => {
   const [replyValue, setReplyValue] = useState();
   const [replySending, setReplySending] = useState(false);
   const [comments, setComments] = useState();
+  const [sortTypeVotes, setSortTypeLikes] = useState(true);
+  const [sortOrderAsc, setSortOrderAsc] = useState(true);
   const [userData, setUserData] = useState();
 
   async function getFSData() {
@@ -266,7 +268,7 @@ const Comments = ({ postID, postAdminUID }) => {
           >
             <ReplyIcon fontSize="small" />
           </IconButton>
-          {reply.uid && reply.uid == currentUser.uid && (
+          {reply.uid && currentUser && reply.uid == currentUser.uid && (
             <IconButton
               className="show"
               aria-label="reply"
@@ -323,16 +325,18 @@ const Comments = ({ postID, postAdminUID }) => {
                   >
                     <ReplyIcon />
                   </IconButton>
-                  {comment.uid && comment.uid == currentUser.uid && (
-                    <IconButton
-                      className="show"
-                      aria-label="reply"
-                      // size="small"
-                      onClick={handleDeleteModalOpen}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  )}
+                  {comment.uid &&
+                    currentUser &&
+                    comment.uid == currentUser.uid && (
+                      <IconButton
+                        className="show"
+                        aria-label="reply"
+                        // size="small"
+                        onClick={handleDeleteModalOpen}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    )}
                 </div>
               </div>
             </div>
@@ -344,11 +348,12 @@ const Comments = ({ postID, postAdminUID }) => {
                 <IconButton
                   size="small"
                   sx={{ color: "black", bgcolor: "#f0efef" }}
+                  disabled={!currentUser}
                 >
                   <ArrowDropUpIcon />
                 </IconButton>
                 <p>15</p>
-                <IconButton size="small">
+                <IconButton size="small" disabled={!currentUser}>
                   <ArrowDropDownIcon />
                 </IconButton>
               </div>
@@ -436,14 +441,48 @@ const Comments = ({ postID, postAdminUID }) => {
             <p>{comments && comments.length}</p>
           </div>
           <div className="endBtns">
-            <Tooltip title="Sort by oldest first">
-              <IconButton sx={{ m: 0.5 }}>
-                <SwapVertIcon />
+            <Tooltip
+              title={`Sort by ${
+                sortTypeVotes
+                  ? `${sortOrderAsc ? "least" : "most"} voted`
+                  : `${sortOrderAsc ? "oldest" : "newest"} first`
+              }`}
+            >
+              <IconButton
+                sx={{ m: 0.5 }}
+                onClick={() => {
+                  setSortOrderAsc(!sortOrderAsc);
+                  console.log(sortOrderAsc);
+                }}
+              >
+                <SwapVertIcon
+                  sx={{
+                    display: "inline-block",
+                    transition: "transform 0.3s ease-in-out",
+                    transform: !sortOrderAsc
+                      ? "rotate(180deg) scaleX(-1)"
+                      : "none",
+                  }}
+                />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Sort by votes">
-              <IconButton sx={{ m: 0.5 }}>
-                <SortIcon />
+            <Tooltip title={`Sort by ${sortTypeVotes ? "Date" : "Votes"}`}>
+              <IconButton
+                sx={{
+                  m: 0.5,
+                }}
+                onClick={() => {
+                  setSortTypeLikes(!sortTypeVotes);
+                  console.log(sortTypeVotes);
+                }}
+              >
+                <SortIcon
+                  sx={{
+                    display: "inline-block",
+                    transition: "transform 0.3s ease-in-out",
+                    transform: !sortTypeVotes ? "scaleX(-1)" : "none",
+                  }}
+                />
               </IconButton>
             </Tooltip>
           </div>

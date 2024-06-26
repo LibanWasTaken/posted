@@ -10,6 +10,7 @@ import { getTimeDifferenceShort } from "../functions/functions";
 import { NAV_OPTIONS } from "../context/UserOptions";
 
 import SearchTwoToneIcon from "@mui/icons-material/SearchTwoTone";
+import HandymanOutlinedIcon from "@mui/icons-material/HandymanOutlined";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
@@ -42,6 +43,7 @@ const Navbar = () => {
   const [notifications, setNotifications] = useState([]);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [darkNav, setDarkNav] = useState(false);
 
   async function getNotification() {
     const userID = currentUser.uid;
@@ -63,6 +65,12 @@ const Navbar = () => {
   }
 
   useEffect(() => {
+    const pathName = window.location.pathname;
+    if (pathName === "/" || pathName === "/me") {
+      setDarkNav(true);
+    } else {
+      setDarkNav(false);
+    }
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
     };
@@ -96,34 +104,6 @@ const Navbar = () => {
     }
   }
 
-  // function getTimeDifferenceShort(timestamp) {
-  //   const currentTime = dayjs();
-  //   const targetTime = dayjs(timestamp);
-
-  //   const secondsDiff = Math.abs(currentTime.diff(targetTime, "second"));
-  //   const minutesDiff = Math.abs(currentTime.diff(targetTime, "minute"));
-  //   const hoursDiff = Math.abs(currentTime.diff(targetTime, "hour"));
-  //   const daysDiff = Math.abs(currentTime.diff(targetTime, "day"));
-  //   const monthsDiff = Math.abs(currentTime.diff(targetTime, "month"));
-  //   const yearsDiff = Math.abs(currentTime.diff(targetTime, "year"));
-
-  //   if (secondsDiff < 60) {
-  //     return `${secondsDiff}s`;
-  //   } else if (minutesDiff < 60) {
-  //     return `${minutesDiff}m`;
-  //   } else if (hoursDiff < 24) {
-  //     return `${hoursDiff}h`;
-  //   } else if (daysDiff < 30) {
-  //     return `${daysDiff}d`;
-  //   } else if (monthsDiff < 12) {
-  //     return `${monthsDiff}M`;
-  //   } else if (secondsDiff < 0) {
-  //     return `${monthsDiff}f`;
-  //   } else {
-  //     return `${yearsDiff}y`;
-  //   }
-  // }
-
   function generateMenuItemLink(url, div) {
     return (
       <Link
@@ -146,6 +126,13 @@ const Navbar = () => {
       <li key={option.value}>
         <Link
           to={option.value}
+          onClick={() => {
+            if (option.value === "/me") {
+              setDarkNav(true);
+            } else {
+              setDarkNav(false);
+            }
+          }}
           style={{
             textDecoration: "none",
           }}
@@ -203,13 +190,14 @@ const Navbar = () => {
 
   return (
     <Wrapper>
-      <nav>
+      <nav className={darkNav && "darkNav"}>
         <Link
           to="/"
           style={{
             textDecoration: "none",
           }}
           className="logo"
+          onClick={() => setDarkNav(true)}
         >
           POSTED
         </Link>
@@ -238,6 +226,9 @@ const Navbar = () => {
                 justifyContent: "center",
               }}
             >
+              <Link to={"/playground"} className="icon">
+                <HandymanOutlinedIcon fontSize="medium" />
+              </Link>
               <a href="/search" className="icon">
                 <SearchTwoToneIcon fontSize="large" />
               </a>
@@ -311,7 +302,7 @@ const Navbar = () => {
                   </MenuItem>
                 </Link>
                 <Link
-                  to="/account"
+                  to={`/user/${currentUser && currentUser.uid}`}
                   style={{
                     textDecoration: "none",
                     color: "black",
@@ -431,8 +422,11 @@ const Navbar = () => {
 };
 
 const Wrapper = styled.section`
+  /* background-color: black; */
+
   * {
     color: black;
+    /* color: #ddd; */
     /* font-family: sans-serif; */
     letter-spacing: 1px;
     font-weight: 300;
@@ -473,9 +467,9 @@ const Wrapper = styled.section`
     align-items: center;
     gap: 1rem;
   }
-  .logoPng {
+  /* .logoPng {
     height: 50px;
-  }
+  } */
   .profilePic {
     height: 2rem;
     border-radius: 50%;
@@ -552,6 +546,14 @@ const Wrapper = styled.section`
       padding: 0;
     }
   } */
+
+  .darkNav {
+    background-color: black;
+    transition: 0.3s;
+    * {
+      color: whitesmoke;
+    }
+  }
 `;
 
 export default Navbar;

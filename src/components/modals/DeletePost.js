@@ -9,6 +9,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { LinearProgress } from "@mui/material";
 
 import {
   doc,
@@ -17,6 +18,7 @@ import {
   deleteDoc,
   collection,
   setDoc,
+  addDoc,
 } from "firebase/firestore";
 
 import { db } from "../../services/firebase-config";
@@ -62,65 +64,37 @@ export default function DeletePost({
 
   const navigate = useNavigate();
   function redirect() {
-    // Use the history.push method to navigate to the desired URL
     navigate(`/me`);
   }
 
   // FIXME: IT DOESNT DELETE SUB COLLECTIONS
   async function handleDelete() {
+    setDeleting(true);
     if (postIDValue === postID) {
-      // setDeleting(true);
-      console.log("Deleting post:", postID, "from user:", userID);
+      try {
+        await deleteDoc(doc(db, fromDB, postID));
+        console.log("successfully deleted");
 
-      const postDocRef = doc(db, fromDB, postID);
+        await deleteDoc(doc(db, `users/${userID}/${fromDB}`, postID));
+        console.log("deleted from user posts");
 
-      const checkRef = collection(db, fromDB, postID, "diary");
-      const subCollectionSnapshot = await getDocs(checkRef);
-
-      const checkRef2 = collection(db, fromDB, postID, "comments");
-      const subCollectionSnapshot2 = await getDocs(checkRef2);
-      const commentsDocs = subCollectionSnapshot.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }));
-      const commentsDocs2 = subCollectionSnapshot2.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }));
-      // TODO: If its empty, it doesnt exist.. now delete the one that exists
-      console.log(commentsDocs);
-      console.log(commentsDocs2);
-      // console.log(docSnapshot);
-      // try {
-      //    const subCollectionRef = collection(postDocRef, 'subCollectionName');
-      //    const subCollectionSnapshot = await subCollectionRef.get();
-      //    subCollectionSnapshot.forEach((doc) => {
-      //      doc.ref.delete();
-      //    });
-
-      //    await deleteDoc(postDocRef);
-      //   console.log(
-      //     "Document and subcollections successfully deleted from posts"
-      //   );
-      // } catch (error) {
-      //   console.error("Error deleting document from posts: ", error);
-      // }
-
-      // const userPostDocRef = doc(db, `users/${userID}/posts`, postID);
-      // try {
-      //   await deleteDoc(userPostDocRef);
-      //   console.log("Document successfully deleted from user!");
-      //   redirect();
-      // } catch (error) {
-      //   console.error("Error deleting document from user: ", error);
-      // }
+        const newDocRef = await addDoc(collection(db, "bin"), {
+          type: "post",
+          id: postID,
+        });
+        console.log("added to bin");
+        redirect();
+      } catch (error) {
+        console.error(error);
+        setDeleting(false);
+      }
     }
   }
 
   return (
     <ThemeProvider theme={theme}>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Deletion</DialogTitle>
+        <DialogTitle>{deleting ? "Deleting" : "Deletion"}</DialogTitle>
         <DialogContent sx={{ m: 5, overflow: "hidden" }}>
           <DialogContentText sx={{ marginBottom: 0 }}>
             This is irreversible.
@@ -137,6 +111,7 @@ export default function DeletePost({
             type="text"
             variant="standard"
             value={postIDValue}
+            disabled={deleting}
             onChange={(e) => setPostIDValue(e.target.value)}
           />
         </DialogContent>
@@ -155,6 +130,7 @@ export default function DeletePost({
             Delete
           </Button>
         </DialogActions>
+        {deleting && <LinearProgress />}
       </Dialog>
     </ThemeProvider>
   );

@@ -26,7 +26,7 @@ import ListMaxIndentLevelPlugin from "./plugins/ListMaxIndentLevelPlugin";
 import CodeHighlightPlugin from "./plugins/CodeHighlightPlugin";
 import AutoLinkPlugin from "./plugins/AutoLinkPlugin";
 
-import "./styles.css";
+// import "./styles.css";
 
 // me:
 import { useParams } from "react-router-dom";
