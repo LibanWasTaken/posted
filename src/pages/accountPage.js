@@ -59,6 +59,7 @@ const theme = createTheme({
 });
 
 export function AccPage() {
+  console.log("asdasdadsa");
   const { user, loading } = useUserContext();
   const [value, setValue] = useState(0);
   const [registerEmail, setRegisterEmail] = useState("");
@@ -312,8 +313,8 @@ export function AccPage() {
                 </Grow>
               </section>
               <section className="form">
-                {value == 0 && (
-                  <Fade in={value == 0}>
+                {value === 0 && (
+                  <Fade in={value === 0}>
                     <div className="inputs">
                       <h1>Log In</h1>
                       <Box
@@ -375,8 +376,8 @@ export function AccPage() {
                     </div>
                   </Fade>
                 )}
-                {value == 1 && (
-                  <Fade in={value == 1}>
+                {value === 1 && (
+                  <Fade in={value === 1}>
                     <div className="inputs">
                       <h1>Register</h1>
                       <Box
@@ -480,8 +481,8 @@ export function AccPage() {
                     </div>
                   </Fade>
                 )}
-                {value == 2 && (
-                  // <Grow in={value == 2}>
+                {value === 2 && (
+                  // <Grow in={value === 2}>
                   <div className="inputs">
                     <CircularProgress />
                   </div>
@@ -501,8 +502,8 @@ export function AccPage() {
                       setValue(newValue);
                     }}
                   >
-                    {loginMethods == 1 && (
-                      <Fade in={loginMethods == 1}>
+                    {loginMethods === 1 && (
+                      <Fade in={loginMethods === 1}>
                         <BottomNavigationAction
                           label="Log In"
                           className="bottomNavBtn"
@@ -510,8 +511,8 @@ export function AccPage() {
                         />
                       </Fade>
                     )}
-                    {loginMethods == 1 && (
-                      <Fade in={loginMethods == 1}>
+                    {loginMethods === 1 && (
+                      <Fade in={loginMethods === 1}>
                         <BottomNavigationAction
                           label="Sign Up"
                           className="bottomNavBtn"
@@ -519,8 +520,8 @@ export function AccPage() {
                         />
                       </Fade>
                     )}
-                    {loginMethods == 1 && (
-                      <Fade in={loginMethods == 1}>
+                    {loginMethods === 1 && (
+                      <Fade in={loginMethods === 1}>
                         <BottomNavigationAction
                           label=""
                           className="bottomNavBtn"
@@ -529,8 +530,8 @@ export function AccPage() {
                         />
                       </Fade>
                     )}
-                    {loginMethods == 2 && (
-                      <Fade in={loginMethods == 2}>
+                    {loginMethods === 2 && (
+                      <Fade in={loginMethods === 2}>
                         <BottomNavigationAction
                           label="Phone"
                           className="bottomNavBtn"
@@ -539,8 +540,8 @@ export function AccPage() {
                         />
                       </Fade>
                     )}
-                    {loginMethods == 2 && (
-                      <Fade in={loginMethods == 2}>
+                    {loginMethods === 2 && (
+                      <Fade in={loginMethods === 2}>
                         <BottomNavigationAction
                           label="Facebook"
                           className="bottomNavBtn"
@@ -549,8 +550,8 @@ export function AccPage() {
                         />
                       </Fade>
                     )}
-                    {loginMethods == 2 && (
-                      <Fade in={loginMethods == 2}>
+                    {loginMethods === 2 && (
+                      <Fade in={loginMethods === 2}>
                         <BottomNavigationAction
                           label="Github"
                           className="bottomNavBtn"
@@ -559,8 +560,8 @@ export function AccPage() {
                         />
                       </Fade>
                     )}
-                    {loginMethods == 3 && (
-                      <Fade in={loginMethods == 3}>
+                    {loginMethods === 3 && (
+                      <Fade in={loginMethods === 3}>
                         <BottomNavigationAction
                           label="Twitter"
                           className="bottomNavBtn"
@@ -569,8 +570,8 @@ export function AccPage() {
                         />
                       </Fade>
                     )}
-                    {loginMethods == 3 && (
-                      <Fade in={loginMethods == 3}>
+                    {loginMethods === 3 && (
+                      <Fade in={loginMethods === 3}>
                         <BottomNavigationAction
                           label="Apple"
                           className="bottomNavBtn"
@@ -579,8 +580,8 @@ export function AccPage() {
                         />
                       </Fade>
                     )}
-                    {loginMethods == 3 && (
-                      <Fade in={loginMethods == 3}>
+                    {loginMethods === 3 && (
+                      <Fade in={loginMethods === 3}>
                         <BottomNavigationAction
                           label="Microsoft"
                           className="bottomNavBtn"

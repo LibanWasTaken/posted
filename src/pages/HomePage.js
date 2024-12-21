@@ -416,6 +416,7 @@ const HomePage = () => {
             </Parallax>
           </div>
         </Fade>
+        <p className="bigAssText">NOW</p>
       </section>
 
       <section className="endSection">
@@ -836,6 +837,17 @@ const Wrapper = styled.main`
         padding: 0;
         margin: 0;
       }
+    }
+
+    .bigAssText {
+      position: absolute;
+      font-size: 30rem;
+      z-index: -1;
+      transform: rotate(-90deg);
+      right: 10rem;
+      opacity: 0.025;
+      top: -5rem;
+      font-weight: 700;
     }
   }
 
